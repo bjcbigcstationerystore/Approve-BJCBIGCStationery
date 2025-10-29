@@ -178,10 +178,11 @@
 
   <script>
     /************ CONFIG ************/
-    const SPREADSHEET_ID = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg'; // ใช้ตามที่ให้มา
-    const MASTER_SHEET   = 'Master';
-    const ADMIN_BU_SHEET = 'Admin BU';
+    const SPREADSHEET_ID   = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
+    const MASTER_SHEET     = 'Master';
+    const ADMIN_BU_SHEET   = 'Admin BU';
     const BU_APPROVE_SHEET = 'BU Approve';
+    const RESPONSE_SHEET   = 'Response';
 
     /************ STATE ************/
     let requestsData = [];
@@ -290,6 +291,50 @@
       return out;
     }
 
+    // ดึงรายละเอียดจากชีต Response โดยใช้ Request number (A) เป็นเงื่อนไข
+    async function loadDetailByRequestNumber(reqNo) {
+      const safe = String(reqNo || '').replace(/'/g, "\\'");
+      const tq = `select * where A='${safe}'`;
+      const table = await gvizQuery(RESPONSE_SHEET, tq);
+      const rows = table.rows || [];
+      if (!rows.length) return null;
+
+      const c = rows[0].c || [];
+      // คอลัมน์หลัก
+      const reqNumber   = String(cellVal(c[0]) || '').trim(); // A
+      const dateRaw     = cellVal(c[1]);                      // B
+      const requester   = String(cellVal(c[6]) || '').trim(); // G
+      const itemCount   = cellVal(c[9]);                      // J จำนวนรายการเบิก
+      const amountV     = cellVal(c[10]);                     // K จำนวนเงินรวม
+      const amount      = (typeof amountV === 'number') ? amountV : Number(amountV);
+      const dateISO     = toISO(dateRaw);
+
+      // เริ่มชุดรายการตั้งแต่คอลัมน์ L(11) M(12) N(13) แล้วไล่ไปทีละ 3
+      const items = [];
+      for (let i = 11; i < c.length; i += 3) {
+        const name = String(cellVal(c[i]) || '').trim();       // L, O, R, ...
+        const qtyV = cellVal(c[i + 1]);                        // M, P, S, ...
+        const priceV = cellVal(c[i + 2]);                      // N, Q, T, ...
+        if (!name && !qtyV && !priceV) continue;               // ข้ามแถวว่างท้ายตาราง
+        const qty   = (typeof qtyV === 'number') ? qtyV : Number(qtyV);
+        const price = (typeof priceV === 'number') ? priceV : Number(priceV);
+        items.push({
+          name: name || '-',
+          qty: Number.isFinite(qty) ? qty : (qtyV || ''),
+          price: Number.isFinite(price) ? price : (priceV || '')
+        });
+      }
+
+      return {
+        reqNumber,
+        requester,
+        date: dateISO || String(dateRaw || ''),
+        itemCount: Number.isFinite(Number(itemCount)) ? Number(itemCount) : itemCount,
+        amount: Number.isFinite(amount) ? amount : (amountV || ''),
+        items
+      };
+    }
+
     /************ UI ************/
     function showLoginError(msg) {
       const input = document.getElementById('employee-id');
@@ -392,50 +437,90 @@
       });
     }
 
-    function showDetail(requestId) {
-      const request = requestsData.find(r => r.id === requestId);
-      if (!request) return;
+    // แสดงรายละเอียดจากชีต Response ตาม Request Number
+    async function showDetail(requestId) {
       currentRequestId = requestId;
-
       const modalContent = document.getElementById('modal-content');
-      modalContent.innerHTML = `
-        <div class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div>
-                <p class="text-sm text-gray-500 mb-1">Request Number</p>
-                <p class="text-lg font-semibold text-gray-800">${request.id}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500 mb-1">ผู้ขอเบิก</p>
-                <p class="text-base font-medium text-gray-800">${request.requester}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500 mb-1">วันที่ขอ</p>
-                <p class="text-base font-medium text-gray-800">${request.date}</p>
-              </div>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <p class="text-sm text-gray-500 mb-1">สถานะ</p>
-                <div>${getStatusBadge(request.status)}</div>
-              </div>
-              <div class="bg-blue-50 rounded-lg p-4">
-                <p class="text-sm text-gray-600 mb-1">จำนวนเงินรวม</p>
-                <p class="text-2xl font-bold text-blue-600">
-                  ${Number.isFinite(request.amount) ? request.amount.toLocaleString('th-TH') : request.amount} บาท
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4 class="text-lg font-semibold text-gray-800 mb-2">รายละเอียดรายการ</h4>
-            <p class="text-gray-700 whitespace-pre-line">${request.items || '-'}</p>
-          </div>
-        </div>
-      `;
-
+      modalContent.innerHTML = `<div class="p-6 text-center text-gray-600">กำลังดึงรายละเอียดจาก Response...</div>`;
       document.getElementById('detail-modal').classList.add('active');
+
+      try {
+        const detail = await loadDetailByRequestNumber(requestId);
+        if (!detail) {
+          modalContent.innerHTML = `<div class="p-6 text-center text-red-600">ไม่พบรายละเอียดในชีต Response สำหรับเลขที่ ${requestId}</div>`;
+          return;
+        }
+
+        const rows = detail.items.map((it, idx) => `
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-3 text-sm text-gray-500 text-center">${idx + 1}</td>
+            <td class="px-4 py-3 text-sm text-gray-800">${it.name}</td>
+            <td class="px-4 py-3 text-sm text-gray-700 text-center">${it.qty}</td>
+            <td class="px-4 py-3 text-sm text-gray-700 text-right">
+              ${Number.isFinite(it.price) ? it.price.toLocaleString('th-TH') : it.price}
+            </td>
+          </tr>
+        `).join('') || `
+          <tr><td colspan="4" class="px-4 py-3 text-center text-sm text-gray-500">- ไม่มีรายละเอียดรายการ -</td></tr>
+        `;
+
+        modalContent.innerHTML = `
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <p class="text-sm text-gray-500 mb-1">Request Number</p>
+                  <p class="text-lg font-semibold text-gray-800">${detail.reqNumber}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500 mb-1">ผู้ขอเบิก</p>
+                  <p class="text-base font-medium text-gray-800">${detail.requester}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500 mb-1">วันที่ขอ</p>
+                  <p class="text-base font-medium text-gray-800">${detail.date}</p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="bg-blue-50 rounded-lg p-4">
+                  <p class="text-sm text-gray-600 mb-1">จำนวนรายการเบิก</p>
+                  <p class="text-xl font-bold text-blue-600">
+                    ${Number.isFinite(detail.itemCount) ? detail.itemCount : (detail.itemCount || '-')} รายการ
+                  </p>
+                </div>
+                <div class="bg-blue-50 rounded-lg p-4">
+                  <p class="text-sm text-gray-600 mb-1">จำนวนเงินรวม</p>
+                  <p class="text-2xl font-bold text-blue-600">
+                    ${Number.isFinite(detail.amount) ? detail.amount.toLocaleString('th-TH') : detail.amount} บาท
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-lg font-semibold text-gray-800 mb-3">รายละเอียดรายการ</h4>
+              <div class="bg-gray-50 rounded-lg overflow-hidden">
+                <table class="w-full">
+                  <thead class="bg-gray-200">
+                    <tr>
+                      <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700" style="width:80px;">ลำดับ</th>
+                      <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">รายการ</th>
+                      <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700" style="width:120px;">จำนวน</th>
+                      <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700" style="width:140px;">ราคา</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        console.error(e);
+        modalContent.innerHTML = `<div class="p-6 text-center text-red-600">เกิดข้อผิดพลาดขณะดึงข้อมูลรายละเอียด</div>`;
+      }
     }
 
     function closeModal() {
