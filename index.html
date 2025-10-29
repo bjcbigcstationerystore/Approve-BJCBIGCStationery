@@ -3,248 +3,509 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BJC Big C Stationery Store</title>
-
-  <!-- Font + Tailwind -->
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>APPROVAL STATIONERY STORE</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    :root{
-      --emerald-700:#047857;
-      --emerald-600:#059669;
-      --emerald-500:#10b981;
-    }
-    html,body{
-      height:100%;
-      margin:0;
-      font-family:'Prompt',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:
-        radial-gradient(1000px 400px at 20% -10%, rgba(5,150,105,.25) 0%, transparent 70%),
-        radial-gradient(1000px 400px at 80% 110%, rgba(4,120,87,.22) 0%, transparent 70%),
-        linear-gradient(180deg, var(--emerald-500) 0%, var(--emerald-600) 45%, var(--emerald-700) 100%);
-      color:#0f172a;
-    }
-
-    /* กล่องการ์ดกลางของหน้า Verify */
-    .verify-box{
-      position:relative;
-      background:#ffffff;
-      border:1px solid rgba(15,23,42,.06);
-      border-radius:18px;
-      box-shadow:0 20px 42px rgba(2,8,23,.12);
-      padding:70px 40px;
-      text-align:center;
-      width:100%;
-      max-width:580px;
-      margin:auto;
-    }
-    @media (max-width:480px){
-      .verify-box{ padding:40px 24px; max-width:90vw; }
-    }
-    .verify-logo{ margin:-40px auto 35px; display:flex; align-items:center; justify-content:center; }
-    .verify-logo img{ height:64px; width:auto; }
-    @media (max-width:480px){
-      .verify-logo{ margin:-10px auto 20px; }
-      .verify-logo img{ height:52px; }
-    }
-    .verify-title{ font-weight:700; font-size:1.7rem; letter-spacing:.01em; text-transform:uppercase; margin-bottom:.25rem; }
-    .verify-subtitle{ display:inline-flex; align-items:center; justify-content:center; gap:10px; font-size:1.125rem; color:#334155; font-weight:700; margin:.15rem 0 1.2rem; }
-    .verify-desc{ font-size:.95rem; color:#64748b; text-align:left; margin:.15rem 0 .25rem; }
-    .input-wrapper{ position:relative; width:100%; margin-top:.1rem; }
-    .input-icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); width:24px; height:24px; opacity:.9; pointer-events:none; }
-    .verify-input{
-      width:100%; padding:12px 14px 12px 48px; background:#fff; border:1.5px solid #cbd5e1; border-radius:10px;
-      font-size:1rem; color:#0f172a; transition:all .2s ease-in-out; margin-top:.25rem;
-    }
-    .verify-input::placeholder{ color:#94a3b8; }
-    .verify-input:focus{ outline:none; border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.18); }
-    .verify-button{
-      width:100%; margin-top:1.4rem; min-height:56px; border:none; border-radius:14px; font-weight:600; font-size:1.05rem; color:#fff;
-      background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 12px 26px rgba(16,185,129,.28); cursor:pointer;
-      transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
-    }
-    .verify-button:hover{
-      background:linear-gradient(135deg,#059669,#047857); transform:translateY(-1px); box-shadow:0 14px 30px rgba(16,185,129,.34);
-    }
-
-    /* หน้า 2 – การ์ดข้อมูลพนักงาน */
-    .profile-card{
-      background:#fff; border:1px solid rgba(15,23,42,.06); border-radius:18px;
-      box-shadow:0 20px 42px rgba(2,8,23,.12);
-    }
-    .field-label{ font-size:.85rem; color:#64748b; margin-bottom:.25rem; }
-    .field-value{ font-size:1.05rem; color:#0f172a; }
-    .avatar{
-      width:72px; height:72px; border-radius:9999px; display:flex; align-items:center; justify-content:center;
-      background:linear-gradient(135deg,#6366f1,#3b82f6); color:#fff; font-weight:700; font-size:1.4rem;
-    }
+    body { box-sizing: border-box; }
+    @keyframes slideIn { from{opacity:0; transform:translateY(-10px)} to{opacity:1; transform:translateY(0)} }
+    .animate-slide-in{ animation: slideIn .3s ease-out; }
+    .filter-btn{ transition:all .2s ease; }
+    .filter-btn:hover{ transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.15) }
+    .filter-btn.active{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(59,130,246,.3) }
+    .table-row{ transition:all .2s ease; }
+    .table-row:hover{ background:#f8fafc; transform:scale(1.005); }
+    .modal{ display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:1000; animation:fadeIn .2s ease; }
+    .modal.active{ display:flex; align-items:center; justify-content:center; }
+    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+    .modal-content{ animation:slideIn .3s ease-out; }
   </style>
 </head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
 
-<body>
-  <!-- PAGE 1: Verify -->
-  <section id="page-verify" class="min-h-screen w-full flex items-center justify-center px-4 py-10">
-    <div class="verify-box">
-      <div class="verify-logo">
-        <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C Logo" loading="lazy"
-             onerror="this.src='https://via.placeholder.com/200x60?text=BJC+Big+C'">
-      </div>
-
-      <h1 class="verify-title">APPROVAL STATIONERY STORE</h1>
-      <p class="verify-subtitle"><span aria-hidden="true">🏢</span> ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน</p>
-      <p class="verify-desc">กรอกรหัสพนักงานเพื่อเข้าใช้งานระบบ</p>
-
-      <label for="employeeId" class="sr-only">รหัสพนักงาน</label>
-      <div class="input-wrapper">
-        <img src="https://i.postimg.cc/4NKdMhvp/id-card.png" alt="" class="input-icon">
-        <input id="employeeId" type="text" class="verify-input" placeholder="กรอกรหัสพนักงาน">
-      </div>
-
-      <button id="btnProceed" class="verify-button" type="button">ดำเนินการต่อ</button>
-
-      <!-- กล่อง error เล็ก ๆ -->
-      <p id="errBox" class="mt-3 text-sm text-red-600 hidden">ไม่พบรหัสพนักงานในระบบ กรุณาตรวจสอบอีกครั้ง</p>
-    </div>
-  </section>
-
-  <!-- PAGE 2: Profile -->
-  <section id="page-profile" class="min-h-screen w-full px-4 py-10 hidden">
-    <div class="max-w-6xl mx-auto space-y-6">
+  <!-- Login Page -->
+  <div id="login-page" class="min-h-screen flex items-center justify-center px-4">
+    <div class="max-w-md w-full space-y-8">
       <div class="text-center">
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">APPROVAL STATIONERY STORE</h1>
-        <div class="mt-2 h-1 w-24 bg-blue-500 mx-auto rounded"></div>
+        <div class="mb-8">
+          <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C Logo" class="mx-auto h-20 w-auto" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+        </div>
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">APPROVAL STATIONERY STORE</h1>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full mb-6"></div>
+        <div class="mb-8">
+          <p class="text-2xl text-gray-700 mb-2">🏢ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน</p>
+          <p class="text-lg text-gray-600">กรอกรหัสพนักงานเพื่อเข้าใช้งานระบบ</p>
+        </div>
       </div>
 
-      <!-- การ์ดข้อมูล -->
-      <div class="profile-card p-6 md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <!-- ซ้าย: avatar -->
-          <div class="flex items-center gap-4">
-            <div id="pfAvatar" class="avatar">👤</div>
+      <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-in">
+        <form onsubmit="handleLogin(event)" class="space-y-6">
+          <div>
+            <label for="employee-id" class="block text-sm font-medium text-gray-700 mb-2">รหัสพนักงาน</label>
+            <input id="employee-id" name="employee-id" type="text" required
+                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                   placeholder="กรอกรหัสพนักงาน" autocomplete="username">
+          </div>
+          <div>
+            <button type="submit"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+              🚀 ดำเนินการต่อ
+            </button>
+          </div>
+        </form>
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-700 text-center">
+            💡 <strong>Note:</strong> ต้อง Publish ชีตเป็นสาธารณะ (File → <em>Publish to the web</em>) ก่อน
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div id="dashboard-page" class="container mx-auto px-4 py-8 max-w-7xl" style="display:none;">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">APPROVAL STATIONERY STORE</h1>
+      <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full"></div>
+    </div>
+
+    <!-- Approver Info -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-slide-in">
+      <div class="flex items-center">
+        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-4xl mr-6">👤</div>
+        <div class="flex-1">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <div class="field-label">ชื่อ-นามสกุล</div>
-              <div id="pfName" class="field-value font-semibold">-</div>
+              <p class="text-gray-500 text-sm mb-1">Name</p>
+              <p class="text-xl font-bold text-gray-800" id="user-name">-</p>
             </div>
-          </div>
-
-          <!-- กลาง: Division + Cost Center -->
-          <div>
-            <div class="field-label">แผนก Cost Center</div>
-            <div id="pfDivisionCost" class="field-value">-</div>
-          </div>
-
-          <!-- ขวา: Email -->
-          <div>
-            <div class="field-label">Email</div>
-            <a id="pfEmail" class="field-value text-blue-600 hover:underline" href="#" target="_blank">-</a>
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Email</p>
+              <p class="text-lg font-semibold text-blue-600" id="user-email">-</p>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Cost Center</p>
+              <p class="text-lg font-semibold text-gray-700" id="user-cost-center">-</p>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Division</p>
+              <p class="text-lg font-semibold text-gray-700" id="user-division">-</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Table + Filters -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-gray-800">รายการขอเบิกเครื่องเขียน</h3>
+        </div>
+
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <!-- ปุ่มกรองสถานะ -->
+          <div class="flex flex-wrap gap-2">
+            <button onclick="filterByStatus('all')" class="filter-btn active px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="all">
+              รวมทั้งหมด (<span id="total-count">0</span>)
+            </button>
+            <button onclick="filterByStatus('approved')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="approved">
+              อนุมัติ (<span id="approved-count">0</span>)
+            </button>
+            <button onclick="filterByStatus('pending')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="pending">
+              รออนุมัติ (<span id="pending-count">0</span>)
+            </button>
+            <button onclick="filterByStatus('revise')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="revise">
+              แก้ไข (<span id="revise-count">0</span>)
+            </button>
+            <button onclick="filterByStatus('rejected')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="rejected">
+              ปฏิเสธ (<span id="rejected-count">0</span>)
+            </button>
+          </div>
+
+          <!-- ตัวกรองวันที่ -->
+          <div class="flex items-center gap-2 ml-auto">
+            <label for="date-filter" class="text-sm text-gray-600">ช่วงวันที่:</label>
+            <select id="date-filter" onchange="filterByDate()"
+                    class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="all" selected>ทั้งหมด</option>
+              <option value="today">วันนี้</option>
+              <option value="week">7 วันล่าสุด</option>
+              <option value="month">เดือนนี้</option>
+              <option value="latest">3 วันล่าสุด</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Request Number</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">ผู้ขอเบิก</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">วันที่ขอ</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">รายการ (ชิ้น)</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">จำนวนเงิน</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">สถานะ</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">การดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="detail-modal" class="modal">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90%] overflow-y-auto">
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-2xl font-bold text-gray-800">รายละเอียดการขอเบิกเครื่องเขียน</h3>
+          <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-3xl font-bold">&times;</button>
+        </div>
+      </div>
+      <div class="p-6" id="modal-content"></div>
+      <div class="p-6 border-t border-gray-200 bg-gray-50 flex gap-3 justify-end">
+        <button onclick="closeModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition">ปิด</button>
+        <!-- โหมด GitHub: ปุ่มตัวอย่างเท่านั้น (ไม่เขียนกลับชีต) -->
+        <button onclick="alert('โหมด GitHub: ปุ่มนี้เป็นตัวอย่างเท่านั้น')" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition">✅ อนุมัติ</button>
+        <button onclick="alert('โหมด GitHub: ปุ่มนี้เป็นตัวอย่างเท่านั้น')" class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition">❌ ปฏิเสธ</button>
+        <button onclick="alert('โหมด GitHub: ปุ่มนี้เป็นตัวอย่างเท่านั้น')" class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium transition">🔄 ขอแก้ไข</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // === ตั้งค่า Google Sheet ===
-    const SHEET_ID   = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
-    const SHEET_NAME = 'Master';
+    /************ CONFIG ************/
+    const SPREADSHEET_ID = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg'; // ใช้ตามที่ให้มา
+    const MASTER_SHEET   = 'Master';
+    const ADMIN_BU_SHEET = 'Admin BU';
+    const BU_APPROVE_SHEET = 'BU Approve';
 
-    // ดึงข้อมูลผ่าน Google Visualization API (ต้องเปิดสิทธิ์ Anyone with the link – Viewer)
-    async function fetchSheetRows() {
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(SHEET_NAME)}`;
-      const res = await fetch(url);
+    /************ STATE ************/
+    let requestsData = [];
+    let currentRequestId = null;
+    let currentFilter = 'all';
+    let currentDateFilter = 'all';
+    let currentUser = null;
+
+    /************ GVIZ FETCH ************/
+    async function gvizQuery(sheetName, tq) {
+      const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SPREADSHEET_ID)}/gviz/tq`;
+      const url = `${base}?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent(tq)}`;
+      const res = await fetch(url, { method:'GET' });
       const text = await res.text();
-
-      // ตัด wrapper ของ GViz ออกให้เหลือ JSON
-      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-      const cols = json.table.cols.map(c => (c.label || '').trim());
-
-      // แปลงเป็น array ของ object โดยอิง label ของคอลัมน์
-      const rows = (json.table.rows || []).map(r => {
-        const obj = {};
-        r.c.forEach((cell, idx) => {
-          obj[cols[idx] || `col${idx}`] = cell ? cell.v : '';
-        });
-        return obj;
-      });
-      return rows;
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start === -1 || end === -1) throw new Error('GViz response malformed (ตรวจการตั้งค่า Publish to the web)');
+      const json = JSON.parse(text.substring(start, end + 1));
+      if (!json.table) return { cols:[], rows:[] };
+      return json.table;
     }
 
-    // หา record ตาม EmployeeID (คอลัมน์ F)
-    function findByEmployeeId(rows, employeeId) {
-      // รองรับชื่อหัวคอลัมน์แตกต่างเล็กน้อย
-      const idKeys = ['EmployeeID','EmpID','Employee Id','รหัสพนักงาน','F'];
-      const nameKeys = ['Name','ชื่อ','G'];
-      const emailKeys = ['Email','อีเมล','H'];
-      const divKeys = ['Division','ฝ่าย','E'];
-      const ccKeys = ['Cost Center','CostCenter','D'];
-
-      const norm = s => String(s || '').trim().toLowerCase();
-
-      for (const row of rows) {
-        const idVal = idKeys.map(k => row[k]).find(v => v !== undefined);
-        if (norm(idVal) === norm(employeeId)) {
-          return {
-            name:  nameKeys.map(k => row[k]).find(v => v !== undefined) || '',
-            email: emailKeys.map(k => row[k]).find(v => v !== undefined) || '',
-            division: divKeys.map(k => row[k]).find(v => v !== undefined) || '',
-            costCenter: ccKeys.map(k => row[k]).find(v => v !== undefined) || ''
-          };
-        }
+    function cellVal(c) {
+      if (!c) return '';
+      if ('v' in c && c.v != null) {
+        if (c.f) return c.f; // formatted string
+        return c.v;
       }
-      return null;
+      return '';
     }
 
-    // สลับหน้า
-    function showPage(idToShow) {
-      document.getElementById('page-verify').classList.toggle('hidden', idToShow !== 'verify');
-      document.getElementById('page-profile').classList.toggle('hidden', idToShow !== 'profile');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // กด "ดำเนินการต่อ"
-    document.getElementById('btnProceed').addEventListener('click', async () => {
-      const empId = document.getElementById('employeeId').value.trim();
-      const err = document.getElementById('errBox');
-      err.classList.add('hidden');
-
-      if (!empId) {
-        err.textContent = 'กรุณากรอกรหัสพนักงาน';
-        err.classList.remove('hidden');
-        return;
+    function toISO(dateStr) {
+      if (!dateStr) return '';
+      const slash = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (slash) {
+        const d = String(slash[1]).padStart(2,'0');
+        const m = String(slash[2]).padStart(2,'0');
+        const y = slash[3];
+        return `${y}-${m}-${d}`;
       }
+      const iso = dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
+      if (iso) return dateStr;
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${day}`;
+      }
+      return String(dateStr);
+    }
+
+    /************ DATA LOADERS ************/
+    async function loadUserByEmpId(empId) {
+      const safeEmp = empId.replace(/'/g, "\\'");
+      // C=Role, D=Cost, E=Division, F=EmpID, G=Name, H=Email
+      const tq = `select C,D,E,F,G,H where F='${safeEmp}'`;
+      const table = await gvizQuery(MASTER_SHEET, tq);
+      const rows = table.rows || [];
+      if (!rows.length) return null;
+
+      const r = rows[0].c;
+      const role       = String(cellVal(r[0]) || '').trim();
+      const costCenter = String(cellVal(r[1]) || '').trim();
+      const division   = String(cellVal(r[2]) || '').trim();
+      const emp        = String(cellVal(r[3]) || '').trim();
+      const name       = String(cellVal(r[4]) || '').trim();
+      const email      = String(cellVal(r[5]) || '').trim();
+
+      return { empId: emp, role, costCenter, division, name, email };
+    }
+
+    async function loadRequestsForRole(role) {
+      const sheet = (role === 'BU Admin') ? ADMIN_BU_SHEET
+                  : (role === 'BU/BP Head') ? BU_APPROVE_SHEET
+                  : BU_APPROVE_SHEET;
+
+      // A=req no, B=date, G=requester, J=items, K=amount, L=status(optional)
+      const tq = `select A,B,G,J,K,L`;
+      const table = await gvizQuery(sheet, tq);
+      const rows = table.rows || [];
+      const colCount = (table.cols || []).length;
+
+      const out = rows.map(row => {
+        const c = row.c || [];
+        const id      = String(cellVal(c[0]) || '').trim();
+        const dateRaw = cellVal(c[1]);
+        const requester = String(cellVal(c[2]) || '').trim();
+        const items   = String(cellVal(c[3]) || '').trim();
+        const amountV = cellVal(c[4]);
+        const statusV = (colCount >= 6) ? String((cellVal(c[5]) || '')).trim().toLowerCase() : 'pending';
+
+        const amount = (typeof amountV === 'number') ? amountV : Number(amountV);
+        const dateISO = toISO(dateRaw);
+
+        return {
+          id,
+          requester,
+          date: dateISO || String(dateRaw || ''),
+          items,
+          amount: Number.isFinite(amount) ? amount : (amountV || ''),
+          status: statusV || 'pending'
+        };
+      }).filter(o => o.id);
+
+      return out;
+    }
+
+    /************ UI ************/
+    function showLoginError(msg) {
+      const input = document.getElementById('employee-id');
+      input.classList.add('border-red-500');
+      input.focus();
+      let errorMsg = document.getElementById('error-message');
+      if (!errorMsg) {
+        errorMsg = document.createElement('p');
+        errorMsg.id = 'error-message';
+        errorMsg.className = 'text-red-500 text-sm mt-2';
+        input.parentNode.appendChild(errorMsg);
+      }
+      errorMsg.textContent = '❌ ' + (msg || 'รหัสพนักงานไม่ถูกต้อง');
+      setTimeout(() => {
+        input.classList.remove('border-red-500');
+        if (errorMsg) errorMsg.remove();
+      }, 3000);
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      const employeeId = document.getElementById('employee-id').value.trim().toUpperCase();
+      const btn = event.submitter;
+      if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
 
       try {
-        const rows = await fetchSheetRows();
-        const rec = findByEmployeeId(rows, empId);
-
-        if (!rec) {
-          err.textContent = 'ไม่พบรหัสพนักงานในระบบ กรุณาตรวจสอบอีกครั้ง';
-          err.classList.remove('hidden');
-          return;
+        const user = await loadUserByEmpId(employeeId);
+        if (!user || user.empId !== employeeId) {
+          if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+          return showLoginError('ไม่พบรหัสพนักงานใน Master');
         }
 
-        // ใส่ค่าลงหน้า 2
-        document.getElementById('pfName').textContent = rec.name || '-';
-        document.getElementById('pfDivisionCost').textContent =
-          `${rec.division || '-'} - ${rec.costCenter || '-'}`;
+        currentUser = user;
+        document.getElementById('user-name').textContent = currentUser.name || '';
+        document.getElementById('user-email').textContent = currentUser.email || '';
+        document.getElementById('user-cost-center').textContent = currentUser.costCenter || '';
+        document.getElementById('user-division').textContent = currentUser.division || '';
 
-        const emailEl = document.getElementById('pfEmail');
-        emailEl.textContent = rec.email || '-';
-        emailEl.href = rec.email ? `mailto:${rec.email}` : '#';
+        // โหลดรายการตามบทบาท
+        requestsData = await loadRequestsForRole(currentUser.role);
 
-        // อัปเดต avatar เป็นอักษรย่อ (ถ้ามีชื่อ)
-        const av = document.getElementById('pfAvatar');
-        const initials = (rec.name || '').split(/\s+/).filter(Boolean).slice(0,2).map(s => s[0]).join('').toUpperCase();
-        av.textContent = initials || '👤';
+        // เปลี่ยนหน้า
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('dashboard-page').style.display = 'block';
 
-        showPage('profile');
-      } catch (e) {
-        console.error(e);
-        err.textContent = 'ไม่สามารถเชื่อมต่อข้อมูลได้ กรุณาลองใหม่อีกครั้ง';
-        err.classList.remove('hidden');
+        // แสดงตาราง
+        updateCounts();
+        renderFilteredData();
+      } catch (err) {
+        console.error(err);
+        showLoginError('ดึงข้อมูลไม่สำเร็จ (ตรวจการตั้งค่า Publish และชื่อชีต/คอลัมน์)');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
       }
+    }
+
+    function logout() {
+      currentUser = null;
+      requestsData = [];
+      document.getElementById('dashboard-page').style.display = 'none';
+      document.getElementById('login-page').style.display = 'block';
+      document.getElementById('employee-id').value = '';
+    }
+
+    function getStatusBadge(status) {
+      const s = (status || '').toLowerCase();
+      const badges = {
+        'approved': '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">✅ อนุมัติ</span>',
+        'pending': '<span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">⏳ รออนุมัติ</span>',
+        'rejected': '<span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">❌ ปฏิเสธ</span>',
+        'revise': '<span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">🔄 แก้ไข</span>'
+      };
+      return badges[s] || `<span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">${status || 'pending'}</span>`;
+    }
+
+    function renderTable(data = requestsData) {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+      data.forEach(request => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100 table-row cursor-pointer';
+        row.onclick = () => showDetail(request.id);
+        row.innerHTML = `
+          <td class="px-6 py-4 text-sm font-medium text-blue-600">${request.id}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">${request.requester}</td>
+          <td class="px-6 py-4 text-sm text-gray-600">${request.date}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">${request.items}</td>
+          <td class="px-6 py-4 text-sm font-semibold text-gray-800">
+            ${Number.isFinite(request.amount) ? request.amount.toLocaleString('th-TH') : request.amount} บาท
+          </td>
+          <td class="px-6 py-4 text-sm">${getStatusBadge(request.status)}</td>
+          <td class="px-6 py-4 text-center">
+            <button onclick="event.stopPropagation(); showDetail('${request.id}')"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium transition">
+              ดูรายละเอียด
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function showDetail(requestId) {
+      const request = requestsData.find(r => r.id === requestId);
+      if (!request) return;
+      currentRequestId = requestId;
+
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm text-gray-500 mb-1">Request Number</p>
+                <p class="text-lg font-semibold text-gray-800">${request.id}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 mb-1">ผู้ขอเบิก</p>
+                <p class="text-base font-medium text-gray-800">${request.requester}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 mb-1">วันที่ขอ</p>
+                <p class="text-base font-medium text-gray-800">${request.date}</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm text-gray-500 mb-1">สถานะ</p>
+                <div>${getStatusBadge(request.status)}</div>
+              </div>
+              <div class="bg-blue-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600 mb-1">จำนวนเงินรวม</p>
+                <p class="text-2xl font-bold text-blue-600">
+                  ${Number.isFinite(request.amount) ? request.amount.toLocaleString('th-TH') : request.amount} บาท
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-gray-800 mb-2">รายละเอียดรายการ</h4>
+            <p class="text-gray-700 whitespace-pre-line">${request.items || '-'}</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detail-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').classList.remove('active');
+      currentRequestId = null;
+    }
+
+    function updateCounts() {
+      document.getElementById('total-count').textContent    = requestsData.length;
+      document.getElementById('approved-count').textContent = requestsData.filter(r => (r.status||'').toLowerCase()==='approved').length;
+      document.getElementById('pending-count').textContent  = requestsData.filter(r => (r.status||'').toLowerCase()==='pending').length;
+      document.getElementById('rejected-count').textContent = requestsData.filter(r => (r.status||'').toLowerCase()==='rejected').length;
+      document.getElementById('revise-count').textContent   = requestsData.filter(r => (r.status||'').toLowerCase()==='revise').length;
+    }
+
+    function filterByStatus(status) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.querySelector(`[data-status="${status}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderFilteredData();
+    }
+
+    function filterByDate() {
+      const sel = document.getElementById('date-filter');
+      currentDateFilter = sel ? sel.value : 'all';
+      renderFilteredData();
+    }
+
+    function renderFilteredData() {
+      let filtered = requestsData.slice();
+
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(r => (r.status||'').toLowerCase() === currentFilter);
+      }
+
+      if (currentDateFilter !== 'all') {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        filtered = filtered.filter(r => {
+          const requestDate = new Date(r.date);
+          switch (currentDateFilter) {
+            case 'today':
+              return r.date === todayStr;
+            case 'week': {
+              const weekAgo = new Date(today.getTime() - 7*24*60*60*1000);
+              return requestDate >= weekAgo;
+            }
+            case 'month':
+              return requestDate.getMonth() === today.getMonth() &&
+                     requestDate.getFullYear() === today.getFullYear();
+            case 'latest': {
+              const threeDaysAgo = new Date(today.getTime() - 3*24*60*60*1000);
+              return requestDate >= threeDaysAgo;
+            }
+            default:
+              return true;
+          }
+        });
+      }
+
+      filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+      renderTable(filtered);
+    }
+
+    // UX: close modal on backdrop/Escape
+    document.getElementById('detail-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'detail-modal') closeModal();
     });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
   </script>
 </body>
 </html>
