@@ -2,70 +2,157 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BJC Big C Stationery — Sheets Live</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BJC Big C Stationery Store</title>
+
+  <!-- Font + Tailwind -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    html,body{height:100%;margin:0;font-family:'Prompt',sans-serif;background:#f8fafc;color:#0f172a}
-    .container{max-width:1000px;margin:0 auto;padding:2rem}
-    .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:.5rem;background:#e2e8f0;color:#0f172a}
-    table{width:100%;border-collapse:separate;border-spacing:0}
-    th,td{padding:.75rem;border-bottom:1px solid #e2e8f0}
-    th{background:#f1f5f9;text-align:left}
+    :root{
+      --emerald-700:#047857;
+      --emerald-600:#059669;
+      --emerald-500:#10b981;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:'Prompt',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      /* พื้นหลังเขียวไล่เฉดแบบอ่อนลง */
+      background:
+        radial-gradient(1000px 400px at 20% -10%, rgba(5,150,105,.25) 0%, transparent 70%),
+        radial-gradient(1000px 400px at 80% 110%, rgba(4,120,87,.22) 0%, transparent 70%),
+        linear-gradient(180deg, var(--emerald-500) 0%, var(--emerald-600) 45%, var(--emerald-700) 100%);
+      color:#0f172a;
+    }
+    /* กล่องการ์ดกลาง */
+    .verify-box{
+      position:relative;
+      background:#ffffff;
+      border:1px solid rgba(15,23,42,.06);
+      border-radius:18px;
+      box-shadow:0 20px 42px rgba(2,8,23,.12);
+      padding:70px 40px;
+      text-align:center;
+      width:100%;
+      max-width:580px;
+      margin:auto;
+    }
+    @media (max-width:480px){
+      .verify-box{ padding:40px 24px; max-width:90vw; }
+    }
+    /* แถบโลโก้ด้านบนการ์ด */
+    .verify-logo{
+      margin:-40px auto 35px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .verify-logo img{ height:64px; width:auto; }
+    @media (max-width:480px){
+      .verify-logo{ margin:-10px auto 20px; }
+      .verify-logo img{ height:52px; }
+    }
+    /* หัวเรื่อง + คำอธิบาย */
+    .verify-title{ 
+      font-weight:700; 
+      font-size:1.7rem; 
+      letter-spacing:.01em; 
+      text-transform:uppercase; 
+      margin-bottom:.25rem; 
+    }
+    .verify-subtitle{ 
+      display:inline-flex; 
+      align-items:center; 
+      justify-content:center; 
+      gap:10px; font-size:1.125rem; 
+      color:#334155; 
+      font-weight:700; 
+      margin:.15rem 0 1.2rem; 
+    }
+    .verify-desc{ 
+      font-size:.95rem; 
+      color:#64748b; 
+      text-align:left; 
+      margin:.15rem 0 .25rem; 
+    }
+    .input-wrapper{ 
+      position:relative; 
+      width:100%;
+      margin-top:.1rem; 
+    }
+    .input-icon{ 
+      position:absolute; 
+      left:14px; top:50%; 
+      transform:translateY(-50%); 
+      width:24px; height:24px; 
+      opacity:.9; 
+      pointer-events:none; 
+    }
+    .verify-input{
+      width:100%;
+      padding:12px 14px 12px 48px;
+      background:#fff;
+      border:1.5px solid #cbd5e1;
+      border-radius:10px;
+      font-size:1rem;
+      color:#0f172a;
+      transition:all .2s ease-in-out;
+      margin-top:.25rem;
+    }
+    .verify-input::placeholder{ color:#94a3b8; }
+    .verify-input:focus{ outline:none; border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.18); }
+    /* ปุ่มยืนยัน */
+    .verify-button{
+      width:100%;
+      margin-top:1.4rem;
+      min-height:56px;
+      border:none;
+      border-radius:14px;
+      font-weight:600;
+      font-size:1.05rem;
+      color:#fff;
+      background:linear-gradient(135deg,#10b981,#059669);
+      box-shadow:0 12px 26px rgba(16,185,129,.28);
+      cursor:pointer;
+      transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .verify-button:hover{
+      background:linear-gradient(135deg,#059669,#047857);
+      transform:translateY(-1px);
+      box-shadow:0 14px 30px rgba(16,185,129,.34);
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="mb-6">
-      <h1 class="text-2xl font-semibold">BJC Big C Stationery — Google Sheets Data</h1>
-      <p class="text-slate-600">โหลดข้อมูลจาก Apps Script Web App</p>
-      <div class="mt-2 text-sm text-slate-500">Source: <span class="badge">Apps Script</span></div>
-    </header>
-
-    <section class="mb-4 flex gap-2 items-end">
-      <div>
-        <label class="block text-sm text-slate-600">Sheet name</label>
-        <input id="sheetName" class="border rounded px-3 py-2" value="Response"/>
+  <!-- จัดกึ่งกลางแนวตั้ง/แนวนอน -->
+  <div class="min-h-screen w-full flex items-center justify-center px-4 py-10">
+    <div class="verify-box">
+      <!-- โลโก้ใหม่ -->
+      <div class="verify-logo">
+        <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C Logo" loading="lazy"
+             onerror="this.src='https://via.placeholder.com/200x60?text=BJC+Big+C'">
       </div>
-      <div class="grow">
-        <label class="block text-sm text-slate-600">Select columns (comma separated)</label>
-        <input id="selectCols" class="border rounded px-3 py-2 w-full" placeholder="เช่น Request ID,BU Admin,Email BU Admin"/>
-      </div>
-      <button id="loadBtn" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">Load</button>
-    </section>
 
-    <section id="status" class="text-sm text-slate-600">พร้อมโหลดข้อมูล…</section>
-    <section id="tableWrap" class="mt-4 overflow-auto border rounded hidden"></section>
+      <!-- หัวข้อ -->
+      <h1 class="verify-title">APPROVAL STATIONERY STORE</h1>
+      <p class="verify-subtitle">
+        <span aria-hidden="true">🏢</span>
+        ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน
+      </p>
+
+      <!-- คำอธิบาย -->
+      <p class="verify-desc">กรอกรหัสพนักงานเพื่อเข้าใช้งานระบบ</p>
+
+      <!-- ช่องกรอกรหัส -->
+      <label for="employeeId" class="sr-only">รหัสพนักงาน</label>
+      <div class="input-wrapper">
+        <img src="https://i.postimg.cc/4NKdMhvp/id-card.png" alt="" class="input-icon">
+        <input id="employeeId" type="text" class="verify-input" placeholder="กรอกรหัสพนักงาน">
+      </div>
+
+      <!-- ปุ่ม -->
+      <button class="verify-button" type="button">ดำเนินการต่อ</button>
+    </div>
   </div>
-
-  <script>
-    const WEB_APP = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
-
-    async function loadData(){
-      const sheet = document.getElementById('sheetName').value.trim() || 'Response';
-      const select = document.getElementById('selectCols').value.trim();
-      const url = new URL(WEB_APP);
-      url.searchParams.set('sheet', sheet);
-      if (select) url.searchParams.set('select', select);
-
-      const status = document.getElementById('status');
-      const tableWrap = document.getElementById('tableWrap');
-      status.textContent = 'กำลังโหลดข้อมูล…';
-      tableWrap.classList.add('hidden');
-      tableWrap.innerHTML = '';
-
-      try {
-        const res = await fetch(url.toString(), { method: 'GET' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const json = await res.json();
-        if (!json.ok) throw new Error(json.error || 'Unknown API error');
-
-        const rows = json.data || [];
-        if (rows.length === 0){
-          status.textContent = `โหลดสำเร็จ (${json.sheet}) แต่ยังไม่มีข้อมูล`;
-          return;
-        }
-        const keys = Object.keys(rows[0]);
-        const thead = `<thead><tr>${keys.map(k => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead>`;
-        const tbody = `<tbody>${rows.map(r => `<tr>${keys.map(k => `<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join(''
+</body>
+</html>
