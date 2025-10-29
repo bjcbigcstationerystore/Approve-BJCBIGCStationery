@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BJC Big C Stationery Store</title>
+  <title>Approval • BJC Big C Stationery Store</title>
 
-  <!-- Font + Tailwind -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -14,145 +13,213 @@
       --emerald-700:#047857;
       --emerald-600:#059669;
       --emerald-500:#10b981;
+      --slate-700:#334155;
+      --slate-600:#475569;
+      --slate-500:#64748b;
+      --slate-200:#e2e8f0;
+      --brand:#2563eb; /* สีปุ่ม/แท็บน้ำเงินแบบในภาพ */
     }
     html,body{
       height:100%;
       margin:0;
       font-family:'Prompt',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      /* พื้นหลังเขียวไล่เฉดแบบอ่อนลง */
       background:
         radial-gradient(1000px 400px at 20% -10%, rgba(5,150,105,.25) 0%, transparent 70%),
         radial-gradient(1000px 400px at 80% 110%, rgba(4,120,87,.22) 0%, transparent 70%),
         linear-gradient(180deg, var(--emerald-500) 0%, var(--emerald-600) 45%, var(--emerald-700) 100%);
       color:#0f172a;
     }
-    /* กล่องการ์ดกลาง */
-    .verify-box{
-      position:relative;
-      background:#ffffff;
+    .container-card{
+      background: #f8fafc;
       border:1px solid rgba(15,23,42,.06);
       border-radius:18px;
-      box-shadow:0 20px 42px rgba(2,8,23,.12);
-      padding:70px 40px;
-      text-align:center;
-      width:100%;
-      max-width:580px;
-      margin:auto;
+      box-shadow:0 14px 36px rgba(2,8,23,.14);
     }
-    @media (max-width:480px){
-      .verify-box{ padding:40px 24px; max-width:90vw; }
+    .chip{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.55rem .9rem;border-radius:999px;font-weight:600;font-size:.9rem;
+      background:#eef2ff;color:#1d4ed8;border:1px solid rgba(29,78,216,.15);
+      cursor:pointer; user-select:none;
     }
-    /* แถบโลโก้ด้านบนการ์ด */
-    .verify-logo{
-      margin:-40px auto 35px;
-      display:flex;align-items:center;justify-content:center;
+    .chip.active{
+      background:#1d4ed8;color:#fff; box-shadow:0 6px 18px rgba(29,78,216,.28);
     }
-    .verify-logo img{ height:64px; width:auto; }
-    @media (max-width:480px){
-      .verify-logo{ margin:-10px auto 20px; }
-      .verify-logo img{ height:52px; }
+    .badge{
+      display:inline-flex;align-items:center;gap:.4rem;
+      padding:.35rem .6rem;border-radius:999px;font-weight:600;font-size:.82rem;
+      border:1px solid transparent;
     }
-    /* หัวเรื่อง + คำอธิบาย */
-    .verify-title{ 
-      font-weight:700; 
-      font-size:1.7rem; 
-      letter-spacing:.01em; 
-      text-transform:uppercase; 
-      margin-bottom:.25rem; 
+    .badge.green{ background:#dcfce7; color:#166534; border-color:#86efac; }
+    .badge.yellow{ background:#fef9c3; color:#854d0e; border-color:#fde68a; }
+    .badge.red{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+    .btn-primary{
+      background:#1d4ed8;color:#fff;font-weight:700;padding:.55rem 1rem;border-radius:12px;
+      border:1px solid rgba(29,78,216,.25);
+      box-shadow:0 8px 22px rgba(29,78,216,.25);
     }
-    .verify-subtitle{ 
-      display:inline-flex; 
-      align-items:center; 
-      justify-content:center; 
-      gap:10px; font-size:1.125rem; 
-      color:#334155; 
-      font-weight:700; 
-      margin:.15rem 0 1.2rem; 
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    thead th{
+      text-align:left; font-weight:700; color:var(--slate-600);
+      border-bottom:1px solid #e5e7eb; padding:.9rem 1rem; background:#fff;
     }
-    .verify-desc{ 
-      font-size:.95rem; 
-      color:#64748b; 
-      text-align:left; 
-      margin:.15rem 0 .25rem; 
+    tbody td{
+      padding:1rem; border-bottom:1px solid #e5e7eb; background:#fff; color:#0f172a;
     }
-    .input-wrapper{ 
-      position:relative; 
-      width:100%;
-      margin-top:.1rem; 
+    .title-underline{
+      position:relative; display:inline-block; padding-bottom:.35rem;
     }
-    .input-icon{ 
-      position:absolute; 
-      left:14px; top:50%; 
-      transform:translateY(-50%); 
-      width:24px; height:24px; 
-      opacity:.9; 
-      pointer-events:none; 
-    }
-    .verify-input{
-      width:100%;
-      padding:12px 14px 12px 48px;
-      background:#fff;
-      border:1.5px solid #cbd5e1;
-      border-radius:10px;
-      font-size:1rem;
-      color:#0f172a;
-      transition:all .2s ease-in-out;
-      margin-top:.25rem;
-    }
-    .verify-input::placeholder{ color:#94a3b8; }
-    .verify-input:focus{ outline:none; border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.18); }
-    /* ปุ่มยืนยัน */
-    .verify-button{
-      width:100%;
-      margin-top:1.4rem;
-      min-height:56px;
-      border:none;
-      border-radius:14px;
-      font-weight:600;
-      font-size:1.05rem;
-      color:#fff;
-      background:linear-gradient(135deg,#10b981,#059669);
-      box-shadow:0 12px 26px rgba(16,185,129,.28);
-      cursor:pointer;
-      transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
-    }
-    .verify-button:hover{
-      background:linear-gradient(135deg,#059669,#047857);
-      transform:translateY(-1px);
-      box-shadow:0 14px 30px rgba(16,185,129,.34);
+    .title-underline::after{
+      content:""; position:absolute; left:0; right:0; bottom:0; height:4px;
+      border-radius:999px; background:#93c5fd;
+      width:70%; margin:auto;
     }
   </style>
 </head>
 <body>
-  <!-- จัดกึ่งกลางแนวตั้ง/แนวนอน -->
-  <div class="min-h-screen w-full flex items-center justify-center px-4 py-10">
-    <div class="verify-box">
-      <!-- โลโก้ใหม่ -->
-      <div class="verify-logo">
-        <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C Logo" loading="lazy"
-             onerror="this.src='https://via.placeholder.com/200x60?text=BJC+Big+C'">
+  <div class="min-h-screen w-full px-4 py-10">
+    <!-- หัวเรื่องใหญ่ -->
+    <h1 class="text-center text-3xl md:text-4xl font-extrabold tracking-wide text-slate-900">
+      <span class="title-underline">APPROVAL STATIONERY STORE</span>
+    </h1>
+
+    <!-- การ์ดโปรไฟล์ -->
+    <div class="container-card max-w-6xl mx-auto mt-7 p-5 md:p-7">
+      <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+        <!-- avatar -->
+        <div class="h-20 w-20 rounded-full bg-slate-200 flex items-center justify-center text-3xl">
+          👤
+        </div>
+        <!-- 3 คอลัมน์ -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+          <div>
+            <div class="text-slate-500">ชื่อ-นามสกุล</div>
+            <div id="empName" class="text-xl font-bold">—</div>
+          </div>
+          <div>
+            <div class="text-slate-500">แผนก Cost Center</div>
+            <div id="empCostCenter" class="text-xl font-semibold">—</div>
+          </div>
+          <div>
+            <div class="text-slate-500">Email</div>
+            <a id="empEmail" href="#" class="text-xl font-semibold text-blue-700 underline underline-offset-4">—</a>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <!-- หัวข้อ -->
-      <h1 class="verify-title">APPROVAL STATIONERY STORE</h1>
-      <p class="verify-subtitle">
-        <span aria-hidden="true">🏢</span>
-        ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน
-      </p>
-
-      <!-- คำอธิบาย -->
-      <p class="verify-desc">กรอกรหัสพนักงานเพื่อเข้าใช้งานระบบ</p>
-
-      <!-- ช่องกรอกรหัส -->
-      <label for="employeeId" class="sr-only">รหัสพนักงาน</label>
-      <div class="input-wrapper">
-        <img src="https://i.postimg.cc/4NKdMhvp/id-card.png" alt="" class="input-icon">
-        <input id="employeeId" type="text" class="verify-input" placeholder="กรอกรหัสพนักงาน">
+    <!-- ชิพกรองสถานะ + ปุ่ม -->
+    <div class="container-card max-w-6xl mx-auto mt-6 p-4 md:p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2">
+          <span class="chip active">รวมทั้งหมด (8)</span>
+          <span class="chip">อนุมัติ (3)</span>
+          <span class="chip">รออนุมัติ (3)</span>
+          <span class="chip">แก้ไข (1)</span>
+          <span class="chip">ปฏิเสธ (1)</span>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn-primary" type="button">📅 เรียงตามวันที่</button>
+          <button class="btn-primary" type="button">🔥 เรียงตามยอดเงิน</button>
+        </div>
       </div>
+    </div>
 
-      <!-- ปุ่ม -->
-      <button class="verify-button" type="button">ดำเนินการต่อ</button>
+    <!-- ตารางรายการ -->
+    <div class="container-card max-w-6xl mx-auto mt-6 overflow-x-auto">
+      <table>
+        <thead>
+          <tr>
+            <th class="min-w-[160px]">Request Number</th>
+            <th class="min-w-[180px]">ผู้ขอเบิก</th>
+            <th class="min-w-[130px]">วันที่ขอ</th>
+            <th class="min-w-[340px]">รายการ (ชิ้น)</th>
+            <th class="min-w-[110px]">จำนวนเงิน</th>
+            <th class="min-w-[120px]">สถานะ</th>
+            <th class="min-w-[130px] text-right">การดำเนินการ</th>
+          </tr>
+        </thead>
+        <tbody id="reqBody">
+          <!-- ตัวอย่างข้อมูลเริ่มต้น (mock) จะถูกแทนที่ได้ภายหลัง -->
+          <tr>
+            <td><a href="#" class="text-blue-700 font-semibold underline">REQ-ST-2024-001</a></td>
+            <td>นางสาวสมหญิง ใจดี</td>
+            <td>2024-01-15</td>
+            <td>ปากกา, ดินสอ, ยางลบ (15 ชิ้น)</td>
+            <td class="font-bold">450 บาท</td>
+            <td><span class="badge green">✅ อนุมัติ</span></td>
+            <td class="text-right"><button class="btn-primary">ดูรายละเอียด</button></td>
+          </tr>
+          <tr>
+            <td><a href="#" class="text-blue-700 font-semibold underline">REQ-ST-2024-002</a></td>
+            <td>นายวิชัย รักงาน</td>
+            <td>2024-01-16</td>
+            <td>กระดาษ A4, แฟ้ม (25 ชิ้น)</td>
+            <td class="font-bold">320 บาท</td>
+            <td><span class="badge yellow">⏳ รออนุมัติ</span></td>
+            <td class="text-right"><button class="btn-primary">ดูรายละเอียด</button></td>
+          </tr>
+          <tr>
+            <td><a href="#" class="text-blue-700 font-semibold underline">REQ-ST-2024-004</a></td>
+            <td>นายสมศักดิ์ มั่นคง</td>
+            <td>2024-01-18</td>
+            <td>สมุดโน้ต, ไส้ดินสอ (12 ชิ้น)</td>
+            <td class="font-bold">180 บาท</td>
+            <td><span class="badge red">❌ ปฏิเสธ</span></td>
+            <td class="text-right"><button class="btn-primary">ดูรายละเอียด</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+
+  <script>
+    // ====== ตั้งค่า URL เว็บแอป (อันเดียวกับหน้าแรก) ======
+    const API_URL = "https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec";
+
+    // อ่าน empId จาก query
+    const params = new URLSearchParams(location.search);
+    const empId = params.get("empId");
+
+    if (!empId) {
+      // ไม่มี empId ให้กลับหน้าแรก
+      location.replace("./");
+    } else {
+      // โหลดโปรไฟล์พนักงาน
+      loadProfile(empId);
+    }
+
+    async function loadProfile(id){
+      try{
+        const url = `${API_URL}?action=profile&empId=${encodeURIComponent(id)}`;
+        const res = await fetch(url, {cache:'no-store'});
+        const data = await res.json();
+
+        if (!data.success || !data.exists) {
+          alert("ไม่พบรหัสพนักงาน/ไม่มีสิทธิ์เข้าถึง");
+          location.replace("./");
+          return;
+        }
+
+        // เติมข้อมูลหัวการ์ด
+        document.getElementById("empName").textContent = data.profile.name || "—";
+        document.getElementById("empCostCenter").textContent = data.profile.costCenter || "—";
+        const emailEl = document.getElementById("empEmail");
+        if (data.profile.email){
+          emailEl.textContent = data.profile.email;
+          emailEl.href = `mailto:${data.profile.email}`;
+        }else{
+          emailEl.textContent = "—";
+          emailEl.removeAttribute("href");
+        }
+
+        // (ตัวอย่าง) ถ้าคุณมี API คืนรายการคำขอ ก็แทนที่ tbody ที่นี่
+        // renderRequests(data.requests)
+      }catch(err){
+        console.error(err);
+        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+        location.replace("./");
+      }
+    }
+  </script>
 </body>
 </html>
