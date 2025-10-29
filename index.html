@@ -1,76 +1,71 @@
 <!DOCTYPE html>
-</div>
-<button id="loadBtn" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">Load</button>
-</section>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BJC Big C Stationery — Sheets Live</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html,body{height:100%;margin:0;font-family:'Prompt',sans-serif;background:#f8fafc;color:#0f172a}
+    .container{max-width:1000px;margin:0 auto;padding:2rem}
+    .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:.5rem;background:#e2e8f0;color:#0f172a}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:.75rem;border-bottom:1px solid #e2e8f0}
+    th{background:#f1f5f9;text-align:left}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="mb-6">
+      <h1 class="text-2xl font-semibold">BJC Big C Stationery — Google Sheets Data</h1>
+      <p class="text-slate-600">โหลดข้อมูลจาก Apps Script Web App</p>
+      <div class="mt-2 text-sm text-slate-500">Source: <span class="badge">Apps Script</span></div>
+    </header>
 
+    <section class="mb-4 flex gap-2 items-end">
+      <div>
+        <label class="block text-sm text-slate-600">Sheet name</label>
+        <input id="sheetName" class="border rounded px-3 py-2" value="Response"/>
+      </div>
+      <div class="grow">
+        <label class="block text-sm text-slate-600">Select columns (comma separated)</label>
+        <input id="selectCols" class="border rounded px-3 py-2 w-full" placeholder="เช่น Request ID,BU Admin,Email BU Admin"/>
+      </div>
+      <button id="loadBtn" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">Load</button>
+    </section>
 
-<section id="status" class="text-sm text-slate-600">พร้อมโหลดข้อมูล…</section>
-<section id="tableWrap" class="mt-4 overflow-auto border rounded hidden"></section>
-</div>
+    <section id="status" class="text-sm text-slate-600">พร้อมโหลดข้อมูล…</section>
+    <section id="tableWrap" class="mt-4 overflow-auto border rounded hidden"></section>
+  </div>
 
+  <script>
+    const WEB_APP = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
 
-<script>
-const WEB_APP = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
+    async function loadData(){
+      const sheet = document.getElementById('sheetName').value.trim() || 'Response';
+      const select = document.getElementById('selectCols').value.trim();
+      const url = new URL(WEB_APP);
+      url.searchParams.set('sheet', sheet);
+      if (select) url.searchParams.set('select', select);
 
+      const status = document.getElementById('status');
+      const tableWrap = document.getElementById('tableWrap');
+      status.textContent = 'กำลังโหลดข้อมูล…';
+      tableWrap.classList.add('hidden');
+      tableWrap.innerHTML = '';
 
-async function loadData(){
-const sheet = document.getElementById('sheetName').value.trim() || 'Response';
-const select = document.getElementById('selectCols').value.trim();
-const url = new URL(WEB_APP);
-url.searchParams.set('sheet', sheet);
-if (select) url.searchParams.set('select', select);
+      try {
+        const res = await fetch(url.toString(), { method: 'GET' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error || 'Unknown API error');
 
-
-const status = document.getElementById('status');
-const tableWrap = document.getElementById('tableWrap');
-status.textContent = 'กำลังโหลดข้อมูล…';
-tableWrap.classList.add('hidden');
-tableWrap.innerHTML = '';
-
-
-try {
-const res = await fetch(url.toString(), { method: 'GET' });
-if (!res.ok) throw new Error('HTTP ' + res.status);
-const json = await res.json();
-if (!json.ok) throw new Error(json.error || 'Unknown API error');
-
-
-const rows = json.data || [];
-if (rows.length === 0){
-status.textContent = `โหลดสำเร็จ (${json.sheet}) แต่ยังไม่มีข้อมูล`;
-return;
-}
-
-
-// Build table headers from keys of first row
-const keys = Object.keys(rows[0]);
-const thead = `<thead><tr>${keys.map(k => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead>`;
-const tbody = `<tbody>${rows.map(r => `<tr>${keys.map(k => `<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
-
-
-tableWrap.innerHTML = `<table>${thead}${tbody}</table>`;
-tableWrap.classList.remove('hidden');
-status.textContent = `โหลดสำเร็จ: sheet=${json.sheet}, rows=${rows.length}`;
-} catch(err){
-status.textContent = 'เกิดข้อผิดพลาด: ' + err.message + ' — ดูหัวข้อ Troubleshooting CORS ด้านล่างหากเกี่ยวกับ CORS';
-}
-}
-
-
-function escapeHtml(v){
-if (v === null || v === undefined) return '';
-return String(v)
-.replace(/&/g,'&amp;')
-.replace(/</g,'&lt;')
-.replace(/>/g,'&gt;')
-.replace(/"/g,'&quot;')
-.replace(/\n/g,'<br/>');
-}
-
-
-document.getElementById('loadBtn').addEventListener('click', loadData);
-// auto-load once
-loadData();
-</script>
-</body>
-</html>
+        const rows = json.data || [];
+        if (rows.length === 0){
+          status.textContent = `โหลดสำเร็จ (${json.sheet}) แต่ยังไม่มีข้อมูล`;
+          return;
+        }
+        const keys = Object.keys(rows[0]);
+        const thead = `<thead><tr>${keys.map(k => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead>`;
+        const tbody = `<tbody>${rows.map(r => `<tr>${keys.map(k => `<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join(''
