@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+</div>
+<button id="loadBtn" class="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700">Load</button>
+</section>
+
+
+<section id="status" class="text-sm text-slate-600">พร้อมโหลดข้อมูล…</section>
+<section id="tableWrap" class="mt-4 overflow-auto border rounded hidden"></section>
+</div>
+
+
+<script>
+const WEB_APP = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
+
+
+async function loadData(){
+const sheet = document.getElementById('sheetName').value.trim() || 'Response';
+const select = document.getElementById('selectCols').value.trim();
+const url = new URL(WEB_APP);
+url.searchParams.set('sheet', sheet);
+if (select) url.searchParams.set('select', select);
+
+
+const status = document.getElementById('status');
+const tableWrap = document.getElementById('tableWrap');
+status.textContent = 'กำลังโหลดข้อมูล…';
+tableWrap.classList.add('hidden');
+tableWrap.innerHTML = '';
+
+
+try {
+const res = await fetch(url.toString(), { method: 'GET' });
+if (!res.ok) throw new Error('HTTP ' + res.status);
+const json = await res.json();
+if (!json.ok) throw new Error(json.error || 'Unknown API error');
+
+
+const rows = json.data || [];
+if (rows.length === 0){
+status.textContent = `โหลดสำเร็จ (${json.sheet}) แต่ยังไม่มีข้อมูล`;
+return;
+}
+
+
+// Build table headers from keys of first row
+const keys = Object.keys(rows[0]);
+const thead = `<thead><tr>${keys.map(k => `<th>${escapeHtml(k)}</th>`).join('')}</tr></thead>`;
+const tbody = `<tbody>${rows.map(r => `<tr>${keys.map(k => `<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+
+
+tableWrap.innerHTML = `<table>${thead}${tbody}</table>`;
+tableWrap.classList.remove('hidden');
+status.textContent = `โหลดสำเร็จ: sheet=${json.sheet}, rows=${rows.length}`;
+} catch(err){
+status.textContent = 'เกิดข้อผิดพลาด: ' + err.message + ' — ดูหัวข้อ Troubleshooting CORS ด้านล่างหากเกี่ยวกับ CORS';
+}
+}
+
+
+function escapeHtml(v){
+if (v === null || v === undefined) return '';
+return String(v)
+.replace(/&/g,'&amp;')
+.replace(/</g,'&lt;')
+.replace(/>/g,'&gt;')
+.replace(/"/g,'&quot;')
+.replace(/\n/g,'<br/>');
+}
+
+
+document.getElementById('loadBtn').addEventListener('click', loadData);
+// auto-load once
+loadData();
+</script>
+</body>
+</html>
