@@ -193,20 +193,19 @@
     let currentUser = null;
 
     /************ GVIZ FETCH ************/
-    async function gvizQuery(sheetName, tq) {
+ async function gvizQuery(sheetName, tq) {
   const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SPREADSHEET_ID)}/gviz/tq`;
-  const url = `${base}?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent(tq)}`;
-  console.log('[gviz] sheet=', sheetName, 'tq=', tq, 'url=', url);
+  const url  = `${base}?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent(tq)}`;
+  console.log('[gviz] sheet =', sheetName, 'tq =', tq, 'url =', url);
 
-  const res = await fetch(url, { method:'GET' });
+  const res  = await fetch(url, { method:'GET' });
   const text = await res.text();
 
-  // ถ้าไม่ได้ Publish จะได้หน้า HTML ไม่มี JSON
   const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
+  const end   = text.lastIndexOf('}');
   if (start === -1 || end === -1) {
-    console.error('[gviz] MALFORMED RESPONSE (not published?) sample:', text.slice(0, 120));
-    throw new Error('GViz response malformed (ตรวจการตั้งค่า Publish to the web)');
+    console.error('[gviz] MALFORMED for sheet:', sheetName, ' sample:', text.slice(0, 200));
+    throw new Error(`GViz malformed: sheet "${sheetName}" (ตรวจ Publish to the web และสะกดชื่อชีตให้ตรง)`);
   }
 
   const json = JSON.parse(text.substring(start, end + 1));
@@ -264,18 +263,23 @@
       return { empId: emp, role, costCenter, division, name, email };
     }
     
-    // ทำให้ regex ปลอดภัย
+// ทำให้ regex ปลอดภัย
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
-// ✅ อนุญาตเข้าระบบเฉพาะรหัสที่อยู่ใน User Approve คอลัมน์ A (ทนช่องว่าง/ตัวพิมพ์)
+// ✅ ตรวจสิทธิ์จากชีต "User Approve" คอลัมน์ A (ไม่สนตัวพิมพ์ + ตัดช่องว่างหัวท้าย)
 async function isAuthorizedEmp(empId) {
   const raw = String(empId || '').trim();
   if (!raw) return false;
-  const safeRegex = escapeRegex(raw); // ตัดความเสี่ยง meta-char
-  // (?i) = case-insensitive, ^\s*...\s*$ = ยอมช่องว่างหัว-ท้าย
-  const tq = `select A where A matches '(?i)^\\s*${safeRegex}\\s*$' limit 1`;
+
+  const safe = escapeRegex(raw);
+  // (?i) = case-insensitive, ^\s*...\s*$ = ยอมช่องว่างหัวท้ายในชีต
+  const tq = `select A where A matches '(?i)^\\s*${safe}\\s*$' limit 1`;
+  console.log('[auth] tq =', tq);
+
   const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-  return (table.rows || []).length > 0;
+  const ok = (table.rows || []).length > 0;
+  console.log('[auth] allowed =', ok);
+  return ok;
 }
 
 
@@ -380,52 +384,55 @@ async function isAuthorizedEmp(empId) {
 
     async function handleLogin(event) {
   event.preventDefault();
-  const employeeId = document.getElementById('employee-id').value.trim().toUpperCase();
-  const btn = event.submitter;
+
+  const input = document.getElementById('employee-id');
+  const employeeId = String(input.value || '').trim().toUpperCase();
+
+  // เผื่อเบราว์เซอร์ที่ไม่รองรับ event.submitter
+  const btn = event.submitter || document.querySelector('button[type="submit"]');
   if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
 
   try {
-    console.log('[login] empId=', employeeId);
+    console.log('[login] empId =', employeeId);
 
+    // ขั้นที่ 1: ตรวจสิทธิ์ใน "User Approve"
     const allowed = await isAuthorizedEmp(employeeId);
-    console.log('[login] allowed from User Approve?', allowed);
-
+    console.log('[login] allowed ? =', allowed);
     if (!allowed) {
-      if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบข้อมูลในระบบ');
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+      return showLoginError('ไม่พบข้อมูลในระบบ (User Approve)');
     }
 
+    // ขั้นที่ 2: ดึงโปรไฟล์จาก "Master"
     const user = await loadUserByEmpId(employeeId);
-    console.log('[login] user from Master=', user);
-
+    console.log('[login] user =', user);
     if (!user || user.empId !== employeeId) {
-      if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบรหัสพนักงานในระบบ');
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+      return showLoginError('ไม่พบรหัสพนักงานใน Master');
     }
 
-        currentUser = user;
-        document.getElementById('user-name').textContent = currentUser.name || '';
-        document.getElementById('user-email').textContent = currentUser.email || '';
-        document.getElementById('user-cost-center').textContent = currentUser.costCenter || '';
-        document.getElementById('user-division').textContent = currentUser.division || '';
+    // ขั้นที่ 3: อัปเดต UI ผู้ใช้ + โหลดรายการตามบทบาท
+    currentUser = user;
+    document.getElementById('user-name').textContent        = currentUser.name || '';
+    document.getElementById('user-email').textContent       = currentUser.email || '';
+    document.getElementById('user-cost-center').textContent = currentUser.costCenter || '';
+    document.getElementById('user-division').textContent    = currentUser.division || '';
 
-        // โหลดรายการตามบทบาท
-        requestsData = await loadRequestsForRole(currentUser.role);
+    requestsData = await loadRequestsForRole(currentUser.role);
 
-        // เปลี่ยนหน้า
-        document.getElementById('login-page').style.display = 'none';
-        document.getElementById('dashboard-page').style.display = 'block';
+    // ขั้นที่ 4: ไปหน้า Dashboard
+    document.getElementById('login-page').style.display     = 'none';
+    document.getElementById('dashboard-page').style.display = 'block';
+    updateCounts();
+    renderFilteredData();
 
-        // แสดงตาราง
-        updateCounts();
-        renderFilteredData();
-      } catch (err) {
-        console.error(err);
-        showLoginError('ดึงข้อมูลไม่สำเร็จ (ตรวจการตั้งค่า Publish และชื่อชีต/คอลัมน์)');
-      } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
-      }
-    }
+  } catch (err) {
+    console.error('[login] error:', err);
+    showLoginError('ดึงข้อมูลไม่สำเร็จ (ตรวจการตั้งค่า Publish และชื่อชีต/คอลัมน์)');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+  }
+}
 
     function logout() {
       currentUser = null;
