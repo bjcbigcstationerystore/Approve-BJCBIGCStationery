@@ -251,20 +251,6 @@ async function isAuthorizedEmp(empId) {
   const raw = String(empId || '').trim();
   if (!raw) return false;
 
-  const safe = escapeRegex(raw);
-  const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
-  console.log('[auth] tq =', tq);
-
-  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-  const ok = (table.rows || []).some(r => {
-    const v = r && r.c && r.c[0] ? String(r.c[0].v).trim() : '';
-    return v !== '';
-  });
-
-  console.log('[auth] allowed =', ok);
-  return ok;
-}
-
 // ✅ อ่านโปรไฟล์จาก "User Approve"
 // โครงสร้างคอลัมน์:
 // A = Emp BU Admin (รหัสพนักงาน), B = Name, C = Email, D = Company, E = Division, F = Cost Center
