@@ -183,6 +183,7 @@
     const ADMIN_BU_SHEET   = 'Admin BU';
     const BU_APPROVE_SHEET = 'BU Approve';
     const RESPONSE_SHEET   = 'Response';
+    const USER_APPROVE_SHEET = 'User Approve';
 
     /************ STATE ************/
     let requestsData = [];
@@ -254,6 +255,16 @@
 
       return { empId: emp, role, costCenter, division, name, email };
     }
+    
+    // ✅ อนุญาตเข้าระบบเฉพาะรหัสที่อยู่ใน User Approve คอลัมน์ A
+async function isAuthorizedEmp(empId) {
+  const safeEmp = String(empId || '').replace(/'/g, "\\'");
+  // เลือกเฉพาะคอลัมน์ A ที่ตรงรหัส และจำกัด 1 แถว เพื่อลดโหลด
+  const tq = `select A where A='${safeEmp}' limit 1`;
+  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
+  return (table.rows || []).length > 0;
+}
+
 
     async function loadRequestsForRole(role) {
       const sheet = (role === 'BU Admin') ? ADMIN_BU_SHEET
@@ -355,17 +366,47 @@
     }
 
     async function handleLogin(event) {
-      event.preventDefault();
-      const employeeId = document.getElementById('employee-id').value.trim().toUpperCase();
-      const btn = event.submitter;
-      if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
+  event.preventDefault();
+  const employeeId = document.getElementById('employee-id').value.trim().toUpperCase();
+  const btn = event.submitter;
+  if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
 
-      try {
-        const user = await loadUserByEmpId(employeeId);
-        if (!user || user.empId !== employeeId) {
-          if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
-          return showLoginError('ไม่พบรหัสพนักงานใน Master');
-        }
+  try {
+    // ✅ ขั้นที่ 1: ตรวจสิทธิ์จาก User Approve (คอลัมน์ A = Emp BU Admin)
+    const allowed = await isAuthorizedEmp(employeeId);
+    if (!allowed) {
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+      return showLoginError('ไม่พบข้อมูลในระบบ'); // ข้อความตามที่ต้องการ
+    }
+
+    // ✅ ขั้นที่ 2: ดึงรายละเอียดผู้ใช้จาก Master เพื่อแสดงผลบนหน้าหลัก
+    const user = await loadUserByEmpId(employeeId);
+    if (!user || user.empId !== employeeId) {
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+      return showLoginError('ไม่พบรหัสพนักงานใน Master');
+    }
+
+    currentUser = user;
+    document.getElementById('user-name').textContent        = currentUser.name || '';
+    document.getElementById('user-email').textContent       = currentUser.email || '';
+    document.getElementById('user-cost-center').textContent = currentUser.costCenter || '';
+    document.getElementById('user-division').textContent    = currentUser.division || '';
+
+    // โหลดรายการตามบทบาท (เหมือนเดิม)
+    requestsData = await loadRequestsForRole(currentUser.role);
+
+    // เปลี่ยนหน้าและเรนเดอร์ตาราง
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('dashboard-page').style.display = 'block';
+    updateCounts();
+    renderFilteredData();
+  } catch (err) {
+    console.error(err);
+    showLoginError('ดึงข้อมูลไม่สำเร็จ (ตรวจการตั้งค่า Publish และชื่อชีต/คอลัมน์)');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
+  }
+}
 
         currentUser = user;
         document.getElementById('user-name').textContent = currentUser.name || '';
