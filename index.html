@@ -63,6 +63,28 @@
     .status-pill.submit { background:#dcfce7; color:#166534 }  /* อนุมัติ/Submit */
     .status-pill.revise { background:#fef9c3; color:#854d0e }  /* ขอแก้ไข/Revise */
     .status-pill.reject { background:#fee2e2; color:#991b1b }  /* ปฏิเสธ/Reject */
+    
+    /* ===== Modal styles (รายละเอียด) ===== */
+.modal-overlay { background: rgba(0,0,0,.4); }
+.modal-card   { border-radius: 18px; box-shadow: 0 20px 60px rgba(2,6,23,.25); overflow: hidden; }
+.modal-head   { padding: 18px 22px; font-weight: 800; font-size: 20px; }
+.modal-close  { position:absolute; right:16px; top:12px; font-size:22px; color:#94a3b8; }
+.modal-close:hover { color:#475569; }
+
+.total-box{
+  background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 220px;
+  text-align:right; box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
+}
+.total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; }
+.total-box .value{ color:#1d4ed8; font-weight:800; font-size:28px; line-height:1.1; }
+
+.table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; }
+.table-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
+.table-row { padding:12px 16px; }
+.table-row + .table-row { border-top:1px solid #f1f5f9; }
+.col-right{ text-align:right; }
+.bold{ font-weight:700; }
+
   </style>
 </head>
 <body>
@@ -187,17 +209,20 @@
     </main>
   </section>
 
-  <!-- ========== MODAL รายละเอียดคำขอ ========== -->
-  <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-[60]">
-    <div class="bg-white w-[min(880px,92vw)] rounded-2xl shadow-xl relative">
-      <button class="absolute top-3 right-4 text-slate-400 hover:text-slate-600" onclick="closeDetail()">
-        <span aria-hidden="true" style="font-size:22px">×</span>
-      </button>
+<!-- ========== MODAL รายละเอียดคำขอ (ใหม่) ========== -->
+<div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
+  <div class="bg-white w-[min(880px,92vw)] relative modal-card">
+    <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
 
-      <div class="p-6">
-        <div class="text-xl md:text-2xl font-semibold">รายละเอียดการขอเบิกเครื่องเขียน</div>
+    <!-- Header -->
+    <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
 
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+    <!-- Body -->
+    <div class="px-6 pb-6">
+      <!-- แถวบน: ซ้ายข้อมูล, ขวาสถานะ + Total -->
+      <div class="grid grid-cols-1 md:grid-cols-[1fr,320px] gap-4">
+        <!-- ซ้าย: 3 บล็อก -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <div class="text-slate-500 text-sm">Request Number</div>
             <div id="dReqNo" class="font-semibold">—</div>
@@ -212,42 +237,50 @@
           </div>
         </div>
 
-        <div class="mt-4 flex flex-wrap gap-3 items-center">
-          <div class="flex items-center gap-2">
+        <!-- ขวา: สถานะ + Total -->
+        <div class="flex md:flex-col gap-3 items-end md:items-stretch">
+          <div class="flex items-center gap-2 self-start">
             <span class="text-slate-500 text-sm">สถานะ</span>
             <span id="dStatusPill" class="status-pill">—</span>
           </div>
-          <div class="ml-auto">
-            <div class="text-slate-500 text-sm text-right">จำนวนเงินรวม</div>
-            <div id="dTotal" class="text-2xl font-extrabold text-blue-700 text-right">0 บาท</div>
+          <div class="total-box w-full">
+            <div class="label">จำนวนเงินรวม</div>
+            <div id="dTotal" class="value">0 บาท</div>
           </div>
         </div>
+      </div>
 
-        <!-- รายการย่อย L → ... -->
-        <div class="mt-5">
-          <div class="text-[15px] font-semibold mb-2">รายการเครื่องเขียนที่ขอเบิก</div>
-          <div class="overflow-hidden rounded-xl border border-slate-200">
-            <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] bg-slate-50 text-sm text-slate-600 px-4 py-3">
-              <div>รายการ</div><div class="text-right">จำนวน</div><div class="text-right">ราคา/หน่วย (บาท)</div><div class="text-right">รวม</div>
-            </div>
-            <div id="dItems" class="divide-y divide-slate-100"></div>
+      <!-- ตารางรายการ -->
+      <div class="mt-6">
+        <div class="font-semibold mb-2">รายการเครื่องเขียนที่ขอเบิก</div>
+        <div class="table-shell">
+          <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-head">
+            <div>รายการ</div>
+            <div class="col-right">จำนวน</div>
+            <div class="col-right">ราคา/หน่วย (บาท)</div>
+            <div class="col-right">รวม</div>
           </div>
+          <div id="dItems"></div>
         </div>
+      </div>
 
-        <div class="mt-5">
-          <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
-          <textarea id="dComment" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
-        </div>
+      <!-- ความคิดเห็น -->
+      <div class="mt-5">
+        <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
+        <textarea id="dComment" rows="3"
+          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
+      </div>
 
-        <div class="mt-6 flex flex-wrap gap-2 justify-end">
-          <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
-          <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ (Submit)</button>
-          <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ (Reject)</button>
-          <button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 ขอแก้ไข (Revise)</button>
-        </div>
+      <!-- ปุ่ม -->
+      <div class="mt-6 flex flex-wrap gap-2 justify-end">
+        <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
+        <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>
+        <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ</button>
+        <button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 ขอแก้ไข</button>
       </div>
     </div>
   </div>
+</div>
 
   <script>
 /* ===== CONFIG ===== */
@@ -480,34 +513,41 @@ async function openDetail({i}){
   const reqBy   = arr[idxG] ?? '—';
   const total   = Number(arr[idxK] ?? 0);
 
+  // เติมหัวข้อมูล
   document.getElementById('dReqNo').textContent     = reqNo;
   document.getElementById('dRequester').textContent = reqBy;
   document.getElementById('dDate').textContent      = reqDate;
   document.getElementById('dTotal').textContent     = `${total.toLocaleString()} บาท`;
 
-  const adminMap = await loadAdminStatus();
-  const rawStatus     = String(adminMap.get(reqNo) || '').trim();
-  const displayStatus = rawStatus || 'รออนุมัติ';
-  const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+  // เติมสถานะจาก Admin!N (ว่าง = รออนุมัติ)
+  const adminMap       = await loadAdminStatus();
+  const rawStatus      = String(adminMap.get(reqNo) || '').trim();
+  const displayStatus  = rawStatus || 'รออนุมัติ';
+  const pillClass      = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+  const pill           = document.getElementById('dStatusPill');
+  pill.textContent     = displayStatus;
+  pill.className       = `status-pill ${pillClass}`;
 
-  const pill = document.getElementById('dStatusPill');
-  pill.textContent = displayStatus;
-  pill.className   = `status-pill ${pillClass}`;
+  // สร้างรายการ L→ ... (ชุดละ 3 คอลัมน์: ชื่อ/จำนวน/ราคา)
+  const host  = document.getElementById('dItems');
+  const lines = parseLineItems(arr); // ใช้ฟังก์ชันเดิมของคุณได้เลย
+  host.innerHTML = lines.length
+    ? lines.map(li => `
+        <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-row items-center">
+          <div>${li.name || '-'}</div>
+          <div class="col-right">${(li.qty ?? 0).toLocaleString()}</div>
+          <div class="col-right">${(li.price ?? 0).toLocaleString()}</div>
+          <div class="col-right bold">${(li.sum ?? 0).toLocaleString()}</div>
+        </div>
+      `).join('')
+    : `<div class="table-row text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
 
-  const lines = parseLineItems(arr);
-  const host = document.getElementById('dItems');
-  host.innerHTML = lines.length ? lines.map(li => `
-    <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] px-4 py-3 items-center">
-      <div>${li.name}</div>
-      <div class="text-right">${li.qty.toLocaleString()}</div>
-      <div class="text-right">${li.price.toLocaleString()}</div>
-      <div class="text-right font-semibold">${li.sum.toLocaleString()}</div>
-    </div>
-  `).join('') : `<div class="px-4 py-3 text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
-
+  // แสดงโมดอล
   const ov = document.getElementById('detailOverlay');
   ov.classList.remove('hidden'); ov.classList.add('flex');
 }
+    
+    
 function closeDetail(){
   const ov = document.getElementById('detailOverlay');
   ov.classList.add('hidden'); ov.classList.remove('flex');
@@ -549,6 +589,17 @@ async function actOnCurrent(type){
     alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
   }
 }
+    
+    // ปิดเมื่อคลิกพื้นหลัง
+document.getElementById('detailOverlay').addEventListener('click', (e)=>{
+  if (e.target.id === 'detailOverlay') closeDetail();
+});
+
+// ปิดด้วย ESC
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape') closeDetail();
+});
+
 
 /* ===== Boot: ถ้ามี session แล้วเข้า Approval เลย ===== */
 (async function boot(){
