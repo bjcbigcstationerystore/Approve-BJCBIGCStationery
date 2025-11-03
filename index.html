@@ -279,18 +279,29 @@ async function loadUserFromUserApprove(empId){
 // ทำให้ regex ปลอดภัย
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
-// ✅ ตรวจสิทธิ์จากชีต "User Approve" คอลัมน์ A (ไม่สนตัวพิมพ์ + ตัดช่องว่างหัวท้าย)
+// ทำให้ regex ปลอดภัย
+function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+// ✅ ตรวจสิทธิ์จาก "User Approve" คอลัมน์ A
+// - แปลงคอลัมน์ A เป็นข้อความก่อน (toText) ป้องกันกรณีเป็นตัวเลข
+// - ตัดช่องว่างหัวท้าย + ไม่แคร์ตัวพิมพ์
 async function isAuthorizedEmp(empId) {
   const raw = String(empId || '').trim();
   if (!raw) return false;
 
   const safe = escapeRegex(raw);
-  // (?i) = case-insensitive, ^\s*...\s*$ = ยอมช่องว่างหัวท้ายในชีต
-  const tq = `select A where A matches '(?i)^\\s*${safe}\\s*$' limit 1`;
+  // ใช้ trim() ในฝั่ง JS อยู่แล้ว แต่กันช่องว่างในชีตด้วย regex
+  const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
   console.log('[auth] tq =', tq);
 
   const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-  const ok = (table.rows || []).length > 0;
+
+  // กันกรณีบางแถวเป็นค่าว่าง/NULL (GViz จะให้ row.c เป็น null ได้)
+  const ok = (table.rows || []).some(r => {
+    const v = r && r.c && r.c[0] ? String(r.c[0].v).trim() : '';
+    return v !== '';
+  });
+
   console.log('[auth] allowed =', ok);
   return ok;
 }
