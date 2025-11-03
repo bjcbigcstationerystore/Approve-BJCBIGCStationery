@@ -1,670 +1,227 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>APPROVAL STATIONERY STORE</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { prompt: ['Prompt', 'system-ui', 'sans-serif'] },
+          boxShadow: {
+            soft: '0 10px 30px rgba(2, 6, 23, .08)'
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    body { box-sizing: border-box; }
-    @keyframes slideIn { from{opacity:0; transform:translateY(-10px)} to{opacity:1; transform:translateY(0)} }
-    .animate-slide-in{ animation: slideIn .3s ease-out; }
-    .filter-btn{ transition:all .2s ease; }
-    .filter-btn:hover{ transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.15) }
-    .filter-btn.active{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(59,130,246,.3) }
-    .table-row{ transition:all .2s ease; }
-    .table-row:hover{ background:#f8fafc; transform:scale(1.005); }
-    .modal{ display:none; position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:1000; animation:fadeIn .2s ease; }
-    .modal.active{ display:flex; align-items:center; justify-content:center; }
-    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
-    .modal-content{ animation:slideIn .3s ease-out; }
+    :root {
+      --card-w: 720px;
+    }
+    body {
+      font-family: 'Prompt', system-ui, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 50% -200px, rgba(59,130,246,.15), rgba(59,130,246,0)),
+        radial-gradient(800px 600px at 80% 0, rgba(99,102,241,.12), rgba(99,102,241,0)),
+        linear-gradient(180deg, #eef2ff 0%, #f8fafc 70%);
+      min-height: 100vh;
+    }
+    .card {
+      width: min(var(--card-w), calc(100% - 32px));
+      background: white;
+      border-radius: 20px;
+      box-shadow: var(--tw-shadow, 0 20px 60px rgba(2,6,23,.08));
+      padding: 28px;
+    }
+    .logo {
+      width: 340px; max-width: 80vw; height: auto;
+      filter: drop-shadow(0 6px 18px rgba(2,6,23,.08));
+    }
+    .title {
+      letter-spacing: .02em;
+      text-shadow: 0 2px 0 rgba(255,255,255,.7);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.02);
+      transform: translateY(-1px);
+    }
+    .note {
+      background: #f8fafc;
+      border: 1px dashed #e2e8f0;
+    }
+    .divider {
+      margin: 10px auto 0;
+      width: 72px; height: 3px; border-radius: 999px;
+      background: linear-gradient(90deg,#1d4ed8,#60a5fa);
+      opacity: .85;
+    }
+    .hint-error {
+      animation: fadeIn .15s ease-out;
+    }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
   </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="text-slate-800">
 
-  <!-- Login Page -->
-  <div id="login-page" class="min-h-screen flex items-center justify-center px-4">
-    <div class="max-w-md w-full space-y-8">
-      <div class="text-center">
-        <div class="mb-8">
-          <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C Logo" class="mx-auto h-20 w-auto" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
-        </div>
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">APPROVAL STATIONERY STORE</h1>
-        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full mb-6"></div>
-        <div class="mb-8">
-          <p class="text-2xl text-gray-700 mb-2">🏢ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน</p>
-          <p class="text-lg text-gray-600">กรอกรหัสพนักงานเพื่อเข้าใช้งานระบบ</p>
-        </div>
+  <!-- Center container -->
+  <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-3xl text-center">
+
+      <!-- Logo -->
+      <div class="flex items-center justify-center">
+        <img class="logo" alt="BJC Big C" src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png">
       </div>
 
-      <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-in">
-        <form onsubmit="handleLogin(event)" class="space-y-6">
-          <div>
-            <label for="employee-id" class="block text-sm font-medium text-gray-700 mb-2">รหัสพนักงาน</label>
-            <input id="employee-id" name="employee-id" type="text" required
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                   placeholder="กรอกรหัสพนักงาน" autocomplete="username">
-          </div>
-          <div>
-            <button type="submit"
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
-              🚀 ดำเนินการต่อ
-            </button>
+      <!-- Title -->
+      <h1 class="mt-6 text-3xl md:text-4xl font-extrabold title">APPROVAL STATIONERY STORE</h1>
+      <div class="divider"></div>
+
+      <!-- Sub -->
+      <p class="mt-5 text-slate-600">
+        🏢 ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน<br>
+        กรุณารหัสพนักงานเพื่อเข้าสู่ระบบ
+      </p>
+
+      <!-- Card -->
+      <div class="mt-7 mx-auto card shadow-soft animate-[fadeIn_.25s_ease-out]">
+        <form id="verifyForm" class="text-left">
+          <label for="empCode" class="block text-sm text-slate-600">รหัสพนักงาน</label>
+          <input id="empCode" name="empCode" type="text" inputmode="numeric" autocomplete="off" required
+                 class="mt-2 w-full rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 px-4 py-3 outline-none"
+                 placeholder="เช่น 12345">
+
+          <button id="submitBtn" type="submit"
+            class="mt-4 w-full btn-primary text-white font-medium rounded-xl py-3 transition-all flex items-center justify-center gap-2 active:translate-y-[1px]">
+            <span>🚀 ดำเนินการต่อ</span>
+            <svg id="loadingIcon" class="hidden animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"></circle>
+              <path class="opacity-75" d="M4 12a8 8 0 018-8" stroke="white" stroke-width="4" stroke-linecap="round"></path>
+            </svg>
+          </button>
+
+          <p id="hint" class="mt-3 text-sm text-rose-600 hidden hint-error">ไม่พบข้อมูลในระบบ</p>
+
+          <div class="note rounded-xl p-4 mt-4 text-sm text-slate-600">
+            💡 <b>Note:</b> ต้อง Publish หรือแชร์เป็นสาธารณะ (Anyone with the link – Viewer) ก่อน
           </div>
         </form>
-        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p class="text-sm text-blue-700 text-center">
-            💡 <strong>Note:</strong> ต้อง Publish ชีตเป็นสาธารณะ (File → <em>Publish to the web</em>) ก่อน
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Dashboard -->
-  <div id="dashboard-page" class="container mx-auto px-4 py-8 max-w-7xl" style="display:none;">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-gray-800 mb-2">APPROVAL STATIONERY STORE</h1>
-      <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full"></div>
-    </div>
-
-    <!-- Approver Info -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-slide-in">
-      <div class="flex items-center">
-        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-4xl mr-6">👤</div>
-        <div class="flex-1">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p class="text-gray-500 text-sm mb-1">Name</p>
-              <p class="text-xl font-bold text-gray-800" id="user-name">-</p>
-            </div>
-            <div>
-              <p class="text-gray-500 text-sm mb-1">Email</p>
-              <p class="text-lg font-semibold text-blue-600" id="user-email">-</p>
-            </div>
-            <div>
-              <p class="text-gray-500 text-sm mb-1">Cost Center</p>
-              <p class="text-lg font-semibold text-gray-700" id="user-cost-center">-</p>
-            </div>
-            <div>
-              <p class="text-gray-500 text-sm mb-1">Division</p>
-              <p class="text-lg font-semibold text-gray-700" id="user-division">-</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table + Filters -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-800">รายการขอเบิกเครื่องเขียน</h3>
-        </div>
-
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <!-- ปุ่มกรองสถานะ -->
-          <div class="flex flex-wrap gap-2">
-            <button onclick="filterByStatus('all')" class="filter-btn active px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="all">
-              รวมทั้งหมด (<span id="total-count">0</span>)
-            </button>
-            <button onclick="filterByStatus('approved')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="approved">
-              อนุมัติ (<span id="approved-count">0</span>)
-            </button>
-            <button onclick="filterByStatus('pending')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="pending">
-              รออนุมัติ (<span id="pending-count">0</span>)
-            </button>
-            <button onclick="filterByStatus('revise')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="revise">
-              แก้ไข (<span id="revise-count">0</span>)
-            </button>
-            <button onclick="filterByStatus('rejected')" class="filter-btn px-4 py-2 rounded-lg font-medium text-sm bg-gray-100 text-gray-700" data-status="rejected">
-              ปฏิเสธ (<span id="rejected-count">0</span>)
-            </button>
-          </div>
-
-          <!-- ตัวกรองวันที่ -->
-          <div class="flex items-center gap-2 ml-auto">
-            <label for="date-filter" class="text-sm text-gray-600">ช่วงวันที่:</label>
-            <select id="date-filter" onchange="filterByDate()"
-                    class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="all" selected>ทั้งหมด</option>
-              <option value="today">วันนี้</option>
-              <option value="week">7 วันล่าสุด</option>
-              <option value="month">เดือนนี้</option>
-              <option value="latest">3 วันล่าสุด</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Request Number</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">ผู้ขอเบิก</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">วันที่ขอ</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">รายการ (ชิ้น)</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">จำนวนเงิน</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">สถานะ</th>
-              <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">การดำเนินการ</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div id="detail-modal" class="modal">
-    <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90%] overflow-y-auto">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-2xl font-bold text-gray-800">รายละเอียดการขอเบิกเครื่องเขียน</h3>
-          <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-3xl font-bold">&times;</button>
-        </div>
-      </div>
-      <div class="p-6" id="modal-content"></div>
-      <div class="p-6 border-t border-gray-200 bg-gray-50 flex gap-3 justify-end">
-        <button onclick="closeModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition">ปิด</button>
-        <!-- โหมด GitHub: ปุ่มตัวอย่างเท่านั้น (ไม่เขียนกลับชีต) -->
-        <button onclick="alert('โหมด GitHub: ปุ่มนี้เป็นตัวอย่างเท่านั้น')" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium transition">✅ อนุมัติ</button>
-        <button onclick="alert('โหมด GitHub: ปุ่มนี้เป็นตัวอย่างเท่านั้น')" class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition">❌ ปฏิเสธ</button>
-        <button onclick="alert('โหมด GitHub: ปุ่มนี้เป็นตัวอย่างเท่านั้น')" class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium transition">🔄 ขอแก้ไข</button>
       </div>
     </div>
   </div>
 
   <script>
-    /************ CONFIG ************/
-    const SPREADSHEET_ID   = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
-    const MASTER_SHEET     = 'Master';
-    const ADMIN_BU_SHEET   = 'Admin BU';
-    const BU_APPROVE_SHEET = 'BU Approve';
-    const RESPONSE_SHEET   = 'Response';
-    const USER_APPROVE_SHEET = 'User Approve';
+    /* ====== CONFIG ====== */
+    const SHEET_ID = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg'; // ตามที่ให้มา
+    const SHEET_NAME = 'User Approve';                                // แท็บในชีต
+    // หากต้องการ ping Apps Script หรือใช้ในหน้าถัดไป เก็บไว้ได้
+    const APPS_SCRIPT_BASE = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
 
-    /************ STATE ************/
-    let requestsData = [];
-    let currentRequestId = null;
-    let currentFilter = 'all';
-    let currentDateFilter = 'all';
-    let currentUser = null;
+    // ถ้าตรวจสอบสำเร็จ จะไปหน้าถัดไป (เปลี่ยนเป็นเส้นทางจริงของคุณ)
+    const NEXT_URL = './approval.html'; // หรือ './index2.html' ฯลฯ
 
-    /************ GVIZ FETCH ************/
- async function gvizQuery(sheetName, tq) {
-  const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SPREADSHEET_ID)}/gviz/tq`;
-  const url  = `${base}?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent(tq)}`;
-  console.log('[gviz] sheet =', sheetName, 'tq =', tq, 'url =', url);
-
-  const res  = await fetch(url, { method:'GET' });
-  const text = await res.text();
-
-  const start = text.indexOf('{');
-  const end   = text.lastIndexOf('}');
-  if (start === -1 || end === -1) {
-    console.error('[gviz] MALFORMED for sheet:', sheetName, ' sample:', text.slice(0, 200));
-    throw new Error(`GViz malformed: sheet "${sheetName}" (ตรวจ Publish to the web และสะกดชื่อชีตให้ตรง)`);
-  }
-
-  const json = JSON.parse(text.substring(start, end + 1));
-  if (!json.table) return { cols:[], rows:[] };
-  return json.table;
-}
-
-    function cellVal(c) {
-      if (!c) return '';
-      if ('v' in c && c.v != null) {
-        if (c.f) return c.f; // formatted string
-        return c.v;
-      }
-      return '';
-    }
-
-    function toISO(dateStr) {
-      if (!dateStr) return '';
-      const slash = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (slash) {
-        const d = String(slash[1]).padStart(2,'0');
-        const m = String(slash[2]).padStart(2,'0');
-        const y = slash[3];
-        return `${y}-${m}-${d}`;
-      }
-      const iso = dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
-      if (iso) return dateStr;
-      const d = new Date(dateStr);
-      if (!isNaN(d.getTime())) {
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2,'0');
-        const day = String(d.getDate()).padStart(2,'0');
-        return `${y}-${m}-${day}`;
-      }
-      return String(dateStr);
-    }
-
-    /// helper: ป้องกัน meta-char ใน regex
-function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
-// ✅ ตรวจสิทธิ์จาก "User Approve" คอลัมน์ A (ไม่สนตัวพิมพ์ + ยอมช่องว่างหัวท้าย + บังคับ toText)
-async function isAuthorizedEmp(empId) {
-  const raw = String(empId || '').trim();
-  if (!raw) return false;
-
-// ✅ อ่านโปรไฟล์จาก "User Approve"
-// โครงสร้างคอลัมน์:
-// A = Emp BU Admin (รหัสพนักงาน), B = Name, C = Email, D = Company, E = Division, F = Cost Center
-async function loadUserFromUserApprove(empId) {
-  const raw = String(empId || '').trim();
-  if (!raw) return null;
-
-  const isNum  = /^\d+$/.test(raw);
-  const safeSQ = raw.replace(/'/g, "\\'");
-  const safeRe = escapeRegex(raw);
-
-  // ลองแบบเท่ากับตรง ๆ ก่อน แล้วค่อย fallback เป็น matches (กันช่องว่างหัวท้าย)
-  const queries = isNum
-    ? [
-        `select A,B,C,D,E,F where A = ${raw} limit 1`,
-        `select A,B,C,D,E,F where toText(A) matches '^\\s*${safeRe}\\s*$' limit 1`,
-      ]
-    : [
-        `select A,B,C,D,E,F where A = '${safeSQ}' limit 1`,
-        `select A,B,C,D,E,F where toText(A) matches '^\\s*${safeRe}\\s*$' limit 1`,
-      ];
-
-  for (const tq of queries) {
-    const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-    const rows  = table.rows || [];
-    if (!rows.length) continue;
-
-    const c = rows[0].c || [];
-    const emp  = String((c[0]?.v ?? c[0]?.f ?? '')).trim();
-    const name = String((c[1]?.v ?? c[1]?.f ?? '')).trim();
-    const mail = String((c[2]?.v ?? c[2]?.f ?? '')).trim();
-    const comp = String((c[3]?.v ?? c[3]?.f ?? '')).trim();
-    const div  = String((c[4]?.v ?? c[4]?.f ?? '')).trim();
-    const cost = String((c[5]?.v ?? c[5]?.f ?? '')).trim();
-
-    // ไม่มี role ในชีตนี้ → กำหนดเป็น 'BU Admin' ตามบริบทของ User Approve
-    return {
-      empId: emp,
-      name,
-      email: mail,
-      company: comp,
-      division: div,
-      costCenter: cost,
-      role: 'BU Admin'
-    };
-  }
-  return null;
-}
-
-  const safe = escapeRegex(raw);
-  const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
-  console.log('[auth] tq =', tq);
-
-  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-  const ok = (table.rows || []).some(r => {
-    const v = r && r.c && r.c[0] ? String(r.c[0].v).trim() : '';
-    return v !== '';
-  });
-
-  console.log('[auth] allowed =', ok);
-  return ok;
-}
-
-    async function loadRequestsForRole(role) {
-      const sheet = (role === 'BU Admin') ? ADMIN_BU_SHEET
-                  : (role === 'BU/BP Head') ? BU_APPROVE_SHEET
-                  : BU_APPROVE_SHEET;
-
-      // A=req no, B=date, G=requester, J=items, K=amount, L=status(optional)
-      const tq = `select A,B,G,J,K,L`;
-      const table = await gvizQuery(sheet, tq);
-      const rows = table.rows || [];
-      const colCount = (table.cols || []).length;
-
-      const out = rows.map(row => {
-        const c = row.c || [];
-        const id      = String(cellVal(c[0]) || '').trim();
-        const dateRaw = cellVal(c[1]);
-        const requester = String(cellVal(c[2]) || '').trim();
-        const items   = String(cellVal(c[3]) || '').trim();
-        const amountV = cellVal(c[4]);
-        const statusV = (colCount >= 6) ? String((cellVal(c[5]) || '')).trim().toLowerCase() : 'pending';
-
-        const amount = (typeof amountV === 'number') ? amountV : Number(amountV);
-        const dateISO = toISO(dateRaw);
-
-        return {
-          id,
-          requester,
-          date: dateISO || String(dateRaw || ''),
-          items,
-          amount: Number.isFinite(amount) ? amount : (amountV || ''),
-          status: statusV || 'pending'
-        };
-      }).filter(o => o.id);
-
-      return out;
-    }
-
-    // ดึงรายละเอียดจากชีต Response โดยใช้ Request number (A) เป็นเงื่อนไข
-    async function loadDetailByRequestNumber(reqNo) {
-      const safe = String(reqNo || '').replace(/'/g, "\\'");
-      const tq = `select * where A='${safe}'`;
-      const table = await gvizQuery(RESPONSE_SHEET, tq);
-      const rows = table.rows || [];
-      if (!rows.length) return null;
-
-      const c = rows[0].c || [];
-      // คอลัมน์หลัก
-      const reqNumber   = String(cellVal(c[0]) || '').trim(); // A
-      const dateRaw     = cellVal(c[1]);                      // B
-      const requester   = String(cellVal(c[6]) || '').trim(); // G
-      const itemCount   = cellVal(c[9]);                      // J จำนวนรายการเบิก
-      const amountV     = cellVal(c[10]);                     // K จำนวนเงินรวม
-      const amount      = (typeof amountV === 'number') ? amountV : Number(amountV);
-      const dateISO     = toISO(dateRaw);
-
-      // เริ่มชุดรายการตั้งแต่คอลัมน์ L(11) M(12) N(13) แล้วไล่ไปทีละ 3
-      const items = [];
-      for (let i = 11; i < c.length; i += 3) {
-        const name = String(cellVal(c[i]) || '').trim();       // L, O, R, ...
-        const qtyV = cellVal(c[i + 1]);                        // M, P, S, ...
-        const priceV = cellVal(c[i + 2]);                      // N, Q, T, ...
-        if (!name && !qtyV && !priceV) continue;               // ข้ามแถวว่างท้ายตาราง
-        const qty   = (typeof qtyV === 'number') ? qtyV : Number(qtyV);
-        const price = (typeof priceV === 'number') ? priceV : Number(priceV);
-        items.push({
-          name: name || '-',
-          qty: Number.isFinite(qty) ? qty : (qtyV || ''),
-          price: Number.isFinite(price) ? price : (priceV || '')
-        });
-      }
-
-      return {
-        reqNumber,
-        requester,
-        date: dateISO || String(dateRaw || ''),
-        itemCount: Number.isFinite(Number(itemCount)) ? Number(itemCount) : itemCount,
-        amount: Number.isFinite(amount) ? amount : (amountV || ''),
-        items
-      };
-    }
-
-    /************ UI ************/
-    function showLoginError(msg) {
-      const input = document.getElementById('employee-id');
-      input.classList.add('border-red-500');
-      input.focus();
-      let errorMsg = document.getElementById('error-message');
-      if (!errorMsg) {
-        errorMsg = document.createElement('p');
-        errorMsg.id = 'error-message';
-        errorMsg.className = 'text-red-500 text-sm mt-2';
-        input.parentNode.appendChild(errorMsg);
-      }
-      errorMsg.textContent = '❌ ' + (msg || 'รหัสพนักงานไม่ถูกต้อง');
-      setTimeout(() => {
-        input.classList.remove('border-red-500');
-        if (errorMsg) errorMsg.remove();
-      }, 3000);
-    }
-
-    async function handleLogin(event) {
-  event.preventDefault();
-
-  const input = document.getElementById('employee-id');
-  const employeeId = String(input.value || '').trim().toUpperCase();
-
-  const btn = event.submitter || document.querySelector('button[type="submit"]');
-  if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
-
-  try {
-    console.log('[login] empId =', employeeId);
-
-    // 1) เช็คสิทธิ์ใน User Approve (คอลัมน์ A)
-    const allowed = await isAuthorizedEmp(employeeId);
-    console.log('[login] allowed ? =', allowed);
-    if (!allowed) {
-      if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบข้อมูลในระบบ (User Approve)');
-    }
-
-    // 2) โหลดโปรไฟล์จาก User Approve (แทน Master)
-    const user = await loadUserFromUserApprove(employeeId);
-    console.log('[login] user =', user);
-    if (!user || !user.empId) {
-      if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบโปรไฟล์จาก User Approve');
-    }
-
-    // 3) อัปเดต UI + โหลดรายการตามบทบาท
-    currentUser = user;
-    document.getElementById('user-name').textContent        = currentUser.name || '';
-    document.getElementById('user-email').textContent       = currentUser.email || '';
-    document.getElementById('user-cost-center').textContent = currentUser.costCenter || '';
-    document.getElementById('user-division').textContent    = currentUser.division || '';
-
-    // ถ้าใช้ role ตัดสินชีตปลายทาง ตารางยังใช้ฟังก์ชันเดิมได้เลย
-    requestsData = await loadRequestsForRole(currentUser.role || 'BU Admin');
-
-    // 4) เปิดหน้า Dashboard
-    document.getElementById('login-page').style.display     = 'none';
-    document.getElementById('dashboard-page').style.display = 'block';
-    updateCounts();
-    renderFilteredData();
-
-  } catch (err) {
-    console.error('[login] error:', err);
-    showLoginError('ดึงข้อมูลไม่สำเร็จ (ตรวจการตั้งค่า Publish และชื่อชีต/คอลัมน์)');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
-  }
-}
-
-    function logout() {
-      currentUser = null;
-      requestsData = [];
-      document.getElementById('dashboard-page').style.display = 'none';
-      document.getElementById('login-page').style.display = 'block';
-      document.getElementById('employee-id').value = '';
-    }
-
-    function getStatusBadge(status) {
-      const s = (status || '').toLowerCase();
-      const badges = {
-        'approved': '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">✅ อนุมัติ</span>',
-        'pending': '<span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">⏳ รออนุมัติ</span>',
-        'rejected': '<span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">❌ ปฏิเสธ</span>',
-        'revise': '<span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">🔄 แก้ไข</span>'
-      };
-      return badges[s] || `<span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">${status || 'pending'}</span>`;
-    }
-
-    function renderTable(data = requestsData) {
-      const tbody = document.getElementById('table-body');
-      tbody.innerHTML = '';
-      data.forEach(request => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-gray-100 table-row cursor-pointer';
-        row.onclick = () => showDetail(request.id);
-        row.innerHTML = `
-          <td class="px-6 py-4 text-sm font-medium text-blue-600">${request.id}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">${request.requester}</td>
-          <td class="px-6 py-4 text-sm text-gray-600">${request.date}</td>
-          <td class="px-6 py-4 text-sm text-gray-700">${request.items}</td>
-          <td class="px-6 py-4 text-sm font-semibold text-gray-800">
-            ${Number.isFinite(request.amount) ? request.amount.toLocaleString('th-TH') : request.amount} บาท
-          </td>
-          <td class="px-6 py-4 text-sm">${getStatusBadge(request.status)}</td>
-          <td class="px-6 py-4 text-center">
-            <button onclick="event.stopPropagation(); showDetail('${request.id}')"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium transition">
-              ดูรายละเอียด
-            </button>
-          </td>
-        `;
-        tbody.appendChild(row);
+    /* ====== UTIL: Read Google Sheets via GViz ====== */
+    function buildGVizUrl(code) {
+      // เลือกเฉพาะคอลัมน์ A (emp code) และดึงคอลัมน์อื่นติดมาด้วยก็ได้
+      // where A = '12345' (escape single quotes)
+      const safe = String(code).replace(/'/g, "\\'");
+      const tq = `select A,B,C,D,E where A='${safe}'`;
+      const params = new URLSearchParams({
+        tqx: 'out:json',
+        sheet: SHEET_NAME,
+        tq
       });
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + params.toString();
     }
 
-    // แสดงรายละเอียดจากชีต Response ตาม Request Number
-    async function showDetail(requestId) {
-      currentRequestId = requestId;
-      const modalContent = document.getElementById('modal-content');
-      modalContent.innerHTML = `<div class="p-6 text-center text-gray-600">กำลังดึงรายละเอียดจาก Response...</div>`;
-      document.getElementById('detail-modal').classList.add('active');
+    async function fetchGViz(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      const text = await res.text();
+      // ตัด wrapper "google.visualization.Query.setResponse(...)"
+      const match = text.match(/setResponse\(([\s\S]*)\);?$/);
+      if (!match) throw new Error('Bad GViz response');
+      const json = JSON.parse(match[1]);
+      const cols = json.table.cols.map(c => c.label || c.id || '');
+      const rows = json.table.rows.map(r =>
+        Object.fromEntries(r.c.map((c,i)=>[cols[i] || `c${i}`, c ? c.v : null]))
+      );
+      return rows;
+    }
 
+    function setLoading(on){
+      const btn = document.getElementById('submitBtn');
+      const icon = document.getElementById('loadingIcon');
+      btn.disabled = on;
+      icon.classList.toggle('hidden', !on);
+      btn.style.opacity = on ? .85 : 1;
+    }
+    function showHint(msg){
+      const el = document.getElementById('hint');
+      el.textContent = msg || 'ไม่พบข้อมูลในระบบ';
+      el.classList.remove('hidden');
+    }
+    function hideHint(){
+      document.getElementById('hint').classList.add('hidden');
+    }
+
+    /* ====== FORM HANDLER ====== */
+    document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      hideHint();
+
+      const code = document.getElementById('empCode').value.trim();
+      if (!code) { showHint('กรุณากรอกรหัสพนักงาน'); return; }
+
+      setLoading(true);
       try {
-        const detail = await loadDetailByRequestNumber(requestId);
-        if (!detail) {
-          modalContent.innerHTML = `<div class="p-6 text-center text-red-600">ไม่พบรายละเอียดในชีต Response สำหรับเลขที่ ${requestId}</div>`;
+        const url = buildGVizUrl(code);
+        const rows = await fetchGViz(url);
+
+        if (!rows || rows.length === 0) {
+          showHint('ไม่พบข้อมูลในระบบ');
+          setLoading(false);
           return;
         }
 
-        const rows = detail.items.map((it, idx) => `
-          <tr class="border-b border-gray-100">
-            <td class="px-4 py-3 text-sm text-gray-500 text-center">${idx + 1}</td>
-            <td class="px-4 py-3 text-sm text-gray-800">${it.name}</td>
-            <td class="px-4 py-3 text-sm text-gray-700 text-center">${it.qty}</td>
-            <td class="px-4 py-3 text-sm text-gray-700 text-right">
-              ${Number.isFinite(it.price) ? it.price.toLocaleString('th-TH') : it.price}
-            </td>
-          </tr>
-        `).join('') || `
-          <tr><td colspan="4" class="px-4 py-3 text-center text-sm text-gray-500">- ไม่มีรายละเอียดรายการ -</td></tr>
-        `;
+        // เก็บข้อมูลผู้อนุมัติไว้ใช้ต่อ (คุณแก้ key ของคอลัมน์ได้ตามหัวตารางจริง)
+        const rec = rows[0]; // พบแถวแรก
+        sessionStorage.setItem('approver', JSON.stringify({
+          empCode: rec.A ?? rec.c0 ?? code,
+          colB: rec.B ?? rec.c1 ?? null,
+          colC: rec.C ?? rec.c2 ?? null,
+          colD: rec.D ?? rec.c3 ?? null,
+          colE: rec.E ?? rec.c4 ?? null,
+          verifiedAt: new Date().toISOString()
+        }));
 
-        modalContent.innerHTML = `
-          <div class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="space-y-4">
-                <div>
-                  <p class="text-sm text-gray-500 mb-1">Request Number</p>
-                  <p class="text-lg font-semibold text-gray-800">${detail.reqNumber}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500 mb-1">ผู้ขอเบิก</p>
-                  <p class="text-base font-medium text-gray-800">${detail.requester}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500 mb-1">วันที่ขอ</p>
-                  <p class="text-base font-medium text-gray-800">${detail.date}</p>
-                </div>
-              </div>
-              <div class="space-y-4">
-                <div class="bg-blue-50 rounded-lg p-4">
-                  <p class="text-sm text-gray-600 mb-1">จำนวนรายการเบิก</p>
-                  <p class="text-xl font-bold text-blue-600">
-                    ${Number.isFinite(detail.itemCount) ? detail.itemCount : (detail.itemCount || '-')} รายการ
-                  </p>
-                </div>
-                <div class="bg-blue-50 rounded-lg p-4">
-                  <p class="text-sm text-gray-600 mb-1">จำนวนเงินรวม</p>
-                  <p class="text-2xl font-bold text-blue-600">
-                    ${Number.isFinite(detail.amount) ? detail.amount.toLocaleString('th-TH') : detail.amount} บาท
-                  </p>
-                </div>
-              </div>
-            </div>
+        // ถ้าต้อง ping Apps Script ว่ามีคนล็อกอิน (optional)
+        // await fetch(APPS_SCRIPT_BASE + '?action=heartbeat&emp=' + encodeURIComponent(code)).catch(()=>{});
 
-            <div>
-              <h4 class="text-lg font-semibold text-gray-800 mb-3">รายละเอียดรายการ</h4>
-              <div class="bg-gray-50 rounded-lg overflow-hidden">
-                <table class="w-full">
-                  <thead class="bg-gray-200">
-                    <tr>
-                      <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700" style="width:80px;">ลำดับ</th>
-                      <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">รายการ</th>
-                      <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700" style="width:120px;">จำนวน</th>
-                      <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700" style="width:140px;">ราคา</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${rows}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        `;
-      } catch (e) {
-        console.error(e);
-        modalContent.innerHTML = `<div class="p-6 text-center text-red-600">เกิดข้อผิดพลาดขณะดึงข้อมูลรายละเอียด</div>`;
+        // ไปหน้าถัดไป
+        window.location.href = NEXT_URL; // เปลี่ยนปลายทางตามโปรเจกต์ของคุณ
+      } catch (err) {
+        console.error(err);
+        showHint('ไม่สามารถเชื่อมต่อข้อมูลได้ โปรดลองอีกครั้ง');
+      } finally {
+        setLoading(false);
       }
-    }
-
-    function closeModal() {
-      document.getElementById('detail-modal').classList.remove('active');
-      currentRequestId = null;
-    }
-
-    function updateCounts() {
-      document.getElementById('total-count').textContent    = requestsData.length;
-      document.getElementById('approved-count').textContent = requestsData.filter(r => (r.status||'').toLowerCase()==='approved').length;
-      document.getElementById('pending-count').textContent  = requestsData.filter(r => (r.status||'').toLowerCase()==='pending').length;
-      document.getElementById('rejected-count').textContent = requestsData.filter(r => (r.status||'').toLowerCase()==='rejected').length;
-      document.getElementById('revise-count').textContent   = requestsData.filter(r => (r.status||'').toLowerCase()==='revise').length;
-    }
-
-    function filterByStatus(status) {
-      currentFilter = status;
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.querySelector(`[data-status="${status}"]`);
-      if (activeBtn) activeBtn.classList.add('active');
-      renderFilteredData();
-    }
-
-    function filterByDate() {
-      const sel = document.getElementById('date-filter');
-      currentDateFilter = sel ? sel.value : 'all';
-      renderFilteredData();
-    }
-
-    function renderFilteredData() {
-      let filtered = requestsData.slice();
-
-      if (currentFilter !== 'all') {
-        filtered = filtered.filter(r => (r.status||'').toLowerCase() === currentFilter);
-      }
-
-      if (currentDateFilter !== 'all') {
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
-        filtered = filtered.filter(r => {
-          const requestDate = new Date(r.date);
-          switch (currentDateFilter) {
-            case 'today':
-              return r.date === todayStr;
-            case 'week': {
-              const weekAgo = new Date(today.getTime() - 7*24*60*60*1000);
-              return requestDate >= weekAgo;
-            }
-            case 'month':
-              return requestDate.getMonth() === today.getMonth() &&
-                     requestDate.getFullYear() === today.getFullYear();
-            case 'latest': {
-              const threeDaysAgo = new Date(today.getTime() - 3*24*60*60*1000);
-              return requestDate >= threeDaysAgo;
-            }
-            default:
-              return true;
-          }
-        });
-      }
-
-      filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
-      renderTable(filtered);
-    }
-
-    // UX: close modal on backdrop/Escape
-    document.getElementById('detail-modal').addEventListener('click', (e) => {
-      if (e.target.id === 'detail-modal') closeModal();
     });
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // UX: กด Enter ใน input ให้ทำงานเนียน ๆ
+    document.getElementById('empCode').addEventListener('keydown', e=>{
+      if (e.key === 'Enter') document.getElementById('submitBtn').focus();
+    });
   </script>
 </body>
 </html>
