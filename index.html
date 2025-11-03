@@ -194,17 +194,25 @@
 
     /************ GVIZ FETCH ************/
     async function gvizQuery(sheetName, tq) {
-      const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SPREADSHEET_ID)}/gviz/tq`;
-      const url = `${base}?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent(tq)}`;
-      const res = await fetch(url, { method:'GET' });
-      const text = await res.text();
-      const start = text.indexOf('{');
-      const end = text.lastIndexOf('}');
-      if (start === -1 || end === -1) throw new Error('GViz response malformed (ตรวจการตั้งค่า Publish to the web)');
-      const json = JSON.parse(text.substring(start, end + 1));
-      if (!json.table) return { cols:[], rows:[] };
-      return json.table;
-    }
+  const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SPREADSHEET_ID)}/gviz/tq`;
+  const url = `${base}?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent(tq)}`;
+  console.log('[gviz] sheet=', sheetName, 'tq=', tq, 'url=', url);
+
+  const res = await fetch(url, { method:'GET' });
+  const text = await res.text();
+
+  // ถ้าไม่ได้ Publish จะได้หน้า HTML ไม่มี JSON
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1) {
+    console.error('[gviz] MALFORMED RESPONSE (not published?) sample:', text.slice(0, 120));
+    throw new Error('GViz response malformed (ตรวจการตั้งค่า Publish to the web)');
+  }
+
+  const json = JSON.parse(text.substring(start, end + 1));
+  if (!json.table) return { cols:[], rows:[] };
+  return json.table;
+}
 
     function cellVal(c) {
       if (!c) return '';
@@ -256,21 +264,16 @@
       return { empId: emp, role, costCenter, division, name, email };
     }
     
-    // ✅ อนุญาตเข้าระบบเฉพาะรหัสที่อยู่ใน User Approve คอลัมน์ A
-async function isAuthorizedEmp(empId) {
-  const safeEmp = String(empId || '').replace(/'/g, "\\'");
-  // เลือกเฉพาะคอลัมน์ A ที่ตรงรหัส และจำกัด 1 แถว เพื่อลดโหลด
- function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+    // ทำให้ regex ปลอดภัย
+function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
+// ✅ อนุญาตเข้าระบบเฉพาะรหัสที่อยู่ใน User Approve คอลัมน์ A (ทนช่องว่าง/ตัวพิมพ์)
 async function isAuthorizedEmp(empId) {
   const raw = String(empId || '').trim();
   if (!raw) return false;
-  const safeRegex = escapeRegex(raw);
-  // (?i) = case-insensitive, ^\s* ... \s*$ = ตัดช่องว่างหัวท้าย
+  const safeRegex = escapeRegex(raw); // ตัดความเสี่ยง meta-char
+  // (?i) = case-insensitive, ^\s*...\s*$ = ยอมช่องว่างหัว-ท้าย
   const tq = `select A where A matches '(?i)^\\s*${safeRegex}\\s*$' limit 1`;
-  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-  return (table.rows || []).length > 0;
-}
   const table = await gvizQuery(USER_APPROVE_SHEET, tq);
   return (table.rows || []).length > 0;
 }
@@ -382,13 +385,23 @@ async function isAuthorizedEmp(empId) {
   if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
 
   try {
-    // ✅ ขั้นที่ 1: ตรวจสิทธิ์จาก User Approve (คอลัมน์ A = Emp BU Admin)
+    console.log('[login] empId=', employeeId);
+
     const allowed = await isAuthorizedEmp(employeeId);
+    console.log('[login] allowed from User Approve?', allowed);
+
     if (!allowed) {
       if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบข้อมูลในระบบ'); // ข้อความตามที่ต้องการ
+      return showLoginError('ไม่พบข้อมูลในระบบ');
     }
 
+    const user = await loadUserByEmpId(employeeId);
+    console.log('[login] user from Master=', user);
+
+    if (!user || user.empId !== employeeId) {
+      if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
+      return showLoginError('ไม่พบรหัสพนักงานใน Master');
+    }
     // ✅ ขั้นที่ 2: ดึงรายละเอียดผู้ใช้จาก Master เพื่อแสดงผลบนหน้าหลัก
     const user = await loadUserByEmpId(employeeId);
     if (!user || user.empId !== employeeId) {
