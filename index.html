@@ -14,87 +14,57 @@
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { prompt: ['Prompt', 'system-ui', 'sans-serif'] },
-          boxShadow: {
-            soft: '0 10px 30px rgba(2, 6, 23, .08)'
-          }
+          fontFamily: { prompt: ['Prompt','system-ui','sans-serif'] },
+          boxShadow: { soft: '0 10px 30px rgba(2,6,23,.08)' }
         }
       }
     }
   </script>
 
   <style>
-    :root {
-      --card-w: 720px;
-    }
-    body {
-      font-family: 'Prompt', system-ui, sans-serif;
+    :root { --card-w: 720px; }
+    body{
+      font-family:'Prompt',system-ui,sans-serif;
       background:
         radial-gradient(1200px 600px at 50% -200px, rgba(59,130,246,.15), rgba(59,130,246,0)),
         radial-gradient(800px 600px at 80% 0, rgba(99,102,241,.12), rgba(99,102,241,0)),
-        linear-gradient(180deg, #eef2ff 0%, #f8fafc 70%);
-      min-height: 100vh;
+        linear-gradient(180deg,#eef2ff 0%,#f8fafc 70%);
+      min-height:100vh;
     }
-    .card {
-      width: min(var(--card-w), calc(100% - 32px));
-      background: white;
-      border-radius: 20px;
-      box-shadow: var(--tw-shadow, 0 20px 60px rgba(2,6,23,.08));
-      padding: 28px;
-    }
-    .logo {
-      width: 340px; max-width: 80vw; height: auto;
-      filter: drop-shadow(0 6px 18px rgba(2,6,23,.08));
-    }
-    .title {
-      letter-spacing: .02em;
-      text-shadow: 0 2px 0 rgba(255,255,255,.7);
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    }
-    .btn-primary:hover {
-      filter: brightness(1.02);
-      transform: translateY(-1px);
-    }
-    .note {
-      background: #f8fafc;
-      border: 1px dashed #e2e8f0;
-    }
-    .divider {
-      margin: 10px auto 0;
-      width: 72px; height: 3px; border-radius: 999px;
-      background: linear-gradient(90deg,#1d4ed8,#60a5fa);
-      opacity: .85;
-    }
-    .hint-error {
-      animation: fadeIn .15s ease-out;
-    }
-    @keyframes fadeIn { from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
+    .card{ width:min(var(--card-w),calc(100% - 32px)); background:#fff; border-radius:20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); padding:28px; }
+    .logo{ width:340px; max-width:80vw; height:auto; filter:drop-shadow(0 6px 18px rgba(2,6,23,.08)); }
+    .title{ letter-spacing:.02em; text-shadow:0 2px 0 rgba(255,255,255,.7); }
+    .btn-primary{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); }
+    .btn-primary:hover{ filter:brightness(1.02); transform:translateY(-1px); }
+    .divider{ margin:10px auto 0; width:72px; height:3px; border-radius:999px; background:linear-gradient(90deg,#1d4ed8,#60a5fa); opacity:.85; }
+    .hint-error{ animation:fadeIn .15s ease-out; }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
+
+    /* Approval header */
+    .title-underline{ width:92px; height:4px; border-radius:999px; background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
+    .info-card{ background:#fff; border-radius:18px; padding:18px 20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); }
+    .field-label{ font-size:.78rem; color:#64748b }
+    .field-value{ font-weight:600; color:#0f172a }
+    .hidden{ display:none !important; }
   </style>
 </head>
 <body class="text-slate-800">
 
-  <!-- Center container -->
-  <div class="min-h-screen flex items-center justify-center px-4">
+  <!-- ========== หน้าหรือ Section: VERIFY ========== -->
+  <section id="verifyScreen" class="min-h-screen flex items-center justify-center px-4">
     <div class="w-full max-w-3xl text-center">
-
-      <!-- Logo -->
       <div class="flex items-center justify-center">
         <img class="logo" alt="BJC Big C" src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png">
       </div>
 
-      <!-- Title -->
       <h1 class="mt-6 text-3xl md:text-4xl font-extrabold title">APPROVAL STATIONERY STORE</h1>
       <div class="divider"></div>
 
-      <!-- Sub -->
       <p class="mt-5 text-slate-600">
         🏢 ระบบอนุมัติการเบิกอุปกรณ์สำนักงาน<br>
         กรุณารหัสพนักงานเพื่อเข้าสู่ระบบ
       </p>
 
-      <!-- Card -->
       <div class="mt-7 mx-auto card shadow-soft animate-[fadeIn_.25s_ease-out]">
         <form id="verifyForm" class="text-left">
           <label for="empCode" class="block text-sm text-slate-600">รหัสพนักงาน</label>
@@ -112,113 +82,147 @@
           </button>
 
           <p id="hint" class="mt-3 text-sm text-rose-600 hidden hint-error">ไม่พบข้อมูลในระบบ</p>
-
         </form>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ========== หน้าหรือ Section: APPROVAL (แค่ส่วนบนสุดก่อน) ========== -->
+  <section id="approvalScreen" class="hidden">
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <div class="flex items-center justify-center mb-3">
+        <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C" class="h-10 md:h-12 object-contain">
+      </div>
+
+      <h1 class="text-3xl md:text-4xl font-extrabold text-center">APPROVAL STATIONERY STORE</h1>
+      <div class="title-underline mx-auto mt-2 mb-6"></div>
+
+      <!-- การ์ดข้อมูลผู้อนุมัติ -->
+      <section class="info-card">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" class="text-indigo-500">
+              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-5.33 0-8 2.67-8 5v1h16v-1c0-2.33-2.67-5-8-5z"/>
+            </svg>
+          </div>
+
+          <div class="w-full">
+            <!-- แถว 1 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="field-label">Name</div>
+                <div id="apvName" class="field-value">—</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="field-label">Email</div>
+                <div id="apvEmail" class="field-value">—</div>
+              </div>
+            </div>
+            <!-- แถว 2 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="field-label">Company</div>
+                <div id="apvCompany" class="field-value">—</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="field-label">Division</div>
+                <div id="apvDivision" class="field-value">—</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="field-label">Cost Center</div>
+                <div id="apvCost" class="field-value">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- (ส่วนลิสต์คำขอ/แท็บสถานะ ค่อยเติมต่อได้ทีหลัง) -->
+    </main>
+  </section>
 
   <script>
-    /* ====== CONFIG ====== */
-    const SHEET_ID = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg'; // ตามที่ให้มา
-    const SHEET_NAME = 'User Approve';                                // แท็บในชีต
-    // หากต้องการ ping Apps Script หรือใช้ในหน้าถัดไป เก็บไว้ได้
-    const APPS_SCRIPT_BASE = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
+    /* ===== CONFIG ===== */
+    const SHEET_ID   = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
+    const SHEET_NAME = 'User Approve';
 
-    // ถ้าตรวจสอบสำเร็จ จะไปหน้าถัดไป (เปลี่ยนเป็นเส้นทางจริงของคุณ)
-    const NEXT_URL = './approval.html'; // หรือ './index2.html' ฯลฯ
-
-    /* ====== UTIL: Read Google Sheets via GViz ====== */
-    function buildGVizUrl(code) {
-      // เลือกเฉพาะคอลัมน์ A (emp code) และดึงคอลัมน์อื่นติดมาด้วยก็ได้
-      // where A = '12345' (escape single quotes)
-      const safe = String(code).replace(/'/g, "\\'");
-      const tq = `select A,B,C,D,E where A='${safe}'`;
-      const params = new URLSearchParams({
-        tqx: 'out:json',
-        sheet: SHEET_NAME,
-        tq
-      });
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + params.toString();
+    /* ===== Helpers ===== */
+    function showPage(which){
+      const verify = document.getElementById('verifyScreen');
+      const appr   = document.getElementById('approvalScreen');
+      if(which === 'approval'){ verify.classList.add('hidden'); appr.classList.remove('hidden'); window.scrollTo(0,0); }
+      else { appr.classList.add('hidden'); verify.classList.remove('hidden'); }
     }
+    function setLoading(on){
+      const btn = document.getElementById('submitBtn');
+      const icon = document.getElementById('loadingIcon');
+      btn.disabled = on; icon.classList.toggle('hidden', !on); btn.style.opacity = on ? .85 : 1;
+    }
+    function showHint(msg){ const el = document.getElementById('hint'); el.textContent = msg || 'ไม่พบข้อมูลในระบบ'; el.classList.remove('hidden'); }
+    function hideHint(){ document.getElementById('hint').classList.add('hidden'); }
 
-    async function fetchGViz(url) {
-      const res = await fetch(url, { cache: 'no-store' });
-      const text = await res.text();
-      // ตัด wrapper "google.visualization.Query.setResponse(...)"
-      const match = text.match(/setResponse\(([\s\S]*)\);?$/);
-      if (!match) throw new Error('Bad GViz response');
-      const json = JSON.parse(match[1]);
-      const cols = json.table.cols.map(c => c.label || c.id || '');
+    function buildGVizUrl(code){
+      const safe = String(code).replace(/'/g,"\\'");
+      const tq   = `select A,B,C,D,E,F where A='${safe}'`;
+      const qs   = new URLSearchParams({ tqx:'out:json', sheet:SHEET_NAME, tq });
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + qs.toString();
+    }
+    async function fetchGVizRows(url){
+      const res = await fetch(url, { cache:'no-store' });
+      const txt = await res.text();
+      const m = txt.match(/setResponse\(([\s\S]*)\);?$/);
+      if(!m) throw new Error('Bad GViz response');
+      const json = JSON.parse(m[1]);
+      const cols = json.table.cols.map(c=>c.label || c.id || '');
       const rows = json.table.rows.map(r =>
         Object.fromEntries(r.c.map((c,i)=>[cols[i] || `c${i}`, c ? c.v : null]))
       );
       return rows;
     }
 
-    function setLoading(on){
-      const btn = document.getElementById('submitBtn');
-      const icon = document.getElementById('loadingIcon');
-      btn.disabled = on;
-      icon.classList.toggle('hidden', !on);
-      btn.style.opacity = on ? .85 : 1;
-    }
-    function showHint(msg){
-      const el = document.getElementById('hint');
-      el.textContent = msg || 'ไม่พบข้อมูลในระบบ';
-      el.classList.remove('hidden');
-    }
-    function hideHint(){
-      document.getElementById('hint').classList.add('hidden');
+    function fillApprover(ap){
+      document.getElementById('apvName').textContent     = ap.name || '—';
+      document.getElementById('apvEmail').textContent    = ap.email || '—';
+      document.getElementById('apvCompany').textContent  = ap.company || '—';
+      document.getElementById('apvDivision').textContent = ap.division || '—';
+      document.getElementById('apvCost').textContent     = ap.costCenter || '—';
     }
 
-    /* ====== FORM HANDLER ====== */
+    /* ===== Verify flow ===== */
     document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      hideHint();
-
+      e.preventDefault(); hideHint();
       const code = document.getElementById('empCode').value.trim();
-      if (!code) { showHint('กรุณากรอกรหัสพนักงาน'); return; }
+      if(!code){ showHint('กรุณากรอกรหัสพนักงาน'); return; }
 
       setLoading(true);
-      try {
-        const url = buildGVizUrl(code);
-        const rows = await fetchGViz(url);
+      try{
+        const rows = await fetchGVizRows(buildGVizUrl(code));
+        if(!rows || rows.length === 0){ showHint('ไม่พบข้อมูลในระบบ'); return; }
 
-        if (!rows || rows.length === 0) {
-          showHint('ไม่พบข้อมูลในระบบ');
-          setLoading(false);
-          return;
-        }
-
-        // เก็บข้อมูลผู้อนุมัติไว้ใช้ต่อ (คุณแก้ key ของคอลัมน์ได้ตามหัวตารางจริง)
-        const rec = rows[0]; // พบแถวแรก
-        sessionStorage.setItem('approver', JSON.stringify({
-          empCode: rec.A ?? rec.c0 ?? code,
-          colB: rec.B ?? rec.c1 ?? null,
-          colC: rec.C ?? rec.c2 ?? null,
-          colD: rec.D ?? rec.c3 ?? null,
-          colE: rec.E ?? rec.c4 ?? null,
+        const rec = rows[0];
+        const approver = {
+          empCode:    rec.A ?? rec.c0 ?? code,
+          name:       rec.B ?? rec.c1 ?? '',
+          email:      rec.C ?? rec.c2 ?? '',
+          company:    rec.D ?? rec.c3 ?? '',
+          division:   rec.E ?? rec.c4 ?? '',
+          costCenter: rec.F ?? rec.c5 ?? '',
           verifiedAt: new Date().toISOString()
-        }));
+        };
+        sessionStorage.setItem('approver', JSON.stringify(approver));
 
-        // ถ้าต้อง ping Apps Script ว่ามีคนล็อกอิน (optional)
-        // await fetch(APPS_SCRIPT_BASE + '?action=heartbeat&emp=' + encodeURIComponent(code)).catch(()=>{});
-
-        // ไปหน้าถัดไป
-        window.location.href = NEXT_URL; // เปลี่ยนปลายทางตามโปรเจกต์ของคุณ
-      } catch (err) {
+        // แสดงหน้า Approval และเติมข้อมูล
+        fillApprover(approver);
+        showPage('approval');
+      }catch(err){
         console.error(err);
         showHint('ไม่สามารถเชื่อมต่อข้อมูลได้ โปรดลองอีกครั้ง');
-      } finally {
+      }finally{
         setLoading(false);
       }
     });
 
-    // UX: กด Enter ใน input ให้ทำงานเนียน ๆ
-    document.getElementById('empCode').addEventListener('keydown', e=>{
-      if (e.key === 'Enter') document.getElementById('submitBtn').focus();
-    });
+
   </script>
 </body>
 </html>
