@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>APPROVAL STATIONERY STORE</title>
 
-  <!-- Font -->
+  <!-- Prompt font -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind -->
@@ -30,6 +30,7 @@
         radial-gradient(800px 600px at 80% 0, rgba(99,102,241,.12), rgba(99,102,241,0)),
         linear-gradient(180deg,#eef2ff 0%,#f8fafc 70%);
       min-height:100vh;
+      color:#0f172a;
     }
     .card{ width:min(var(--card-w),calc(100% - 32px)); background:#fff; border-radius:20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); padding:28px; }
     .logo{ width:340px; max-width:80vw; height:auto; filter:drop-shadow(0 6px 18px rgba(2,6,23,.08)); }
@@ -40,17 +41,33 @@
     .hint-error{ animation:fadeIn .15s ease-out; }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
 
-    /* Approval header */
     .title-underline{ width:92px; height:4px; border-radius:999px; background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
     .info-card{ background:#fff; border-radius:18px; padding:18px 20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); }
     .field-label{ font-size:.78rem; color:#64748b }
     .field-value{ font-weight:600; color:#0f172a }
     .hidden{ display:none !important; }
+
+    /* ฟิลเตอร์ & ป้ายสถานะ */
+    .status-chip{
+      padding:8px 14px; border-radius:999px; border:1px solid #e2e8f0; background:#fff;
+      font-size:14px; color:#0f172a; transition:.15s; box-shadow:0 1px 0 rgba(2,6,23,.02)
+    }
+    .status-chip:hover{ background:#f8fafc }
+    .status-chip.active{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; border-color:transparent }
+
+    .status-pill{
+      padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block;
+      background:#e2e8f0; color:#334155;
+    }
+    .status-pill.waiting{ background:#e0f2fe; color:#075985 } /* รออนุมัติ (Admin!N ว่าง) */
+    .status-pill.submit { background:#dcfce7; color:#166534 }  /* อนุมัติ/Submit */
+    .status-pill.revise { background:#fef9c3; color:#854d0e }  /* ขอแก้ไข/Revise */
+    .status-pill.reject { background:#fee2e2; color:#991b1b }  /* ปฏิเสธ/Reject */
   </style>
 </head>
-<body class="text-slate-800">
+<body>
 
-  <!-- ========== หน้าหรือ Section: VERIFY ========== -->
+  <!-- ========== VERIFY ========== -->
   <section id="verifyScreen" class="min-h-screen flex items-center justify-center px-4">
     <div class="w-full max-w-3xl text-center">
       <div class="flex items-center justify-center">
@@ -87,7 +104,7 @@
     </div>
   </section>
 
-  <!-- ========== หน้าหรือ Section: APPROVAL (แค่ส่วนบนสุดก่อน) ========== -->
+  <!-- ========== APPROVAL ========== -->
   <section id="approvalScreen" class="hidden">
     <main class="max-w-6xl mx-auto px-4 py-8">
       <div class="flex items-center justify-center mb-3">
@@ -137,92 +154,418 @@
         </div>
       </section>
 
-      <!-- (ส่วนลิสต์คำขอ/แท็บสถานะ ค่อยเติมต่อได้ทีหลัง) -->
+      <!-- หัวข้อรายการ + ฟิลเตอร์ -->
+      <section class="mt-6">
+        <div class="mb-3">
+          <div class="text-xl md:text-2xl font-semibold">Approval Items</div>
+          <div class="text-sm text-slate-500 -mt-0.5">รายการขออนุมัติอุปกรณ์สำนักงาน</div>
+        </div>
+
+        <!-- ฟิลเตอร์สถานะ -->
+        <div class="flex flex-wrap gap-2">
+          <button class="status-chip active" data-status="ALL">All items</button>
+          <button class="status-chip" data-status="WAITING">Waiting for approval</button>
+          <button class="status-chip" data-status="SUBMIT">Submit</button>
+          <button class="status-chip" data-status="REVISE">Revise</button>
+          <button class="status-chip" data-status="REJECT">Reject</button>
+        </div>
+
+        <!-- ตาราง -->
+        <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="grid grid-cols-[1.1fr,1.1fr,0.9fr,1.4fr,0.8fr,0.9fr,0.9fr] px-4 py-3 bg-slate-50 text-slate-600 text-sm font-medium">
+            <div>Request Number</div>
+            <div>ผู้ขอเบิก</div>
+            <div>วันที่ขอ</div>
+            <div>รายการ (ชิ้น)</div>
+            <div class="text-right">จำนวนเงิน</div>
+            <div>สถานะ</div>
+            <div class="text-right">การดำเนินการ</div>
+          </div>
+          <div id="reqList" class="divide-y divide-slate-100 text-[15px]"></div>
+        </div>
+      </section>
     </main>
   </section>
 
+  <!-- ========== MODAL รายละเอียดคำขอ ========== -->
+  <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-[60]">
+    <div class="bg-white w-[min(880px,92vw)] rounded-2xl shadow-xl relative">
+      <button class="absolute top-3 right-4 text-slate-400 hover:text-slate-600" onclick="closeDetail()">
+        <span aria-hidden="true" style="font-size:22px">×</span>
+      </button>
+
+      <div class="p-6">
+        <div class="text-xl md:text-2xl font-semibold">รายละเอียดการขอเบิกเครื่องเขียน</div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <div class="text-slate-500 text-sm">Request Number</div>
+            <div id="dReqNo" class="font-semibold">—</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
+            <div id="dRequester" class="font-semibold">—</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-sm">วันที่ขอ</div>
+            <div id="dDate" class="font-semibold">—</div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-3 items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 text-sm">สถานะ</span>
+            <span id="dStatusPill" class="status-pill">—</span>
+          </div>
+          <div class="ml-auto">
+            <div class="text-slate-500 text-sm text-right">จำนวนเงินรวม</div>
+            <div id="dTotal" class="text-2xl font-extrabold text-blue-700 text-right">0 บาท</div>
+          </div>
+        </div>
+
+        <!-- รายการย่อย L → ... -->
+        <div class="mt-5">
+          <div class="text-[15px] font-semibold mb-2">รายการเครื่องเขียนที่ขอเบิก</div>
+          <div class="overflow-hidden rounded-xl border border-slate-200">
+            <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] bg-slate-50 text-sm text-slate-600 px-4 py-3">
+              <div>รายการ</div><div class="text-right">จำนวน</div><div class="text-right">ราคา/หน่วย (บาท)</div><div class="text-right">รวม</div>
+            </div>
+            <div id="dItems" class="divide-y divide-slate-100"></div>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
+          <textarea id="dComment" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-2 justify-end">
+          <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
+          <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ (Submit)</button>
+          <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ (Reject)</button>
+          <button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 ขอแก้ไข (Revise)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    /* ===== CONFIG ===== */
-    const SHEET_ID   = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
-    const SHEET_NAME = 'User Approve';
+/* ===== CONFIG ===== */
+const SHEET_ID    = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
+const SHEET_USER  = 'User Approve';
+const SHEET_RESP  = 'Response';
+const SHEET_ADMIN = 'Admin';  // A=Request Number, N=Status
 
-    /* ===== Helpers ===== */
-    function showPage(which){
-      const verify = document.getElementById('verifyScreen');
-      const appr   = document.getElementById('approvalScreen');
-      if(which === 'approval'){ verify.classList.add('hidden'); appr.classList.remove('hidden'); window.scrollTo(0,0); }
-      else { appr.classList.add('hidden'); verify.classList.remove('hidden'); }
-    }
-    function setLoading(on){
-      const btn = document.getElementById('submitBtn');
-      const icon = document.getElementById('loadingIcon');
-      btn.disabled = on; icon.classList.toggle('hidden', !on); btn.style.opacity = on ? .85 : 1;
-    }
-    function showHint(msg){ const el = document.getElementById('hint'); el.textContent = msg || 'ไม่พบข้อมูลในระบบ'; el.classList.remove('hidden'); }
-    function hideHint(){ document.getElementById('hint').classList.add('hidden'); }
+// ถ้ามี Apps Script endpoint สำหรับบันทึกผลอนุมัติ/คอมเมนต์ ใส่ URL ที่นี่
+const API_BASE    = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
 
-    function buildGVizUrl(code){
-      const safe = String(code).replace(/'/g,"\\'");
-      const tq   = `select A,B,C,D,E,F where A='${safe}'`;
-      const qs   = new URLSearchParams({ tqx:'out:json', sheet:SHEET_NAME, tq });
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + qs.toString();
-    }
-    async function fetchGVizRows(url){
-      const res = await fetch(url, { cache:'no-store' });
-      const txt = await res.text();
-      const m = txt.match(/setResponse\(([\s\S]*)\);?$/);
-      if(!m) throw new Error('Bad GViz response');
-      const json = JSON.parse(m[1]);
-      const cols = json.table.cols.map(c=>c.label || c.id || '');
-      const rows = json.table.rows.map(r =>
-        Object.fromEntries(r.c.map((c,i)=>[cols[i] || `c${i}`, c ? c.v : null]))
-      );
-      return rows;
-    }
+/* ===== Helpers ===== */
+function showPage(which){
+  const verify = document.getElementById('verifyScreen');
+  const appr   = document.getElementById('approvalScreen');
+  if(which === 'approval'){ verify.classList.add('hidden'); appr.classList.remove('hidden'); window.scrollTo(0,0); }
+  else { appr.classList.add('hidden'); verify.classList.remove('hidden'); }
+}
+function setLoading(on){
+  const btn = document.getElementById('submitBtn');
+  const icon = document.getElementById('loadingIcon');
+  btn.disabled = on; icon.classList.toggle('hidden', !on); btn.style.opacity = on ? .85 : 1;
+}
+function showHint(msg){ const el = document.getElementById('hint'); el.textContent = msg || 'ไม่พบข้อมูลในระบบ'; el.classList.remove('hidden'); }
+function hideHint(){ document.getElementById('hint').classList.add('hidden'); }
 
-    function fillApprover(ap){
-      document.getElementById('apvName').textContent     = ap.name || '—';
-      document.getElementById('apvEmail').textContent    = ap.email || '—';
-      document.getElementById('apvCompany').textContent  = ap.company || '—';
-      document.getElementById('apvDivision').textContent = ap.division || '—';
-      document.getElementById('apvCost').textContent     = ap.costCenter || '—';
-    }
+function gvizUrl(sheetName, tq){
+  const qs = new URLSearchParams({ tqx:'out:json', sheet: sheetName, tq });
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + qs.toString();
+}
+async function fetchGVizRows(url){
+  const res = await fetch(url, { cache:'no-store' });
+  const txt = await res.text();
+  const m = txt.match(/setResponse\(([\s\S]*)\);?$/);
+  if(!m) throw new Error('Bad GViz');
+  const json = JSON.parse(m[1]);
+  const cols = json.table.cols.map(c=>c.label || c.id || '');
+  const rows = json.table.rows.map(r => {
+    const obj = {};
+    r.c.forEach((c,i)=> obj[cols[i] || `c${i}`] = c ? c.v : null );
+    obj._arr = r.c.map(c => c ? c.v : null); // raw array
+    return obj;
+  });
+  return rows;
+}
 
-    /* ===== Verify flow ===== */
-    document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
-      e.preventDefault(); hideHint();
-      const code = document.getElementById('empCode').value.trim();
-      if(!code){ showHint('กรุณากรอกรหัสพนักงาน'); return; }
+/* ===== Approver Header ===== */
+function fillApprover(ap){
+  document.getElementById('apvName').textContent     = ap.name || '—';
+  document.getElementById('apvEmail').textContent    = ap.email || '—';
+  document.getElementById('apvCompany').textContent  = ap.company || '—';
+  document.getElementById('apvDivision').textContent = ap.division || '—';
+  document.getElementById('apvCost').textContent     = ap.costCenter || '—';
+}
 
-      setLoading(true);
-      try{
-        const rows = await fetchGVizRows(buildGVizUrl(code));
-        if(!rows || rows.length === 0){ showHint('ไม่พบข้อมูลในระบบ'); return; }
+/* ===== VERIFY ===== */
+document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
+  e.preventDefault(); hideHint();
+  const code = document.getElementById('empCode').value.trim();
+  if(!code){ showHint('กรุณากรอกรหัสพนักงาน'); return; }
 
-        const rec = rows[0];
-        const approver = {
-          empCode:    rec.A ?? rec.c0 ?? code,
-          name:       rec.B ?? rec.c1 ?? '',
-          email:      rec.C ?? rec.c2 ?? '',
-          company:    rec.D ?? rec.c3 ?? '',
-          division:   rec.E ?? rec.c4 ?? '',
-          costCenter: rec.F ?? rec.c5 ?? '',
-          verifiedAt: new Date().toISOString()
-        };
-        sessionStorage.setItem('approver', JSON.stringify(approver));
+  setLoading(true);
+  try{
+    // A-F จาก User Approve
+    const tqU = `select A,B,C,D,E,F where A='${code.replace(/'/g,"\\'")}'`;
+    const [rec] = await fetchGVizRows(gvizUrl(SHEET_USER, tqU));
+    if(!rec){ showHint('ไม่พบข้อมูลในระบบ'); return; }
 
-        // แสดงหน้า Approval และเติมข้อมูล
-        fillApprover(approver);
-        showPage('approval');
-      }catch(err){
-        console.error(err);
-        showHint('ไม่สามารถเชื่อมต่อข้อมูลได้ โปรดลองอีกครั้ง');
-      }finally{
-        setLoading(false);
+    const approver = {
+      empCode:    rec._arr?.[0] ?? code,
+      name:       rec._arr?.[1] ?? '',
+      email:      rec._arr?.[2] ?? '',
+      company:    rec._arr?.[3] ?? '',
+      division:   rec._arr?.[4] ?? '',
+      costCenter: rec._arr?.[5] ?? '',
+      verifiedAt: new Date().toISOString()
+    };
+    sessionStorage.setItem('approver', JSON.stringify(approver));
+
+    fillApprover(approver);
+    showPage('approval');
+    await loadAndRenderList('ALL');
+  }catch(err){
+    console.error(err);
+    showHint('ไม่สามารถเชื่อมต่อข้อมูลได้ โปรดลองอีกครั้ง');
+  }finally{ setLoading(false); }
+});
+
+/* ===== LIST + FILTERS ===== */
+let RESP_ROWS = [];
+let CURRENT_FILTER = 'ALL';
+let CURRENT_DETAIL = null;
+let ADMIN_STATUS_MAP = null; // Map<RequestNo, displayStatus)
+
+// แปลงข้อความสถานะ → กลุ่มกรอง
+function normalizeStatus(txt){
+  const s = String(txt || '').trim();
+  if (!s) return 'SUBMIT'; // ข้อความว่างถือเป็นรออนุมัติ → จัดกลุ่ม SUBMIT
+  const u = s.toUpperCase();
+  if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ') || s.includes('รออนุมัติ')) return 'SUBMIT';
+  if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
+  if (u.includes('REJECT')  || s.includes('ปฏิเสธ')) return 'REJECT';
+  return 'SUBMIT';
+}
+function statusClass(norm){
+  const t = (norm||'').toUpperCase();
+  if (t==='SUBMIT') return 'submit';
+  if (t==='REVISE') return 'revise';
+  if (t==='REJECT') return 'reject';
+  return '';
+}
+
+// โหลดสถานะจาก Admin: select A,N → A=RequestNo, N=Status
+async function loadAdminStatus(){
+  if (ADMIN_STATUS_MAP) return ADMIN_STATUS_MAP;
+  const tq = 'select A, N';
+  const rows = await fetchGVizRows(gvizUrl(SHEET_ADMIN, tq));
+  const map = new Map();
+  for (const r of rows){
+    const arr = r._arr || [];
+    const reqNo  = arr[0] ?? '';   // A
+    const status = arr[13] ?? '';  // N (A=0..N=13)
+    if (!reqNo) continue;
+    const display = String(status || '').trim() || 'รออนุมัติ';
+    map.set(reqNo, display);
+  }
+  ADMIN_STATUS_MAP = map;
+  return map;
+}
+
+async function loadAndRenderList(filter){
+  CURRENT_FILTER = filter || CURRENT_FILTER;
+
+  if (RESP_ROWS.length === 0) {
+    const tqR = 'select *';
+    RESP_ROWS = await fetchGVizRows(gvizUrl(SHEET_RESP, tqR));
+  }
+  const adminMap = await loadAdminStatus();
+
+  // index สำคัญใน Response
+  const idxA = 0;   // Request number
+  const idxB = 1;   // วันที่ขอ
+  const idxG = 6;   // ผู้ขอเบิก
+  const idxJ = 9;   // รายการ(ชิ้น)
+  const idxK = 10;  // จำนวนเงิน
+
+  // กรอง
+  let rows = RESP_ROWS.slice();
+  if (CURRENT_FILTER !== 'ALL') {
+    rows = rows.filter(r => {
+      const arr = r._arr || [];
+      const reqNo = arr[idxA] ?? '';
+      const raw = String(adminMap.get(reqNo) || '').trim();
+
+      if (CURRENT_FILTER === 'WAITING') {
+        return raw === ''; // Admin!N ว่างจริงๆ
       }
+
+      const disp = raw || 'รออนุมัติ';
+      const norm = normalizeStatus(disp);
+      return norm === CURRENT_FILTER;
     });
+  }
 
+  // เรนเดอร์
+  const host = document.getElementById('reqList');
+  host.innerHTML = rows.map((r, i) => {
+    const arr = r._arr || [];
+    const reqNo   = arr[idxA] ?? '—';
+    const reqDate = arr[idxB] ?? '—';
+    const reqBy   = arr[idxG] ?? '—';
+    const items   = arr[idxJ] ?? '—';
+    const total   = arr[idxK] ?? 0;
 
+    const rawStatus     = String(adminMap.get(reqNo) || '').trim();
+    const displayStatus = rawStatus || 'รออนุมัติ';
+    const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+
+    return `
+    <div class="grid grid-cols-[1.1fr,1.1fr,0.9fr,1.4fr,0.8fr,0.9fr,0.9fr] px-4 py-3 items-center">
+      <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
+      <div class="truncate">${reqBy || '—'}</div>
+      <div>${reqDate || '—'}</div>
+      <div class="truncate">${items || '—'}</div>
+      <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
+      <div><span class="status-pill ${pillClass}">${displayStatus}</span></div>
+      <div class="text-right">
+        <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
+                onclick='openDetail(${JSON.stringify({i}).replace(/"/g,"&quot;")})'>
+          ดูรายละเอียด
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ฟิลเตอร์คลิก */
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.status-chip');
+  if(!btn) return;
+  document.querySelectorAll('.status-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadAndRenderList(btn.dataset.status);
+});
+
+/* ===== DETAIL MODAL ===== */
+function parseLineItems(arr){
+  const out = [];
+  for (let i = 11; i < arr.length; i += 3) { // เริ่ม L (index 11) → ชุดละ 3 คอลัมน์
+    const name  = arr[i];
+    const qty   = arr[i+1];
+    const price = arr[i+2];
+    if (!name && !qty && !price) continue;
+    const q = Number(qty || 0);
+    const p = Number(price || 0);
+    out.push({ name: name || '-', qty: q, price: p, sum: q * p });
+  }
+  return out;
+}
+
+async function openDetail({i}){
+  const r = RESP_ROWS[i];
+  if(!r) return;
+  CURRENT_DETAIL = i;
+  const arr = r._arr || [];
+  const idxA=0, idxB=1, idxG=6, idxK=10;
+
+  const reqNo   = arr[idxA] ?? '—';
+  const reqDate = arr[idxB] ?? '—';
+  const reqBy   = arr[idxG] ?? '—';
+  const total   = Number(arr[idxK] ?? 0);
+
+  document.getElementById('dReqNo').textContent     = reqNo;
+  document.getElementById('dRequester').textContent = reqBy;
+  document.getElementById('dDate').textContent      = reqDate;
+  document.getElementById('dTotal').textContent     = `${total.toLocaleString()} บาท`;
+
+  const adminMap = await loadAdminStatus();
+  const rawStatus     = String(adminMap.get(reqNo) || '').trim();
+  const displayStatus = rawStatus || 'รออนุมัติ';
+  const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+
+  const pill = document.getElementById('dStatusPill');
+  pill.textContent = displayStatus;
+  pill.className   = `status-pill ${pillClass}`;
+
+  const lines = parseLineItems(arr);
+  const host = document.getElementById('dItems');
+  host.innerHTML = lines.length ? lines.map(li => `
+    <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] px-4 py-3 items-center">
+      <div>${li.name}</div>
+      <div class="text-right">${li.qty.toLocaleString()}</div>
+      <div class="text-right">${li.price.toLocaleString()}</div>
+      <div class="text-right font-semibold">${li.sum.toLocaleString()}</div>
+    </div>
+  `).join('') : `<div class="px-4 py-3 text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
+
+  const ov = document.getElementById('detailOverlay');
+  ov.classList.remove('hidden'); ov.classList.add('flex');
+}
+function closeDetail(){
+  const ov = document.getElementById('detailOverlay');
+  ov.classList.add('hidden'); ov.classList.remove('flex');
+}
+
+/* ===== ACTIONS (Submit/Revise/Reject) ===== */
+async function actOnCurrent(type){
+  const idx = CURRENT_DETAIL;
+  if(idx == null) return;
+  const r = RESP_ROWS[idx];
+  const reqNo = r?._arr?.[0] || '—';
+  const comment = document.getElementById('dComment').value || '';
+  const ap = JSON.parse(sessionStorage.getItem('approver') || '{}');
+
+  try{
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action: 'act',
+        type,               // 'SUBMIT' | 'REVISE' | 'REJECT'
+        requestNo: reqNo,
+        approver: ap?.name || '',
+        approverEmail: ap?.email || '',
+        comment
+      })
+    });
+    const data = await res.json().catch(()=>({ok:false}));
+    if(!data.ok){ alert('อัปเดตไม่สำเร็จ: ' + (data.error || 'Unknown')); return; }
+    alert('บันทึกแล้ว');
+
+    closeDetail();
+    // รีโหลดใหม่เพื่อรีเฟรชสถานะจาก Admin
+    RESP_ROWS = [];
+    ADMIN_STATUS_MAP = null;
+    await loadAndRenderList(CURRENT_FILTER);
+  }catch(err){
+    console.error(err);
+    alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+  }
+}
+
+/* ===== Boot: ถ้ามี session แล้วเข้า Approval เลย ===== */
+(async function boot(){
+  const raw = sessionStorage.getItem('approver');
+  if(raw){
+    try{
+      const ap = JSON.parse(raw);
+      if(ap?.name || ap?.email){
+        fillApprover(ap);
+        showPage('approval');
+        await loadAndRenderList('ALL');
+        return;
+      }
+    }catch{}
+  }
+  // ไม่พบ session → หน้า verify
+})();
   </script>
 </body>
 </html>
