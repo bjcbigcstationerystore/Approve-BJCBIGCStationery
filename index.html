@@ -243,25 +243,38 @@
       return String(dateStr);
     }
 
-    /************ DATA LOADERS ************/
-    async function loadUserByEmpId(empId) {
-      const safeEmp = empId.replace(/'/g, "\\'");
-      // C=Role, D=Cost, E=Division, F=EmpID, G=Name, H=Email
-      const tq = `select C,D,E,F,G,H where F='${safeEmp}'`;
-      const table = await gvizQuery(MASTER_SHEET, tq);
-      const rows = table.rows || [];
-      if (!rows.length) return null;
+    // helper: ป้องกัน meta-char ใน regex (ถ้ามีอยู่แล้วไม่ต้องใส่ซ้ำ)
+function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
-      const r = rows[0].c;
-      const role       = String(cellVal(r[0]) || '').trim();
-      const costCenter = String(cellVal(r[1]) || '').trim();
-      const division   = String(cellVal(r[2]) || '').trim();
-      const emp        = String(cellVal(r[3]) || '').trim();
-      const name       = String(cellVal(r[4]) || '').trim();
-      const email      = String(cellVal(r[5]) || '').trim();
+// ✅ อ่านโปรไฟล์จาก "User Approve"
+// A=Emp BU Admin, B=Name, C=Email, D=Company, E=Division, F=Cost Center
+async function loadUserFromUserApprove(empId){
+  const raw = String(empId || '').trim();
+  if (!raw) return null;
 
-      return { empId: emp, role, costCenter, division, name, email };
-    }
+  const isNum  = /^\d+$/.test(raw);
+  const safeSQ = raw.replace(/'/g, "\\'");
+  const safeRe = escapeRegex(raw);
+
+  // ดึงเฉพาะคอลัมน์ที่ต้องใช้ (A,B,C,E,F,D) ตามลำดับ
+  const queries = isNum
+    ? [
+        `select A,B,C,E,F,D where A = ${raw} limit 1`,
+        `select A,B,C,E,F,D where A matches '^\\s*${safeRe}\\s*$' limit 1`,
+      ]
+    : [
+        `select A,B,C,E,F,D where A = '${safeSQ}' limit 1`,
+        `select A,B,C,E,F,D where A matches '^\\s*${safeRe}\\s*$' limit 1`,
+      ];
+
+  for (const tq of queries){
+    const table = await gvizQuery(USER_APPROVE_SHEET, tq);
+    const rows  = table.rows || [];
+    if (rows.length){
+      const c = rows[0].c || [];
+      const empId   = String((c[0]?.v ?? c[0]?.f ?? '')).trim();
+      const name    = String((c
+
     
 // ทำให้ regex ปลอดภัย
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
@@ -388,14 +401,13 @@ async function isAuthorizedEmp(empId) {
   const input = document.getElementById('employee-id');
   const employeeId = String(input.value || '').trim().toUpperCase();
 
-  // เผื่อเบราว์เซอร์ที่ไม่รองรับ event.submitter
   const btn = event.submitter || document.querySelector('button[type="submit"]');
   if (btn) { btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...'; }
 
   try {
     console.log('[login] empId =', employeeId);
 
-    // ขั้นที่ 1: ตรวจสิทธิ์ใน "User Approve"
+    // 1) เช็คสิทธิ์ใน User Approve (คอลัมน์ A)
     const allowed = await isAuthorizedEmp(employeeId);
     console.log('[login] allowed ? =', allowed);
     if (!allowed) {
@@ -403,24 +415,25 @@ async function isAuthorizedEmp(empId) {
       return showLoginError('ไม่พบข้อมูลในระบบ (User Approve)');
     }
 
-    // ขั้นที่ 2: ดึงโปรไฟล์จาก "Master"
-    const user = await loadUserByEmpId(employeeId);
+    // 2) โหลดโปรไฟล์จาก User Approve (แทน Master)
+    const user = await loadUserFromUserApprove(employeeId);
     console.log('[login] user =', user);
-    if (!user || user.empId !== employeeId) {
+    if (!user || !user.empId) {
       if (btn) { btn.disabled = false; btn.textContent = '🚀 ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบรหัสพนักงานใน Master');
+      return showLoginError('ไม่พบโปรไฟล์จาก User Approve');
     }
 
-    // ขั้นที่ 3: อัปเดต UI ผู้ใช้ + โหลดรายการตามบทบาท
+    // 3) อัปเดต UI + โหลดรายการตามบทบาท
     currentUser = user;
     document.getElementById('user-name').textContent        = currentUser.name || '';
     document.getElementById('user-email').textContent       = currentUser.email || '';
     document.getElementById('user-cost-center').textContent = currentUser.costCenter || '';
     document.getElementById('user-division').textContent    = currentUser.division || '';
 
-    requestsData = await loadRequestsForRole(currentUser.role);
+    // ถ้าใช้ role ตัดสินชีตปลายทาง ตารางยังใช้ฟังก์ชันเดิมได้เลย
+    requestsData = await loadRequestsForRole(currentUser.role || 'BU Admin');
 
-    // ขั้นที่ 4: ไปหน้า Dashboard
+    // 4) เปิดหน้า Dashboard
     document.getElementById('login-page').style.display     = 'none';
     document.getElementById('dashboard-page').style.display = 'block';
     updateCounts();
