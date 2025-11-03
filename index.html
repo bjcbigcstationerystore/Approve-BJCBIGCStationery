@@ -243,8 +243,27 @@
       return String(dateStr);
     }
 
-    // helper: ป้องกัน meta-char ใน regex (ถ้ามีอยู่แล้วไม่ต้องใส่ซ้ำ)
+    /// helper: ป้องกัน meta-char ใน regex
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+// ✅ ตรวจสิทธิ์จาก "User Approve" คอลัมน์ A (ไม่สนตัวพิมพ์ + ยอมช่องว่างหัวท้าย + บังคับ toText)
+async function isAuthorizedEmp(empId) {
+  const raw = String(empId || '').trim();
+  if (!raw) return false;
+
+  const safe = escapeRegex(raw);
+  const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
+  console.log('[auth] tq =', tq);
+
+  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
+  const ok = (table.rows || []).some(r => {
+    const v = r && r.c && r.c[0] ? String(r.c[0].v).trim() : '';
+    return v !== '';
+  });
+
+  console.log('[auth] allowed =', ok);
+  return ok;
+}
 
 // ✅ อ่านโปรไฟล์จาก "User Approve"
 // โครงสร้างคอลัมน์:
@@ -295,16 +314,6 @@ async function loadUserFromUserApprove(empId) {
   return null;
 }
 
-    // helper: ป้องกัน meta-char ใน regex
-function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
-// ✅ ตรวจสิทธิ์จาก "User Approve" คอลัมน์ A
-// - บังคับตีความคอลัมน์ A เป็นข้อความด้วย toText(A) (กันกรณีเป็นตัวเลข)
-// - ยอมช่องว่างหัวท้าย และไม่สนตัวพิมพ์
-async function isAuthorizedEmp(empId) {
-  const raw = String(empId || '').trim();
-  if (!raw) return false;
-
   const safe = escapeRegex(raw);
   const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
   console.log('[auth] tq =', tq);
@@ -318,35 +327,6 @@ async function isAuthorizedEmp(empId) {
   console.log('[auth] allowed =', ok);
   return ok;
 }
-
-
-// ทำให้ regex ปลอดภัย
-function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
-// ✅ ตรวจสิทธิ์จาก "User Approve" คอลัมน์ A
-// - แปลงคอลัมน์ A เป็นข้อความก่อน (toText) ป้องกันกรณีเป็นตัวเลข
-// - ตัดช่องว่างหัวท้าย + ไม่แคร์ตัวพิมพ์
-async function isAuthorizedEmp(empId) {
-  const raw = String(empId || '').trim();
-  if (!raw) return false;
-
-  const safe = escapeRegex(raw);
-  // ใช้ trim() ในฝั่ง JS อยู่แล้ว แต่กันช่องว่างในชีตด้วย regex
-  const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
-  console.log('[auth] tq =', tq);
-
-  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
-
-  // กันกรณีบางแถวเป็นค่าว่าง/NULL (GViz จะให้ row.c เป็น null ได้)
-  const ok = (table.rows || []).some(r => {
-    const v = r && r.c && r.c[0] ? String(r.c[0].v).trim() : '';
-    return v !== '';
-  });
-
-  console.log('[auth] allowed =', ok);
-  return ok;
-}
-
 
     async function loadRequestsForRole(role) {
       const sheet = (role === 'BU Admin') ? ADMIN_BU_SHEET
