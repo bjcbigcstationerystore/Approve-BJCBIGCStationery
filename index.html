@@ -400,13 +400,7 @@ async function isAuthorizedEmp(empId) {
 
     if (!user || user.empId !== employeeId) {
       if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบรหัสพนักงานใน Master');
-    }
-    // ✅ ขั้นที่ 2: ดึงรายละเอียดผู้ใช้จาก Master เพื่อแสดงผลบนหน้าหลัก
-    const user = await loadUserByEmpId(employeeId);
-    if (!user || user.empId !== employeeId) {
-      if (btn) { btn.disabled = false; btn.textContent = 'ดำเนินการต่อ'; }
-      return showLoginError('ไม่พบรหัสพนักงานใน Master');
+      return showLoginError('ไม่พบรหัสพนักงานในระบบ');
     }
 
         currentUser = user;
