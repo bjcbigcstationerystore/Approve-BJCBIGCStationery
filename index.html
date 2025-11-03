@@ -423,9 +423,9 @@ async function loadAndRenderList(filter){
   // index สำคัญใน Response
   const idxA = 0;   // Request number
   const idxB = 1;   // วันที่ขอ
-  const idxG = 6;   // ผู้ขอเบิก
-  const idxJ = 9;   // รายการ(ชิ้น)
-  const idxK = 10;  // จำนวนเงิน
+  const idxG = 7;   // ผู้ขอเบิก
+  const idxJ = 10;   // รายการ(ชิ้น)
+  const idxK = 11;  // จำนวนเงิน
 
   // กรอง
   let rows = RESP_ROWS.slice();
@@ -489,7 +489,7 @@ document.addEventListener('click', (e)=>{
 /* ===== DETAIL MODAL ===== */
 function parseLineItems(arr){
   const out = [];
-  for (let i = 11; i < arr.length; i += 3) { // เริ่ม L (index 11) → ชุดละ 3 คอลัมน์
+  for (let i = 12; i < arr.length; i += 3) { // เริ่ม L (index 11) → ชุดละ 3 คอลัมน์
     const name  = arr[i];
     const qty   = arr[i+1];
     const price = arr[i+2];
@@ -506,7 +506,7 @@ async function openDetail({i}){
   if(!r) return;
   CURRENT_DETAIL = i;
   const arr = r._arr || [];
-  const idxA=0, idxB=1, idxG=6, idxK=10;
+  const idxA=0, idxB=1, idxG=7, idxK=11;
 
   const reqNo   = arr[idxA] ?? '—';
   const reqDate = arr[idxB] ?? '—';
