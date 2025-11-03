@@ -393,16 +393,16 @@ function statusClass(norm){
   return '';
 }
 
-// โหลดสถานะจาก Admin: select A,N → A=RequestNo, N=Status
+// โหลดสถานะจาก Admin: select A,O → A=RequestNo, O=Status
 async function loadAdminStatus(){
   if (ADMIN_STATUS_MAP) return ADMIN_STATUS_MAP;
-  const tq = 'select A, N';
+  const tq = 'select A, O';
   const rows = await fetchGVizRows(gvizUrl(SHEET_ADMIN, tq));
   const map = new Map();
   for (const r of rows){
     const arr = r._arr || [];
     const reqNo  = arr[0] ?? '';   // A
-    const status = arr[13] ?? '';  // N (A=0..N=13)
+    const status = arr[14] ?? '';  // N (A=0..N=13)
     if (!reqNo) continue;
     const display = String(status || '').trim() || 'รออนุมัติ';
     map.set(reqNo, display);
@@ -436,7 +436,7 @@ async function loadAndRenderList(filter){
       const raw = String(adminMap.get(reqNo) || '').trim();
 
       if (CURRENT_FILTER === 'WAITING') {
-        return raw === ''; // Admin!N ว่างจริงๆ
+        return raw === '';
       }
 
       const disp = raw || 'รออนุมัติ';
