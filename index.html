@@ -247,8 +247,9 @@
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
 // ✅ อ่านโปรไฟล์จาก "User Approve"
-// A=Emp BU Admin, B=Name, C=Email, D=Company, E=Division, F=Cost Center
-async function loadUserFromUserApprove(empId){
+// โครงสร้างคอลัมน์:
+// A = Emp BU Admin (รหัสพนักงาน), B = Name, C = Email, D = Company, E = Division, F = Cost Center
+async function loadUserFromUserApprove(empId) {
   const raw = String(empId || '').trim();
   if (!raw) return null;
 
@@ -256,28 +257,68 @@ async function loadUserFromUserApprove(empId){
   const safeSQ = raw.replace(/'/g, "\\'");
   const safeRe = escapeRegex(raw);
 
-  // ดึงเฉพาะคอลัมน์ที่ต้องใช้ (A,B,C,E,F,D) ตามลำดับ
+  // ลองแบบเท่ากับตรง ๆ ก่อน แล้วค่อย fallback เป็น matches (กันช่องว่างหัวท้าย)
   const queries = isNum
     ? [
-        `select A,B,C,E,F,D where A = ${raw} limit 1`,
-        `select A,B,C,E,F,D where A matches '^\\s*${safeRe}\\s*$' limit 1`,
+        `select A,B,C,D,E,F where A = ${raw} limit 1`,
+        `select A,B,C,D,E,F where toText(A) matches '^\\s*${safeRe}\\s*$' limit 1`,
       ]
     : [
-        `select A,B,C,E,F,D where A = '${safeSQ}' limit 1`,
-        `select A,B,C,E,F,D where A matches '^\\s*${safeRe}\\s*$' limit 1`,
+        `select A,B,C,D,E,F where A = '${safeSQ}' limit 1`,
+        `select A,B,C,D,E,F where toText(A) matches '^\\s*${safeRe}\\s*$' limit 1`,
       ];
 
-  for (const tq of queries){
+  for (const tq of queries) {
     const table = await gvizQuery(USER_APPROVE_SHEET, tq);
     const rows  = table.rows || [];
-    if (rows.length){
-      const c = rows[0].c || [];
-      const empId   = String((c[0]?.v ?? c[0]?.f ?? '')).trim();
-      const name    = String((c
+    if (!rows.length) continue;
 
-    
-// ทำให้ regex ปลอดภัย
+    const c = rows[0].c || [];
+    const emp  = String((c[0]?.v ?? c[0]?.f ?? '')).trim();
+    const name = String((c[1]?.v ?? c[1]?.f ?? '')).trim();
+    const mail = String((c[2]?.v ?? c[2]?.f ?? '')).trim();
+    const comp = String((c[3]?.v ?? c[3]?.f ?? '')).trim();
+    const div  = String((c[4]?.v ?? c[4]?.f ?? '')).trim();
+    const cost = String((c[5]?.v ?? c[5]?.f ?? '')).trim();
+
+    // ไม่มี role ในชีตนี้ → กำหนดเป็น 'BU Admin' ตามบริบทของ User Approve
+    return {
+      empId: emp,
+      name,
+      email: mail,
+      company: comp,
+      division: div,
+      costCenter: cost,
+      role: 'BU Admin'
+    };
+  }
+  return null;
+}
+
+    // helper: ป้องกัน meta-char ใน regex
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+// ✅ ตรวจสิทธิ์จาก "User Approve" คอลัมน์ A
+// - บังคับตีความคอลัมน์ A เป็นข้อความด้วย toText(A) (กันกรณีเป็นตัวเลข)
+// - ยอมช่องว่างหัวท้าย และไม่สนตัวพิมพ์
+async function isAuthorizedEmp(empId) {
+  const raw = String(empId || '').trim();
+  if (!raw) return false;
+
+  const safe = escapeRegex(raw);
+  const tq = `select A where toText(A) matches '(?i)^\\s*${safe}\\s*$' limit 1`;
+  console.log('[auth] tq =', tq);
+
+  const table = await gvizQuery(USER_APPROVE_SHEET, tq);
+  const ok = (table.rows || []).some(r => {
+    const v = r && r.c && r.c[0] ? String(r.c[0].v).trim() : '';
+    return v !== '';
+  });
+
+  console.log('[auth] allowed =', ok);
+  return ok;
+}
+
 
 // ทำให้ regex ปลอดภัย
 function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
