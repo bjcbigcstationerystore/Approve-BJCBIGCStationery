@@ -755,21 +755,7 @@ async function actOnCurrent(type){
   }
 }
 
-/* ===== Boot ===== */
-(async function boot(){
-  const raw = sessionStorage.getItem('approver');
-  if(raw){
-    try{
-      APPROVER = JSON.parse(raw);
-      if(APPROVER?.name || APPROVER?.email){
-        fillApprover(APPROVER);
-        showPage('approval');
-        await loadAndRenderList('ALL');
-        return;
-      }
-    }catch{}
-  }
-})();
+
   </script>
 </body>
 </html>
