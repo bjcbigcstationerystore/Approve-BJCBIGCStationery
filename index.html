@@ -59,32 +59,31 @@
       padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block;
       background:#e2e8f0; color:#334155;
     }
-    .status-pill.waiting{ background:#e0f2fe; color:#075985 } /* รออนุมัติ (Admin!N ว่าง) */
+    .status-pill.waiting{ background:#e0f2fe; color:#075985 } /* รออนุมัติ (Admin!O ว่าง) */
     .status-pill.submit { background:#dcfce7; color:#166534 }  /* อนุมัติ/Submit */
     .status-pill.revise { background:#fef9c3; color:#854d0e }  /* ขอแก้ไข/Revise */
     .status-pill.reject { background:#fee2e2; color:#991b1b }  /* ปฏิเสธ/Reject */
-    
+
     /* ===== Modal styles (รายละเอียด) ===== */
-.modal-overlay { background: rgba(0,0,0,.4); }
-.modal-card   { border-radius: 18px; box-shadow: 0 20px 60px rgba(2,6,23,.25); overflow: hidden; }
-.modal-head   { padding: 18px 22px; font-weight: 800; font-size: 20px; }
-.modal-close  { position:absolute; right:16px; top:12px; font-size:22px; color:#94a3b8; }
-.modal-close:hover { color:#475569; }
+    .modal-overlay { background: rgba(0,0,0,.4); }
+    .modal-card   { border-radius: 18px; box-shadow: 0 20px 60px rgba(2,6,23,.25); overflow: hidden; }
+    .modal-head   { padding: 18px 22px; font-weight: 800; font-size: 20px; }
+    .modal-close  { position:absolute; right:16px; top:12px; font-size:22px; color:#94a3b8; }
+    .modal-close:hover { color:#475569; }
 
-.total-box{
-  background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 220px;
-  text-align:right; box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
-}
-.total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; }
-.total-box .value{ color:#1d4ed8; font-weight:800; font-size:28px; line-height:1.1; }
+    .total-box{
+      background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 220px;
+      text-align:right; box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
+    }
+    .total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; }
+    .total-box .value{ color:#1d4ed8; font-weight:800; font-size:28px; line-height:1.1; }
 
-.table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; }
-.table-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
-.table-row { padding:12px 16px; }
-.table-row + .table-row { border-top:1px solid #f1f5f9; }
-.col-right{ text-align:right; }
-.bold{ font-weight:700; }
-
+    .table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; }
+    .table-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
+    .table-row { padding:12px 16px; }
+    .table-row + .table-row { border-top:1px solid #f1f5f9; }
+    .col-right{ text-align:right; }
+    .bold{ font-weight:700; }
   </style>
 </head>
 <body>
@@ -209,87 +208,87 @@
     </main>
   </section>
 
-<!-- ========== MODAL รายละเอียดคำขอ (ใหม่) ========== -->
-<div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
-  <div class="bg-white w-[min(880px,92vw)] relative modal-card">
-    <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
+  <!-- ========== MODAL รายละเอียดคำขอ (ใหม่) ========== -->
+  <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
+    <div class="bg-white w-[min(880px,92vw)] relative modal-card">
+      <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
 
-    <!-- Header -->
-    <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
+      <!-- Header -->
+      <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
 
-    <!-- Body -->
-    <div class="px-6 pb-6">
-      <!-- แถวบน: ซ้ายข้อมูล, ขวาสถานะ + Total -->
-      <div class="grid grid-cols-1 md:grid-cols-[1fr,320px] gap-4">
-        <!-- ซ้าย: 3 บล็อก -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <div class="text-slate-500 text-sm">Request Number</div>
-            <div id="dReqNo" class="font-semibold">—</div>
+      <!-- Body -->
+      <div class="px-6 pb-6">
+        <!-- แถวบน: ซ้ายข้อมูล, ขวาสถานะ + Total -->
+        <div class="grid grid-cols-1 md:grid-cols-[1fr,320px] gap-4">
+          <!-- ซ้าย: 3 บล็อก -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <div class="text-slate-500 text-sm">Request Number</div>
+              <div id="dReqNo" class="font-semibold">—</div>
+            </div>
+            <div>
+              <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
+              <div id="dRequester" class="font-semibold">—</div>
+            </div>
+            <div>
+              <div class="text-slate-500 text-sm">วันที่ขอ</div>
+              <div id="dDate" class="font-semibold">—</div>
+            </div>
           </div>
-          <div>
-            <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
-            <div id="dRequester" class="font-semibold">—</div>
-          </div>
-          <div>
-            <div class="text-slate-500 text-sm">วันที่ขอ</div>
-            <div id="dDate" class="font-semibold">—</div>
+
+          <!-- ขวา: สถานะ + Total -->
+          <div class="flex md:flex-col gap-3 items-end md:items-stretch">
+            <div class="flex items-center gap-2 self-start">
+              <span class="text-slate-500 text-sm">สถานะ</span>
+              <span id="dStatusPill" class="status-pill">—</span>
+            </div>
+            <div class="total-box w-full">
+              <div class="label">จำนวนเงินรวม</div>
+              <div id="dTotal" class="value">0 บาท</div>
+            </div>
           </div>
         </div>
 
-        <!-- ขวา: สถานะ + Total -->
-        <div class="flex md:flex-col gap-3 items-end md:items-stretch">
-          <div class="flex items-center gap-2 self-start">
-            <span class="text-slate-500 text-sm">สถานะ</span>
-            <span id="dStatusPill" class="status-pill">—</span>
-          </div>
-          <div class="total-box w-full">
-            <div class="label">จำนวนเงินรวม</div>
-            <div id="dTotal" class="value">0 บาท</div>
+        <!-- ตารางรายการ -->
+        <div class="mt-6">
+          <div class="font-semibold mb-2">รายการเครื่องเขียนที่ขอเบิก</div>
+          <div class="table-shell">
+            <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-head">
+              <div>รายการ</div>
+              <div class="col-right">จำนวน</div>
+              <div class="col-right">ราคา/หน่วย (บาท)</div>
+              <div class="col-right">รวม</div>
+            </div>
+            <div id="dItems"></div>
           </div>
         </div>
-      </div>
 
-      <!-- ตารางรายการ -->
-      <div class="mt-6">
-        <div class="font-semibold mb-2">รายการเครื่องเขียนที่ขอเบิก</div>
-        <div class="table-shell">
-          <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-head">
-            <div>รายการ</div>
-            <div class="col-right">จำนวน</div>
-            <div class="col-right">ราคา/หน่วย (บาท)</div>
-            <div class="col-right">รวม</div>
-          </div>
-          <div id="dItems"></div>
+        <!-- ความคิดเห็น -->
+        <div class="mt-5">
+          <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
+          <textarea id="dComment" rows="3"
+            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
         </div>
-      </div>
 
-      <!-- ความคิดเห็น -->
-      <div class="mt-5">
-        <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
-        <textarea id="dComment" rows="3"
-          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
-      </div>
-
-      <!-- ปุ่ม -->
-      <div class="mt-6 flex flex-wrap gap-2 justify-end">
-        <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
-        <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>
-        <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ</button>
-        <button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 ขอแก้ไข</button>
+        <!-- ปุ่ม -->
+        <div class="mt-6 flex flex-wrap gap-2 justify-end">
+          <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
+          <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>
+          <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ</button>
+          <button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 ขอแก้ไข</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <script>
 /* ===== CONFIG ===== */
 const SHEET_ID    = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
 const SHEET_USER  = 'User Approve';
-const SHEET_RESP  = 'Response';
-const SHEET_ADMIN = 'Admin';  // A=Request Number, N=Status
+const SHEET_RESP  = 'Response'; // เริ่มอ่านตั้งแต่คอลัมน์ B
+const SHEET_ADMIN = 'Admin';    // A=Request No, O=Status (ว่าง = รออนุมัติ)
 
-// ถ้ามี Apps Script endpoint สำหรับบันทึกผลอนุมัติ/คอมเมนต์ ใส่ URL ที่นี่
+// Apps Script endpoint (ไว้บันทึกผลอนุมัติ/คอมเมนต์)
 const API_BASE    = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
 
 /* ===== Helpers ===== */
@@ -373,12 +372,12 @@ document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
 let RESP_ROWS = [];
 let CURRENT_FILTER = 'ALL';
 let CURRENT_DETAIL = null;
-let ADMIN_STATUS_MAP = null; // Map<RequestNo, displayStatus)
+let ADMIN_STATUS_MAP = null; // Map<RequestNo, displayStatus>
 
-// แปลงข้อความสถานะ → กลุ่มกรอง
+// map สถานะ → กลุ่มฟิลเตอร์
 function normalizeStatus(txt){
   const s = String(txt || '').trim();
-  if (!s) return 'SUBMIT'; // ข้อความว่างถือเป็นรออนุมัติ → จัดกลุ่ม SUBMIT
+  if (!s) return 'SUBMIT'; // ค่าว่างถือเป็น "รออนุมัติ" (นับอยู่กลุ่ม Submit)
   const u = s.toUpperCase();
   if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ') || s.includes('รออนุมัติ')) return 'SUBMIT';
   if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
@@ -401,8 +400,8 @@ async function loadAdminStatus(){
   const map = new Map();
   for (const r of rows){
     const arr = r._arr || [];
-    const reqNo  = arr[0] ?? '';   // A
-    const status = arr[14] ?? '';  // N (A=0..N=13)
+    const reqNo  = arr[0]  ?? '';  // A = index 0
+    const status = arr[14] ?? '';  // O = index 14
     if (!reqNo) continue;
     const display = String(status || '').trim() || 'รออนุมัติ';
     map.set(reqNo, display);
@@ -420,12 +419,12 @@ async function loadAndRenderList(filter){
   }
   const adminMap = await loadAdminStatus();
 
-  // index สำคัญใน Response
-  const idxA = 0;   // Request number
-  const idxB = 1;   // วันที่ขอ
-  const idxG = 7;   // ผู้ขอเบิก
-  const idxJ = 10;   // รายการ(ชิ้น)
-  const idxK = 11;  // จำนวนเงิน
+  // index สำคัญใน Response (เริ่มอ่านตั้งแต่คอลัมน์ B)
+  const idxA = 0;   // Request number  (เดิม A → ตอนนี้ B)
+  const idxB = 1;   // วันที่ขอ        (เดิม B → ตอนนี้ C)
+  const idxG = 7;   // ผู้ขอเบิก        (เดิม G → ตอนนี้ H)
+  const idxJ = 10;  // รายการ(ชิ้น)     (เดิม J → ตอนนี้ K)
+  const idxK = 11;  // จำนวนเงิน        (เดิม K → ตอนนี้ L)
 
   // กรอง
   let rows = RESP_ROWS.slice();
@@ -436,7 +435,7 @@ async function loadAndRenderList(filter){
       const raw = String(adminMap.get(reqNo) || '').trim();
 
       if (CURRENT_FILTER === 'WAITING') {
-        return raw === '';
+        return raw === ''; // ว่างจริง ๆ
       }
 
       const disp = raw || 'รออนุมัติ';
@@ -486,17 +485,15 @@ document.addEventListener('click', (e)=>{
   loadAndRenderList(btn.dataset.status);
 });
 
-/* ===== DETAIL MODAL ===== */
+/* ===== DETAIL ===== */
 function parseLineItems(arr){
   const out = [];
-  for (let i = 12; i < arr.length; i += 3) { // เริ่ม L (index 11) → ชุดละ 3 คอลัมน์
+  for (let i = 12; i < arr.length; i += 3) { // เริ่ม M (เดิม L ที่ index 11 → เลื่อน +1)
     const name  = arr[i];
-    const qty   = arr[i+1];
-    const price = arr[i+2];
+    const qty   = Number(arr[i+1] || 0);
+    const price = Number(arr[i+2] || 0);
     if (!name && !qty && !price) continue;
-    const q = Number(qty || 0);
-    const p = Number(price || 0);
-    out.push({ name: name || '-', qty: q, price: p, sum: q * p });
+    out.push({ name: name || '-', qty, price, sum: qty * price });
   }
   return out;
 }
@@ -506,6 +503,8 @@ async function openDetail({i}){
   if(!r) return;
   CURRENT_DETAIL = i;
   const arr = r._arr || [];
+
+  // index ตามที่เลื่อนแล้ว
   const idxA=0, idxB=1, idxG=7, idxK=11;
 
   const reqNo   = arr[idxA] ?? '—';
@@ -513,13 +512,11 @@ async function openDetail({i}){
   const reqBy   = arr[idxG] ?? '—';
   const total   = Number(arr[idxK] ?? 0);
 
-  // เติมหัวข้อมูล
   document.getElementById('dReqNo').textContent     = reqNo;
   document.getElementById('dRequester').textContent = reqBy;
   document.getElementById('dDate').textContent      = reqDate;
   document.getElementById('dTotal').textContent     = `${total.toLocaleString()} บาท`;
 
-  // เติมสถานะจาก Admin!N (ว่าง = รออนุมัติ)
   const adminMap       = await loadAdminStatus();
   const rawStatus      = String(adminMap.get(reqNo) || '').trim();
   const displayStatus  = rawStatus || 'รออนุมัติ';
@@ -528,78 +525,34 @@ async function openDetail({i}){
   pill.textContent     = displayStatus;
   pill.className       = `status-pill ${pillClass}`;
 
-  // สร้างรายการ L→ ... (ชุดละ 3 คอลัมน์: ชื่อ/จำนวน/ราคา)
+  const lines = parseLineItems(arr);
   const host  = document.getElementById('dItems');
-  const lines = parseLineItems(arr); // ใช้ฟังก์ชันเดิมของคุณได้เลย
   host.innerHTML = lines.length
     ? lines.map(li => `
         <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-row items-center">
-          <div>${li.name || '-'}</div>
-          <div class="col-right">${(li.qty ?? 0).toLocaleString()}</div>
-          <div class="col-right">${(li.price ?? 0).toLocaleString()}</div>
-          <div class="col-right bold">${(li.sum ?? 0).toLocaleString()}</div>
+          <div>${li.name}</div>
+          <div class="col-right">${li.qty.toLocaleString()}</div>
+          <div class="col-right">${li.price.toLocaleString()}</div>
+          <div class="col-right bold">${li.sum.toLocaleString()}</div>
         </div>
       `).join('')
     : `<div class="table-row text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
 
-  // แสดงโมดอล
   const ov = document.getElementById('detailOverlay');
   ov.classList.remove('hidden'); ov.classList.add('flex');
 }
-    
-    
 function closeDetail(){
   const ov = document.getElementById('detailOverlay');
   ov.classList.add('hidden'); ov.classList.remove('flex');
 }
-
-/* ===== ACTIONS (Submit/Revise/Reject) ===== */
-async function actOnCurrent(type){
-  const idx = CURRENT_DETAIL;
-  if(idx == null) return;
-  const r = RESP_ROWS[idx];
-  const reqNo = r?._arr?.[0] || '—';
-  const comment = document.getElementById('dComment').value || '';
-  const ap = JSON.parse(sessionStorage.getItem('approver') || '{}');
-
-  try{
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        action: 'act',
-        type,               // 'SUBMIT' | 'REVISE' | 'REJECT'
-        requestNo: reqNo,
-        approver: ap?.name || '',
-        approverEmail: ap?.email || '',
-        comment
-      })
-    });
-    const data = await res.json().catch(()=>({ok:false}));
-    if(!data.ok){ alert('อัปเดตไม่สำเร็จ: ' + (data.error || 'Unknown')); return; }
-    alert('บันทึกแล้ว');
-
-    closeDetail();
-    // รีโหลดใหม่เพื่อรีเฟรชสถานะจาก Admin
-    RESP_ROWS = [];
-    ADMIN_STATUS_MAP = null;
-    await loadAndRenderList(CURRENT_FILTER);
-  }catch(err){
-    console.error(err);
-    alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
-  }
-}
-    
-    // ปิดเมื่อคลิกพื้นหลัง
+// ปิดเมื่อคลิกพื้นหลัง
 document.getElementById('detailOverlay').addEventListener('click', (e)=>{
   if (e.target.id === 'detailOverlay') closeDetail();
 });
-
 // ปิดด้วย ESC
 document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape') closeDetail();
 });
-
 
 /* ===== Boot: ถ้ามี session แล้วเข้า Approval เลย ===== */
 (async function boot(){
