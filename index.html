@@ -730,22 +730,38 @@ async function actOnCurrent(type){
 
   try{
     const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        action: 'act',
-        type,
-        requestNo: reqNo,
-        approver: ap?.name || '',
-        approverEmail: ap?.email || '',
-        role: ap?.type || '',
-        comment,
-        editedItems
-      })
-    });
-    const data = await res.json().catch(()=>({ok:false}));
-    if(!data.ok){ alert('อัปเดตไม่สำเร็จ: ' + (data.error || 'Unknown')); return; }
-    alert('บันทึกแล้ว');
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({
+    action: 'act',
+    type,
+    requestNo: reqNo,
+    approver: ap?.name || '',
+    approverEmail: ap?.email || '',
+    role: ap?.type || '',
+    comment,
+    editedItems
+  })
+});
+
+const rawText = await res.text();
+let data;
+try { data = JSON.parse(rawText); }
+catch(parseErr){
+  console.error('API raw:', rawText);
+  alert('API ตอบกลับไม่ใช่ JSON: ' + rawText);
+  return;
+}
+
+if (!res.ok || !data.ok){
+  console.error('API error:', data);
+  alert('อัปเดตไม่สำเร็จ: ' + (data.error || (`HTTP ${res.status} ${res.statusText}`)));
+  return;
+}
+
+alert('บันทึกแล้ว');
+
+    
     closeDetail();
     SOURCE_ROWS = [];
     await loadAndRenderList(CURRENT_FILTER);
