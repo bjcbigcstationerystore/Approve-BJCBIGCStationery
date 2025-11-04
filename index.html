@@ -111,8 +111,14 @@
 
     .table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; position:relative; }
     .table-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; position:relative; }
-    .table-row { padding:12px 16px; display:grid; grid-template-columns: 72px 1.4fr 0.7fr 0.9fr 0.9fr; align-items:center; gap:12px; }
-    .table-row + .table-row { border-top:1px solid #f1f5f9; }
+    .detail-row {
+  padding:12px 16px;
+  display:grid;
+  grid-template-columns: 72px 1.4fr 0.7fr 0.9fr 0.9fr; /* ลำดับ | รายการ | จำนวน | ราคา/หน่วย | รวม */
+  align-items:center;
+  gap:12px;
+}
+    .detail-row + .detail-row { border-top:1px solid #f1f5f9; }
     .col-right{ text-align:right; }
     .bold{ font-weight:700; }
 
@@ -600,7 +606,7 @@ function recalcTotals(){
 function renderDetailItems(){
   const host = document.getElementById('dItems');
   if (!DETAIL_LINES.length){
-    host.innerHTML = `<div class="table-row text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
+    host.innerHTML = `<div class="table-row text-slate-500 text-sm" style="grid-column:1 / -1">ไม่มีรายการย่อย</div>`;
     return;
   }
   host.innerHTML = DETAIL_LINES.map((li, idx) => {
