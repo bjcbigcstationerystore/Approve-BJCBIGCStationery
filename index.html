@@ -387,6 +387,12 @@ function formatDDMMYYYY(val, formatted){
   }
   return String(val || '—');
 }
+    function toNum(v){
+  if (v == null) return 0;
+  // แก้เคสสตริง 'NaN', คอมมา, ช่องว่าง
+  const n = Number(String(v).replace(/[, ]/g,''));
+  return Number.isFinite(n) ? n : 0;
+}
 
 /* ===== Approver Header ===== */
 function fillApprover(ap){
@@ -570,15 +576,18 @@ let DETAIL_LINES = [];
 
 function parseLineItemsFromResponseRow(arr){
   const out = [];
-  for (let i = 11; i < arr.length; i += 3) { // L → …
+  const START = 13;
+  
+  for (let i = START; i < arr.length; i += 3) {
     const name  = arr[i];
-    const qty   = Number(arr[i+1] || 0);
-    const price = Number(arr[i+2] || 0);
-    if (!name && !qty && !price) continue;
-    out.push({ name: name || '-', qty, price, sum: qty * price });
+    const qty   = toNum(arr[i+1]);
+    const price = toNum(arr[i+2]);
+     if ((!name || String(name).trim()==='') && qty === 0 && price === 0) continue;
+     out.push({ name: name || '-', qty, price, sum: qty * price });
   }
   return out;
 }
+    
 function renderDetailButtons(type){
   const box = document.getElementById('detailButtons');
   const t = String(type||'').trim().toUpperCase();
@@ -684,7 +693,6 @@ async function openDetail({i}){
   document.getElementById('dReqNo').textContent     = reqNo;
   document.getElementById('dDate').textContent      = reqDate;
   document.getElementById('dRequester').textContent = reqBy;
-  document.getElementById('dTotal').textContent     = `${total.toLocaleString()} บาท`;
   const big = document.getElementById('dStatusBig');
   big.textContent = displayStatus;
   big.className   = `status-badge-big ${pillClass.replace('waiting','')}`;
