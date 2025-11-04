@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>APPROVAL STATIONERY STORE</title>
 
-  <!-- Prompt font -->
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind -->
@@ -29,8 +29,7 @@
         radial-gradient(1200px 600px at 50% -200px, rgba(59,130,246,.15), rgba(59,130,246,0)),
         radial-gradient(800px 600px at 80% 0, rgba(99,102,241,.12), rgba(99,102,241,0)),
         linear-gradient(180deg,#eef2ff 0%,#f8fafc 70%);
-      min-height:100vh;
-      color:#0f172a;
+      min-height:100vh; color:#0f172a;
     }
     .card{ width:min(var(--card-w),calc(100% - 32px)); background:#fff; border-radius:20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); padding:28px; }
     .logo{ width:340px; max-width:80vw; height:auto; filter:drop-shadow(0 6px 18px rgba(2,6,23,.08)); }
@@ -47,7 +46,7 @@
     .field-value{ font-weight:600; color:#0f172a }
     .hidden{ display:none !important; }
 
-    /* ฟิลเตอร์ & ป้ายสถานะ */
+    /* ฟิลเตอร์สถานะ */
     .status-chip{
       padding:8px 14px; border-radius:999px; border:1px solid #e2e8f0; background:#fff;
       font-size:14px; color:#0f172a; transition:.15s; box-shadow:0 1px 0 rgba(2,6,23,.02)
@@ -55,16 +54,38 @@
     .status-chip:hover{ background:#f8fafc }
     .status-chip.active{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; border-color:transparent }
 
+    /* ป้ายสถานะ (ใช้ไซส์เดียวกับตัวอักษรในแถว) */
     .status-pill{
-      padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block;
-      background:#e2e8f0; color:#334155;
+      padding:2px 10px; border-radius:999px; font-size:14px; font-weight:700; display:inline-block;
+      background:#e2e8f0; color:#334155; border:1px solid rgba(2,6,23,.06);
     }
-    .status-pill.waiting{ background:#e0f2fe; color:#075985 }
-    .status-pill.submit { background:#dcfce7; color:#166534 }
-    .status-pill.revise { background:#fef9c3; color:#854d0e }
-    .status-pill.reject { background:#fee2e2; color:#991b1b }
+    .status-pill.waiting{ background:#e0f2fe; color:#075985; border-color:rgba(7,89,133,.15) }
+    .status-pill.submit { background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
+    .status-pill.revise { background:#fef9c3; color:#854d0e; border-color:rgba(133,77,14,.15) }
+    .status-pill.reject { background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
-    /* ===== Modal styles (รายละเอียด) ===== */
+    /* ตารางหลัก: กำหนดคอลัมน์ — 2 คอลัมน์ยาว (req, requester) + 5 คอลัมน์กว้างเท่ากัน */
+    .list-grid{
+      display:grid;
+      grid-template-columns:
+        220px   /* Request Number - กว้างกว่า */
+        280px   /* ผู้ขอเบิก - กว้างกว่า */
+        1fr     /* วันที่ขอ */
+        1fr     /* รายการ (ชิ้น) */
+        1fr     /* จำนวนเงิน */
+        1fr     /* สถานะ */
+        1fr     /* การดำเนินการ */
+      ;
+      gap: 20px;
+      align-items: center;
+    }
+    .grid-head{ @apply list-grid; background:#f1f5f9; color:#475569; font-weight:700; font-size:14px; padding:14px 18px; }
+    .grid-row{  @apply list-grid; padding:14px 18px; }
+    .grid-row + .grid-row { border-top:1px solid #f1f5f9; }
+    .nowrap{ white-space:nowrap }
+    .text-center-all{ text-align:center }
+
+    /* Modal */
     .modal-overlay { background: rgba(0,0,0,.4); }
     .modal-card   { border-radius: 18px; box-shadow: 0 20px 60px rgba(2,6,23,.25); overflow: hidden; }
     .modal-head   { padding: 18px 22px; font-weight: 800; font-size: 20px; }
@@ -72,18 +93,38 @@
     .modal-close:hover { color:#475569; }
 
     .total-box{
-      background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 220px;
+      background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 280px;
       text-align:right; box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
     }
-    .total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; }
+    .total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; text-align:left }
     .total-box .value{ color:#1d4ed8; font-weight:800; font-size:28px; line-height:1.1; }
 
-    .table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; }
-    .table-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
-    .table-row { padding:12px 16px; }
+    .table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; position:relative; }
+    .table-headbar{
+      background:#f8fafc; padding:10px 14px; display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .icon-btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:34px; height:34px; border-radius:10px; border:1px solid #c7d2fe; background:#eef2ff; color:#3730a3;
+      font-size:18px; font-weight:700;
+    }
+    .table-header-row{
+      background:#eef2ff; color:#334155; font-weight:700; padding:10px 16px;
+      display:grid; grid-template-columns: 1.4fr 0.7fr 0.9fr 0.9fr; gap:12px;
+    }
+    .table-row { padding:12px 16px; display:grid; grid-template-columns: 1.4fr 0.7fr 0.9fr 0.9fr; align-items:center; gap:12px; }
     .table-row + .table-row { border-top:1px solid #f1f5f9; }
     .col-right{ text-align:right; }
     .bold{ font-weight:700; }
+
+    .qty-box{ display:inline-flex; align-items:center; gap:8px; justify-content:flex-end; }
+    .qty-box button{
+      width:26px; height:26px; border-radius:8px; border:1px solid #e2e8f0; background:#fff;
+      font-weight:700; line-height:1; display:flex; align-items:center; justify-content:center;
+    }
+    .qty-box input{ width:64px; text-align:right; border:1px solid #e5e7eb; border-radius:10px; padding:4px 8px; }
+    .disabled { opacity:.5; pointer-events:none; }
   </style>
 </head>
 <body>
@@ -119,7 +160,7 @@
             </svg>
           </button>
 
-          <p id="hint" class="mt-3 text-sm text-rose-600 hidden hint-error">ไม่พบข้อมูลในระบบ</p>
+          <p id="hint" class="mt-3 text-sm text-rose-600 hidden hint-error">ไม่มีข้อมูลในระบบ</p>
         </form>
       </div>
     </div>
@@ -127,7 +168,7 @@
 
   <!-- ========== APPROVAL ========== -->
   <section id="approvalScreen" class="hidden">
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex items-center justify-center mb-3">
         <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C" class="h-10 md:h-12 object-contain">
       </div>
@@ -135,58 +176,48 @@
       <h1 class="text-3xl md:text-4xl font-extrabold text-center">APPROVAL STATIONERY STORE</h1>
       <div class="title-underline mx-auto mt-2 mb-6"></div>
 
-      <!-- การ์ดข้อมูลผู้อนุมัติ -->
+      <!-- การ์ดข้อมูลผู้อนุมัติ — รูปซ้าย Type ใต้รูป กล่องข้อมูลเรียงแนวตั้ง -->
       <section class="info-card">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" class="text-indigo-500">
-              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-5.33 0-8 2.67-8 5v1h16v-1c0-2.33-2.67-5-8-5z"/>
-            </svg>
+        <div class="grid grid-cols-[120px,1fr] gap-4 items-start">
+          <!-- รูป + Type -->
+          <div class="flex flex-col items-center">
+            <img src="https://i.postimg.cc/ZYsfHLLr/profile.png" alt="Profile" class="w-[88px] h-[88px] rounded-full object-cover shadow-sm">
+            <div id="apvType" class="mt-2 text-sm text-slate-600 text-center">Type: —</div>
           </div>
 
-          <div class="w-full">
-            <!-- แถว 1 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Name</div>
-                <div id="apvName" class="field-value">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Email</div>
-                <div id="apvEmail" class="field-value">—</div>
-              </div>
+          <!-- ข้อมูลเรียงแถวเดียวกัน (บนลงล่าง) -->
+          <div class="space-y-2">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Name</div>
+              <div id="apvName" class="field-value">—</div>
             </div>
-            <!-- แถว 2 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Company</div>
-                <div id="apvCompany" class="field-value">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Division</div>
-                <div id="apvDivision" class="field-value">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Cost Center</div>
-                <div id="apvCost" class="field-value">—</div>
-              </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Email</div>
+              <div id="apvEmail" class="field-value">—</div>
             </div>
-            <!-- แถว 3: Type -->
-            <div class="mt-2 text-sm text-slate-500">
-              <span id="apvType">—</span>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Company</div>
+              <div id="apvCompany" class="field-value">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Division</div>
+              <div id="apvDivision" class="field-value">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Cost Center</div>
+              <div id="apvCost" class="field-value">—</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- หัวข้อรายการ + ฟิลเตอร์ -->
+      <!-- หัวข้อ + ฟิลเตอร์ -->
       <section class="mt-6">
         <div class="mb-3">
           <div class="text-xl md:text-2xl font-semibold">Approval Items</div>
           <div class="text-sm text-slate-500 -mt-0.5">รายการขออนุมัติอุปกรณ์สำนักงาน</div>
         </div>
 
-        <!-- ฟิลเตอร์สถานะ -->
         <div class="flex flex-wrap gap-2">
           <button class="status-chip active" data-status="ALL">All items</button>
           <button class="status-chip" data-status="WAITING">Waiting for approval</button>
@@ -195,80 +226,89 @@
           <button class="status-chip" data-status="REJECT">Reject</button>
         </div>
 
-        <!-- ตาราง -->
         <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="grid grid-cols-[1.1fr,1.1fr,0.9fr,1.4fr,0.8fr,0.9fr,0.9fr] px-4 py-3 bg-slate-50 text-slate-600 text-sm font-medium">
+          <!-- หัวตาราง -->
+          <div class="grid-head list-grid">
             <div>Request Number</div>
             <div>ผู้ขอเบิก</div>
-            <div>วันที่ขอ</div>
-            <div>รายการ (ชิ้น)</div>
-            <div class="text-right">จำนวนเงิน</div>
-            <div>สถานะ</div>
+            <div class="text-center-all">วันที่ขอ</div>
+            <div class="text-center-all nowrap">รายการ (ชิ้น)</div>
+            <div class="text-center-all">จำนวนเงิน</div>
+            <div class="text-center-all">สถานะ</div>
             <div class="text-right">การดำเนินการ</div>
           </div>
-          <div id="reqList" class="divide-y divide-slate-100 text-[15px]"></div>
+
+          <!-- รายการ -->
+          <div id="reqList"></div>
         </div>
       </section>
     </main>
   </section>
 
-  <!-- ========== MODAL รายละเอียดคำขอ ========== -->
+  <!-- ========== MODAL ========= -->
   <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
-    <div class="bg-white w-[min(880px,92vw)] relative modal-card">
+    <div class="bg-white w-[min(1024px,94vw)] relative modal-card">
       <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
-
       <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
 
       <div class="px-6 pb-6">
-        <div class="grid grid-cols-1 md:grid-cols-[1fr,320px] gap-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <div class="text-slate-500 text-sm">Request Number</div>
-              <div id="dReqNo" class="font-semibold">—</div>
+        <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6">
+          <!-- ซ้าย: 2 แถว 4 ช่อง (ไม่ใส่กรอบ) -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <div class="text-slate-500 text-sm">Request Number</div>
+                <div id="dReqNo" class="font-semibold">—</div>
+              </div>
+              <div>
+                <div class="text-slate-500 text-sm">วันที่ขอ</div>
+                <div id="dDate" class="font-semibold">—</div>
+              </div>
             </div>
-            <div>
-              <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
-              <div id="dRequester" class="font-semibold">—</div>
-            </div>
-            <div>
-              <div class="text-slate-500 text-sm">วันที่ขอ</div>
-              <div id="dDate" class="font-semibold">—</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
+                <div id="dRequester" class="font-semibold">—</div>
+              </div>
+              <div>
+                <div class="text-slate-500 text-sm">สถานะ</div>
+                <div class="mt-1"><span id="dStatusBig" class="status-pill">รออนุมัติ</span></div>
+              </div>
             </div>
           </div>
 
-          <div class="flex md:flex-col gap-3 items-end md:items-stretch">
-            <div class="flex items-center gap-2 self-start">
-              <span class="text-slate-500 text-sm">สถานะ</span>
-              <span id="dStatusPill" class="status-pill">—</span>
-            </div>
-            <div class="total-box w-full">
-              <div class="label">จำนวนเงินรวม</div>
+          <!-- ขวา: กล่องสรุปจำนวนเงินรวม + จำนวนรายการ -->
+          <div>
+            <div class="total-box w-full mb-4">
+              <div class="label"><span id="dCountLabel">รายการเบิก 0 รายการ</span></div>
               <div id="dTotal" class="value">0 บาท</div>
             </div>
           </div>
         </div>
 
-        <div class="mt-6">
-          <div class="font-semibold mb-2">รายการเครื่องเขียนที่ขอเบิก</div>
+        <!-- ตารางรายการย่อย -->
+        <div class="mt-4">
           <div class="table-shell">
-            <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-head">
+            <div class="table-headbar">
+              <span class="font-semibold text-slate-700">รายละเอียดรายการเบิก</span>
+              <button id="toggleEditBtn" class="icon-btn" type="button" title="Revise">✏️</button>
+            </div>
+            <div class="table-header-row">
               <div>รายการ</div>
-              <div class="col-right">จำนวน</div>
-              <div class="col-right">ราคา/หน่วย (บาท)</div>
-              <div class="col-right">รวม</div>
+              <div class="text-right">จำนวน</div>
+              <div class="text-right">ราคา/หน่วย (บาท)</div>
+              <div class="text-right">รวม</div>
             </div>
             <div id="dItems"></div>
           </div>
         </div>
 
+        <!-- คอมเมนต์ + ปุ่ม -->
         <div class="mt-5">
           <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
           <textarea id="dComment" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
         </div>
-
-        <div id="detailButtons" class="mt-6 flex flex-wrap gap-2 justify-end">
-          <!-- ปุ่มจะถูกวาดตาม type -->
-        </div>
+        <div id="detailButtons" class="mt-6 flex flex-wrap gap-2 justify-end"></div>
       </div>
     </div>
   </div>
@@ -277,10 +317,10 @@
 /* ===== CONFIG ===== */
 const SHEET_ID     = '15Nzap1xe_qkcBoVskRTMG7o7Gb_zE8nTRm8rY3VeMmg';
 const SHEET_USER   = 'User Approve';
-const SHEET_RESP   = 'Response';   // ใช้ Map รายการย่อย (A จับคู่, L→)
+const SHEET_RESP   = 'Response';
 const API_BASE     = 'https://script.google.com/macros/s/AKfycbyUDaiiIRN2_OfWgqiusRYivGmed5Gj0K8_Ry5ogXlNRx854YHvsWizjr83jHQkxcO4Cw/exec';
 
-/* ===== Helpers ===== */
+/* ===== Utils ===== */
 function showPage(which){
   const verify = document.getElementById('verifyScreen');
   const appr   = document.getElementById('approvalScreen');
@@ -292,7 +332,7 @@ function setLoading(on){
   const icon = document.getElementById('loadingIcon');
   btn.disabled = on; icon.classList.toggle('hidden', !on); btn.style.opacity = on ? .85 : 1;
 }
-function showHint(msg){ const el = document.getElementById('hint'); el.textContent = msg || 'ไม่พบข้อมูลในระบบ'; el.classList.remove('hidden'); }
+function showHint(msg){ const el = document.getElementById('hint'); el.textContent = msg || 'ไม่มีข้อมูลในระบบ'; el.classList.remove('hidden'); }
 function hideHint(){ document.getElementById('hint').classList.add('hidden'); }
 
 function gvizUrl(sheetName, tq){
@@ -309,10 +349,23 @@ async function fetchGVizRows(url){
   const rows = json.table.rows.map(r => {
     const obj = {};
     r.c.forEach((c,i)=> obj[cols[i] || `c${i}`] = c ? c.v : null );
-    obj._arr = r.c.map(c => c ? c.v : null); // raw array
+    obj._arr = r.c.map(c => c ? c.v : null);
+    obj._fmt = r.c.map(c => (c && c.f) ? c.f : null);
     return obj;
   });
   return rows;
+}
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function formatDDMMYYYY(val, formatted){
+  if (formatted && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(formatted)) return formatted.split('/').map((x,i)=> i<2?pad(+x):x).join('/');
+  if (typeof val === 'string' && /Date\(\d+,\d+,\d+/.test(val)) {
+    const m = val.match(/Date\((\d+),(\d+),(\d+)/); if (m) return pad(+m[3])+'/'+pad(+m[2]+1)+'/'+m[1];
+  }
+  const d = new Date(val); if (!isNaN(d.getTime())) return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
+  if (typeof val === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(val)) {
+    const [d2,m2,y2] = val.split('/').map(x=>+x); return pad(d2)+'/'+pad(m2)+'/'+y2;
+  }
+  return String(val || '—');
 }
 
 /* ===== Approver Header ===== */
@@ -322,7 +375,7 @@ function fillApprover(ap){
   document.getElementById('apvCompany').textContent  = ap.company || '—';
   document.getElementById('apvDivision').textContent = ap.division || '—';
   document.getElementById('apvCost').textContent     = ap.costCenter || '—';
-  document.getElementById('apvType').textContent     = ap.type ? `Type: ${ap.type}` : 'Type: —';
+  document.getElementById('apvType').textContent     = ap.type ? ap.type : '—';
 }
 
 /* ===== Role routing ===== */
@@ -331,12 +384,11 @@ function getSourceByType(type){
   if (t === 'ADMIN')    return { sheet: 'Admin',    statusIdx: 14 }; // O
   if (t === 'BU ADMIN') return { sheet: 'BU Admin', statusIdx: 15 }; // P
   if (t === 'BU HEAD')  return { sheet: 'BU Head',  statusIdx: 16 }; // Q
-  // default: block
   return null;
 }
 
 /* ===== VERIFY ===== */
-let APPROVER = null; // {name,email,company,division,costCenter,type,empCode}
+let APPROVER = null;
 document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
   e.preventDefault(); hideHint();
   const code = document.getElementById('empCode').value.trim();
@@ -344,26 +396,23 @@ document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
 
   setLoading(true);
   try{
-    // A-G จาก User Approve
     const tqU = `select A,B,C,D,E,F,G where A='${code.replace(/'/g,"\\'")}'`;
     const [rec] = await fetchGVizRows(gvizUrl(SHEET_USER, tqU));
     if(!rec){ showHint('ไม่มีข้อมูลในระบบ'); return; }
 
     APPROVER = {
-      empCode:    rec._arr?.[0] ?? code, // A
-      name:       rec._arr?.[1] ?? '',   // B
-      email:      rec._arr?.[2] ?? '',   // C
-      company:    rec._arr?.[3] ?? '',   // D
-      division:   rec._arr?.[4] ?? '',   // E
-      costCenter: rec._arr?.[5] ?? '',   // F
-      type:       rec._arr?.[6] ?? '',   // G (Admin/BU Admin/BU Head)
+      empCode:    rec._arr?.[0] ?? code,
+      name:       rec._arr?.[1] ?? '',
+      email:      rec._arr?.[2] ?? '',
+      company:    rec._arr?.[3] ?? '',
+      division:   rec._arr?.[4] ?? '',
+      costCenter: rec._arr?.[5] ?? '',
+      type:       rec._arr?.[6] ?? '',
       verifiedAt: new Date().toISOString()
     };
     sessionStorage.setItem('approver', JSON.stringify(APPROVER));
-
     fillApprover(APPROVER);
 
-    // ตรวจสิทธิ์และเตรียมโหลดรายการ
     const src = getSourceByType(APPROVER.type);
     if(!src){ alert('ประเภทผู้ใช้ไม่ถูกต้องหรือไม่ได้รับสิทธิ์'); return; }
 
@@ -376,16 +425,15 @@ document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
 });
 
 /* ===== LIST + FILTERS ===== */
-let SOURCE_ROWS = [];       // แถวของ Admin / BU Admin / BU Head
+let SOURCE_ROWS = [];
 let CURRENT_FILTER = 'ALL';
 let CURRENT_DETAIL = null;
 
-// map สถานะ → กลุ่มฟิลเตอร์
 function normalizeStatus(txt){
   const s = String(txt || '').trim();
-  if (!s) return 'SUBMIT'; // ว่าง = รออนุมัติ → จัดในกลุ่ม Submit
+  if (!s) return 'SUBMIT';
   const u = s.toUpperCase();
-  if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ') || s.includes('รออนุมัติ')) return 'SUBMIT';
+  if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ')) return 'SUBMIT';
   if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
   if (u.includes('REJECT')  || s.includes('ปฏิเสธ')) return 'REJECT';
   return 'SUBMIT';
@@ -395,7 +443,14 @@ function statusClass(norm){
   if (t==='SUBMIT') return 'submit';
   if (t==='REVISE') return 'revise';
   if (t==='REJECT') return 'reject';
-  return '';
+  return 'waiting';
+}
+function isApproved(raw){
+  const s = String(raw||'').trim();
+  if (!s) return false;
+  if (s === 'รออนุมัติ') return false;
+  const u = s.toUpperCase();
+  return u.includes('APPROVE') || s.includes('อนุมัติ');
 }
 
 async function loadAndRenderList(filter){
@@ -411,36 +466,48 @@ async function loadAndRenderList(filter){
   if (SOURCE_ROWS.length === 0) {
     const tqS = 'select *';
     SOURCE_ROWS = await fetchGVizRows(gvizUrl(src.sheet, tqS));
+
+    // จำกัดสิทธิ์ตามคอลัมน์ N (index 13) สำหรับ BU Admin / BU Head
+    const t = String(APPROVER?.type||'').toUpperCase();
+    if (t === 'BU ADMIN' || t === 'BU HEAD') {
+      const emp = String(APPROVER?.empCode || '').trim();
+      SOURCE_ROWS = SOURCE_ROWS.filter(r => String((r._arr||[])[13] || '').trim() === emp);
+    }
   }
 
-  // index (A=0,B=1,..., G=6, L=11, M=12, O=14, P=15, Q=16)
-  const idxA = 0;   // Request number
-  const idxB = 1;   // วันที่ขอ
-  const idxG = 6;   // ผู้ขอเบิก
-  const idxL = 11;  // รายการ(ชิ้น)
-  const idxM = 12;  // จำนวนเงิน
-  const idxStatus = src.statusIdx; // O/P/Q
+  const idxA = 0, idxB = 1, idxG = 6, idxL = 11, idxM = 12, idxStatus = src.statusIdx;
 
-  // กรอง
-  let rows = SOURCE_ROWS.slice();
-  if (CURRENT_FILTER !== 'ALL') {
-    rows = rows.filter(r => {
-      const arr = r._arr || [];
-      const raw = String(arr[idxStatus] || '').trim();
-      if (CURRENT_FILTER === 'WAITING') return raw === '';
-      const disp = raw || 'รออนุมัติ';
-      const norm = normalizeStatus(disp);
-      return norm === CURRENT_FILTER;
-    });
-  }
+  let rows = SOURCE_ROWS.slice().filter(r=>{
+    const arr = r._arr || [];
+    const raw = String(arr[idxStatus] || '').trim();
+    if (CURRENT_FILTER === 'ALL') return true;
+    if (CURRENT_FILTER === 'WAITING') return raw === '';
+    const disp = raw || 'รออนุมัติ';
+    const norm = normalizeStatus(disp);
+    return norm === CURRENT_FILTER;
+  });
 
-  // เรนเดอร์
+  // อนุมัติ → ดันไปล่างสุด
+  rows.sort((r1, r2)=>{
+    const a1 = r1._arr||[], a2 = r2._arr||[];
+    const s1 = String(a1[idxStatus]||'').trim();
+    const s2 = String(a2[idxStatus]||'').trim();
+    const ap1 = isApproved(s1) ? 1 : 0;
+    const ap2 = isApproved(s2) ? 1 : 0;
+    if (ap1 !== ap2) return ap1 - ap2;
+    const rno1 = String(a1[idxA]||'');
+    const rno2 = String(a2[idxA]||'');
+    return rno1.localeCompare(rno2, 'th');
+  });
+
   const host = document.getElementById('reqList');
   host.innerHTML = rows.map((r, i) => {
     const arr     = r._arr || [];
+    const fmt     = r._fmt || [];
+
     const reqNo   = arr[idxA] ?? '—';
     const reqBy   = arr[idxG] ?? '—';
-    const reqDate = arr[idxB] ?? '—';
+    const reqDate = formatDDMMYYYY(arr[idxB], fmt[idxB]);
     const items   = arr[idxL] ?? '—';
     const total   = arr[idxM] ?? 0;
 
@@ -449,13 +516,13 @@ async function loadAndRenderList(filter){
     const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
 
     return `
-    <div class="grid grid-cols-[1.1fr,1.1fr,0.9fr,1.4fr,0.8fr,0.9fr,0.9fr] px-4 py-3 items-center">
+    <div class="grid-row list-grid">
       <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
       <div class="truncate">${reqBy || '—'}</div>
-      <div>${reqDate || '—'}</div>
-      <div class="truncate">${items || '—'}</div>
-      <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
-      <div><span class="status-pill ${pillClass}">${displayStatus}</span></div>
+      <div class="text-center-all">${reqDate || '—'}</div>
+      <div class="text-center-all truncate">${items || '—'}</div>
+      <div class="text-center-all font-semibold">${Number(total||0).toLocaleString()} บาท</div>
+      <div class="text-center-all"><span class="status-pill ${pillClass}">${displayStatus}</span></div>
       <div class="text-right">
         <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
                 onclick='openDetail(${JSON.stringify({i}).replace(/"/g,"&quot;")})'>
@@ -466,7 +533,7 @@ async function loadAndRenderList(filter){
   }).join('');
 }
 
-/* ฟิลเตอร์คลิก */
+/* ฟิลเตอร์ */
 document.addEventListener('click', (e)=>{
   const btn = e.target.closest('.status-chip');
   if(!btn) return;
@@ -476,9 +543,13 @@ document.addEventListener('click', (e)=>{
 });
 
 /* ===== DETAIL ===== */
+let DETAIL_EDIT_MODE = false;
+let DETAIL_EDIT_DIRTY = false;
+let DETAIL_LINES = [];
+
 function parseLineItemsFromResponseRow(arr){
   const out = [];
-  for (let i = 11; i < arr.length; i += 3) { // เริ่ม L
+  for (let i = 11; i < arr.length; i += 3) { // L → …
     const name  = arr[i];
     const qty   = Number(arr[i+1] || 0);
     const price = Number(arr[i+2] || 0);
@@ -490,72 +561,114 @@ function parseLineItemsFromResponseRow(arr){
 function renderDetailButtons(type){
   const box = document.getElementById('detailButtons');
   const t = String(type||'').trim().toUpperCase();
+
+  const disableNonRevise = DETAIL_EDIT_DIRTY;
+  const btnClose  = `<button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>`;
+  const btnSubmit = `<button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105 ${disableNonRevise?'disabled':''}" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ (Submit)</button>`;
+  const btnReject = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105 ${disableNonRevise?'disabled':''}" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ (Reject)</button>`;
+  const btnRevise = `<button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 Revise</button>`;
+
   if (t === 'BU HEAD'){
-    box.innerHTML = `
-      <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
-      <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>
-      <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ</button>
-    `;
+    box.innerHTML = `${btnClose}
+      <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105 ${disableNonRevise?'disabled':''}" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>
+      ${btnReject}`;
   }else{
-    box.innerHTML = `
-      <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>
-      <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ (Submit)</button>
-      <button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ (Reject)</button>
-      <button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 ขอแก้ไข (Revise)</button>
-    `;
+    box.innerHTML = `${btnClose} ${btnSubmit} ${btnReject} ${btnRevise}`;
   }
 }
+function recalcTotals(){
+  let total = 0;
+  DETAIL_LINES.forEach(li => li.sum = (Number(li.qty)||0) * (Number(li.price)||0));
+  DETAIL_LINES.forEach(li => total += li.sum);
+  document.getElementById('dTotal').textContent = `${total.toLocaleString()} บาท`;
+  document.getElementById('dCountLabel').textContent = `รายการเบิก ${DETAIL_LINES.length} รายการ`;
+}
+function renderDetailItems(){
+  const host = document.getElementById('dItems');
+  if (!DETAIL_LINES.length){
+    host.innerHTML = `<div class="table-row text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
+    return;
+  }
+  host.innerHTML = DETAIL_LINES.map((li, idx) => {
+    if (!DETAIL_EDIT_MODE){
+      return `
+        <div class="table-row">
+          <div>${li.name}</div>
+          <div class="col-right">${(li.qty).toLocaleString()}</div>
+          <div class="col-right">${(li.price).toLocaleString()}</div>
+          <div class="col-right bold">${(li.sum).toLocaleString()}</div>
+        </div>`;
+    } else {
+      return `
+        <div class="table-row">
+          <div>${li.name}</div>
+          <div class="col-right">
+            <div class="qty-box">
+              <button type="button" onclick="changeQty(${idx}, -1)">−</button>
+              <input type="number" min="0" step="1" value="${li.qty}" oninput="typeQty(${idx}, this.value)">
+              <button type="button" onclick="changeQty(${idx}, 1)">+</button>
+            </div>
+          </div>
+          <div class="col-right">${(li.price).toLocaleString()}</div>
+          <div class="col-right bold">${(li.sum).toLocaleString()}</div>
+        </div>`;
+    }
+  }).join('');
+}
+function markDirty(){
+  if (!DETAIL_EDIT_DIRTY){
+    DETAIL_EDIT_DIRTY = true;
+    renderDetailButtons(APPROVER?.type);
+  }
+}
+function changeQty(idx, delta){
+  const li = DETAIL_LINES[idx];
+  li.qty = Math.max(0, (Number(li.qty)||0) + delta);
+  markDirty(); recalcTotals(); renderDetailItems();
+}
+function typeQty(idx, val){
+  DETAIL_LINES[idx].qty = Math.max(0, Number(val||0));
+  markDirty(); recalcTotals(); renderDetailItems();
+}
+document.getElementById('toggleEditBtn').addEventListener('click', ()=>{
+  DETAIL_EDIT_MODE = !DETAIL_EDIT_MODE;
+  renderDetailItems();
+});
 
+/* เปิดโมดอลรายละเอียด */
 async function openDetail({i}){
   CURRENT_DETAIL = i;
-  const srcRow = SOURCE_ROWS[i];
-  if(!srcRow) return;
-  const arr = srcRow._arr || [];
+  DETAIL_EDIT_MODE  = false;
+  DETAIL_EDIT_DIRTY = false;
 
+  const srcRow = SOURCE_ROWS[i]; if(!srcRow) return;
+  const arr = srcRow._arr || []; const fmt = srcRow._fmt || [];
   const src = getSourceByType(APPROVER?.type);
   const idxA=0, idxB=1, idxG=6, idxM=12, idxStatus=src.statusIdx;
 
   const reqNo   = arr[idxA] ?? '—';
-  const reqDate = arr[idxB] ?? '—';
+  const reqDate = formatDDMMYYYY(arr[idxB], fmt[idxB]);
   const reqBy   = arr[idxG] ?? '—';
   const total   = Number(arr[idxM] ?? 0);
   const rawStatus = String(arr[idxStatus] || '').trim();
   const displayStatus = rawStatus || 'รออนุมัติ';
   const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
 
-  // เติมหัว
+  // ใส่ข้อมูล
   document.getElementById('dReqNo').textContent     = reqNo;
-  document.getElementById('dRequester').textContent = reqBy;
   document.getElementById('dDate').textContent      = reqDate;
+  document.getElementById('dRequester').textContent = reqBy;
   document.getElementById('dTotal').textContent     = `${total.toLocaleString()} บาท`;
-  const pill = document.getElementById('dStatusPill');
-  pill.textContent = displayStatus;
-  pill.className   = `status-pill ${pillClass}`;
+  const big = document.getElementById('dStatusBig');
+  big.textContent = displayStatus;
+  big.className   = `status-pill ${pillClass}`;
 
-  // โหลดรายการย่อยจาก Response (จับ A ตรงกับ reqNo)
+  // รายการย่อยจาก Response
   const tqR = `select * where A='${String(reqNo).replace(/'/g,"\\'")}'`;
   const respRows = await fetchGVizRows(gvizUrl(SHEET_RESP, tqR));
-  const dItemsHost = document.getElementById('dItems');
-  if (!respRows || respRows.length === 0){
-    dItemsHost.innerHTML = `<div class="table-row text-slate-500 text-sm">ไม่พบรายการย่อยใน Response</div>`;
-  }else{
-    const lines = parseLineItemsFromResponseRow(respRows[0]._arr || []);
-    dItemsHost.innerHTML = lines.length
-      ? lines.map(li => `
-          <div class="grid grid-cols-[1.4fr,0.7fr,0.9fr,0.9fr] table-row items-center">
-            <div>${li.name}</div>
-            <div class="col-right">${li.qty.toLocaleString()}</div>
-            <div class="col-right">${li.price.toLocaleString()}</div>
-            <div class="col-right bold">${li.sum.toLocaleString()}</div>
-          </div>
-        `).join('')
-      : `<div class="table-row text-slate-500 text-sm">ไม่มีรายการย่อย</div>`;
-  }
+  DETAIL_LINES = (respRows && respRows.length) ? parseLineItemsFromResponseRow(respRows[0]._arr || []) : [];
+  recalcTotals(); renderDetailItems(); renderDetailButtons(APPROVER?.type);
 
-  // วาดปุ่มตามสิทธิ์
-  renderDetailButtons(APPROVER?.type);
-
-  // เปิดโมดอล
   const ov = document.getElementById('detailOverlay');
   ov.classList.remove('hidden'); ov.classList.add('flex');
 }
@@ -563,7 +676,6 @@ function closeDetail(){
   const ov = document.getElementById('detailOverlay');
   ov.classList.add('hidden'); ov.classList.remove('flex');
 }
-// ปิดพื้นหลัง / ESC
 document.getElementById('detailOverlay').addEventListener('click', (e)=>{
   if (e.target.id === 'detailOverlay') closeDetail();
 });
@@ -571,7 +683,7 @@ document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape') closeDetail();
 });
 
-/* ===== ACTIONS ===== */
+/* ===== ACT ===== */
 async function actOnCurrent(type){
   const idx = CURRENT_DETAIL;
   if(idx == null) return;
@@ -580,26 +692,31 @@ async function actOnCurrent(type){
   const comment = document.getElementById('dComment').value || '';
   const ap = APPROVER || JSON.parse(sessionStorage.getItem('approver') || '{}');
 
+  if (DETAIL_EDIT_DIRTY && type !== 'REVISE'){
+    alert('มีการแก้ไขรายการแล้ว กรุณาส่งเป็น Revise เท่านั้น');
+    return;
+  }
+  const editedItems = DETAIL_EDIT_DIRTY ? DETAIL_LINES.map(li => ({ name: li.name, qty: li.qty, price: li.price })) : null;
+
   try{
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         action: 'act',
-        type,               // 'SUBMIT' | 'REVISE' | 'REJECT'
+        type,
         requestNo: reqNo,
         approver: ap?.name || '',
         approverEmail: ap?.email || '',
         role: ap?.type || '',
-        comment
+        comment,
+        editedItems
       })
     });
     const data = await res.json().catch(()=>({ok:false}));
     if(!data.ok){ alert('อัปเดตไม่สำเร็จ: ' + (data.error || 'Unknown')); return; }
     alert('บันทึกแล้ว');
-
     closeDetail();
-    // รีโหลดรายการใหม่
     SOURCE_ROWS = [];
     await loadAndRenderList(CURRENT_FILTER);
   }catch(err){
@@ -608,7 +725,21 @@ async function actOnCurrent(type){
   }
 }
 
-
+/* ===== Boot ===== */
+(async function boot(){
+  const raw = sessionStorage.getItem('approver');
+  if(raw){
+    try{
+      APPROVER = JSON.parse(raw);
+      if(APPROVER?.name || APPROVER?.email){
+        fillApprover(APPROVER);
+        showPage('approval');
+        await loadAndRenderList('ALL');
+        return;
+      }
+    }catch{}
+  }
+})();
   </script>
 </body>
 </html>
