@@ -312,7 +312,7 @@
               <span class="font-semibold">รายละเอียดรายการเบิก</span>
               <button id="toggleEditBtn" class="edit-btn" type="button"><span>✏️ Revise</span></button>
             </div>
-            <div class="table-row text-slate-600 font-medium bg-slate-50">
+            <div class="detail-row text-slate-600 font-medium bg-slate-50">
               <div class="col-center">ลำดับ</div>
               <div>รายการ</div>
               <div class="col-right">จำนวน</div>
@@ -606,13 +606,16 @@ function recalcTotals(){
 function renderDetailItems(){
   const host = document.getElementById('dItems');
   if (!DETAIL_LINES.length){
-    host.innerHTML = `<div class="table-row text-slate-500 text-sm" style="grid-column:1 / -1">ไม่มีรายการย่อย</div>`;
+    host.innerHTML = `
+  <div class="detail-row text-slate-500 text-sm">
+    <div style="grid-column:1 / -1">ไม่มีรายการย่อย</div>
+  </div>`;
     return;
   }
   host.innerHTML = DETAIL_LINES.map((li, idx) => {
     if (!DETAIL_EDIT_MODE){
       return `
-        <div class="table-row">
+        <div class="detail-row">
         <div class="col-center">${idx + 1}</div>
           <div>${li.name}</div>
           <div class="col-right">${(li.qty).toLocaleString()}</div>
@@ -621,7 +624,7 @@ function renderDetailItems(){
         </div>`;
     } else {
       return `
-        <div class="table-row">
+        <div class="detail-row">
         <div class="col-center">${idx + 1}</div>
           <div>${li.name}</div>
           <div class="col-right">
