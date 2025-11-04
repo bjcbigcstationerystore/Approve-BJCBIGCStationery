@@ -731,11 +731,10 @@ async function actOnCurrent(type){
   try{
     const res = await fetch(API_BASE, {
   method: 'POST',
-  headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   body: JSON.stringify({
     action: 'act',
     type,
-    requestNo: String(reqNo || '').trim(),
+    requestNo: reqNo,
     approver: ap?.name || '',
     approverEmail: ap?.email || '',
     role: ap?.type || '',
