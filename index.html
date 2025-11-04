@@ -29,8 +29,7 @@
         radial-gradient(1200px 600px at 50% -200px, rgba(59,130,246,.15), rgba(59,130,246,0)),
         radial-gradient(800px 600px at 80% 0, rgba(99,102,241,.12), rgba(99,102,241,0)),
         linear-gradient(180deg,#eef2ff 0%,#f8fafc 70%);
-      min-height:100vh;
-      color:#0f172a;
+      min-height:100vh; color:#0f172a;
     }
     .card{ width:min(var(--card-w),calc(100% - 32px)); background:#fff; border-radius:20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); padding:28px; }
     .logo{ width:340px; max-width:80vw; height:auto; filter:drop-shadow(0 6px 18px rgba(2,6,23,.08)); }
@@ -55,45 +54,36 @@
     .status-chip:hover{ background:#f8fafc }
     .status-chip.active{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; border-color:transparent }
 
-    /* ป้ายสถานะ (เล็ก) */
+    /* ป้ายสถานะ (ใช้ไซส์เดียวกับตัวอักษรในแถว) */
     .status-pill{
-      padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block;
-      background:#e2e8f0; color:#334155;
+      padding:2px 10px; border-radius:999px; font-size:14px; font-weight:700; display:inline-block;
+      background:#e2e8f0; color:#334155; border:1px solid rgba(2,6,23,.06);
     }
-    .status-pill.waiting{ background:#e0f2fe; color:#075985 }
-    .status-pill.submit { background:#dcfce7; color:#166534 }
-    .status-pill.revise { background:#fef9c3; color:#854d0e }
-    .status-pill.reject { background:#fee2e2; color:#991b1b }
+    .status-pill.waiting{ background:#e0f2fe; color:#075985; border-color:rgba(7,89,133,.15) }
+    .status-pill.submit { background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
+    .status-pill.revise { background:#fef9c3; color:#854d0e; border-color:rgba(133,77,14,.15) }
+    .status-pill.reject { background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
-    /* ป้ายสถานะ (ใหญ่ในโมดอล) */
-    .status-badge-big{
-      display:inline-block; padding:8px 14px; border-radius:12px; font-weight:800; font-size:18px;
-      background:#e0f2fe; color:#075985; border:1px solid rgba(7,89,133,.15);
-    }
-    .status-badge-big.submit{ background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
-    .status-badge-big.revise{ background:#fef9c3; color:#854d0e; border-color:rgba(133,77,14,.15) }
-    .status-badge-big.reject{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
-
-    /* ตารางหลัก: ล็อคคอลัมน์ + กันชนระหว่าง จำนวนเงิน ↔ สถานะ */
-    .grid-head, .grid-row{
+    /* ตารางหลัก: กำหนดคอลัมน์ — 2 คอลัมน์ยาว (req, requester) + 5 คอลัมน์กว้างเท่ากัน */
+    .list-grid{
       display:grid;
       grid-template-columns:
-        160px   /* Request Number */
-        220px   /* ผู้ขอเบิก */
-        140px   /* วันที่ขอ */
+        220px   /* Request Number - กว้างกว่า */
+        280px   /* ผู้ขอเบิก - กว้างกว่า */
+        1fr     /* วันที่ขอ */
         1fr     /* รายการ (ชิ้น) */
-        140px   /* จำนวนเงิน */
-        40px    /* กันชน */
-        120px   /* สถานะ */
-        140px   /* การดำเนินการ */
+        1fr     /* จำนวนเงิน */
+        1fr     /* สถานะ */
+        1fr     /* การดำเนินการ */
       ;
-      gap: 16px;
+      gap: 20px;
       align-items: center;
     }
-    .grid-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
-    .grid-row{ padding:12px 16px; }
+    .grid-head{ @apply list-grid; background:#f1f5f9; color:#475569; font-weight:700; font-size:14px; padding:14px 18px; }
+    .grid-row{  @apply list-grid; padding:14px 18px; }
     .grid-row + .grid-row { border-top:1px solid #f1f5f9; }
-    .col-center{ justify-self:center; }
+    .nowrap{ white-space:nowrap }
+    .text-center-all{ text-align:center }
 
     /* Modal */
     .modal-overlay { background: rgba(0,0,0,.4); }
@@ -103,25 +93,31 @@
     .modal-close:hover { color:#475569; }
 
     .total-box{
-      background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 260px;
+      background:#eaf2ff; border-radius:14px; padding:14px 16px; min-width: 280px;
       text-align:right; box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
     }
-    .total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; }
+    .total-box .label{ color:#64748b; font-size:13px; margin-bottom:2px; text-align:left }
     .total-box .value{ color:#1d4ed8; font-weight:800; font-size:28px; line-height:1.1; }
 
     .table-shell{ border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; position:relative; }
-    .table-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; position:relative; }
+    .table-headbar{
+      background:#f8fafc; padding:10px 14px; display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .icon-btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:34px; height:34px; border-radius:10px; border:1px solid #c7d2fe; background:#eef2ff; color:#3730a3;
+      font-size:18px; font-weight:700;
+    }
+    .table-header-row{
+      background:#eef2ff; color:#334155; font-weight:700; padding:10px 16px;
+      display:grid; grid-template-columns: 1.4fr 0.7fr 0.9fr 0.9fr; gap:12px;
+    }
     .table-row { padding:12px 16px; display:grid; grid-template-columns: 1.4fr 0.7fr 0.9fr 0.9fr; align-items:center; gap:12px; }
     .table-row + .table-row { border-top:1px solid #f1f5f9; }
     .col-right{ text-align:right; }
     .bold{ font-weight:700; }
 
-    .edit-btn{
-      position:absolute; right:10px; top:8px;
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:10px; border:1px solid #c7d2fe; background:#eef2ff; color:#3730a3;
-      font-size:13px; font-weight:600;
-    }
     .qty-box{ display:inline-flex; align-items:center; gap:8px; justify-content:flex-end; }
     .qty-box button{
       width:26px; height:26px; border-radius:8px; border:1px solid #e2e8f0; background:#fff;
@@ -172,7 +168,7 @@
 
   <!-- ========== APPROVAL ========== -->
   <section id="approvalScreen" class="hidden">
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex items-center justify-center mb-3">
         <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C" class="h-10 md:h-12 object-contain">
       </div>
@@ -180,42 +176,36 @@
       <h1 class="text-3xl md:text-4xl font-extrabold text-center">APPROVAL STATIONERY STORE</h1>
       <div class="title-underline mx-auto mt-2 mb-6"></div>
 
-      <!-- การ์ดข้อมูลผู้อนุมัติ -->
+      <!-- การ์ดข้อมูลผู้อนุมัติ — รูปซ้าย Type ใต้รูป กล่องข้อมูลเรียงแนวตั้ง -->
       <section class="info-card">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" class="text-indigo-500">
-              <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-5.33 0-8 2.67-8 5v1h16v-1c0-2.33-2.67-5-8-5z"/>
-            </svg>
+        <div class="grid grid-cols-[120px,1fr] gap-4 items-start">
+          <!-- รูป + Type -->
+          <div class="flex flex-col items-center">
+            <img src="https://i.postimg.cc/ZYsfHLLr/profile.png" alt="Profile" class="w-[88px] h-[88px] rounded-full object-cover shadow-sm">
+            <div id="apvType" class="mt-2 text-sm text-slate-600 text-center">Type: —</div>
           </div>
 
-          <div class="w-full">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Name</div>
-                <div id="apvName" class="field-value">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Email</div>
-                <div id="apvEmail" class="field-value">—</div>
-              </div>
+          <!-- ข้อมูลเรียงแถวเดียวกัน (บนลงล่าง) -->
+          <div class="space-y-2">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Name</div>
+              <div id="apvName" class="field-value">—</div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Company</div>
-                <div id="apvCompany" class="field-value">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Division</div>
-                <div id="apvDivision" class="field-value">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="field-label">Cost Center</div>
-                <div id="apvCost" class="field-value">—</div>
-              </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Email</div>
+              <div id="apvEmail" class="field-value">—</div>
             </div>
-            <div class="mt-2 text-sm text-slate-500">
-              <span id="apvType">Type: —</span>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Company</div>
+              <div id="apvCompany" class="field-value">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Division</div>
+              <div id="apvDivision" class="field-value">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="field-label">Cost Center</div>
+              <div id="apvCost" class="field-value">—</div>
             </div>
           </div>
         </div>
@@ -237,16 +227,18 @@
         </div>
 
         <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="grid-head">
+          <!-- หัวตาราง -->
+          <div class="grid-head list-grid">
             <div>Request Number</div>
             <div>ผู้ขอเบิก</div>
-            <div>วันที่ขอ</div>
-            <div>รายการ (ชิ้น)</div>
-            <div class="text-right">จำนวนเงิน</div>
-            <div class="col-spacer"></div>
-            <div>สถานะ</div>
+            <div class="text-center-all">วันที่ขอ</div>
+            <div class="text-center-all nowrap">รายการ (ชิ้น)</div>
+            <div class="text-center-all">จำนวนเงิน</div>
+            <div class="text-center-all">สถานะ</div>
             <div class="text-right">การดำเนินการ</div>
           </div>
+
+          <!-- รายการ -->
           <div id="reqList"></div>
         </div>
       </section>
@@ -255,45 +247,40 @@
 
   <!-- ========== MODAL ========= -->
   <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
-    <div class="bg-white w-[min(980px,92vw)] relative modal-card">
+    <div class="bg-white w-[min(1024px,94vw)] relative modal-card">
       <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
-
       <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
 
       <div class="px-6 pb-6">
-        <!-- ซ้าย 2 แถว 4 กล่อง | ขวา รายการเบิก + กล่องรวม -->
         <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6">
-          <!-- ซ้าย -->
+          <!-- ซ้าย: 2 แถว 4 ช่อง (ไม่ใส่กรอบ) -->
           <div class="space-y-4">
-            <!-- แถวบน: Request Number + วันที่ขอ -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div>
                 <div class="text-slate-500 text-sm">Request Number</div>
                 <div id="dReqNo" class="font-semibold">—</div>
               </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div>
                 <div class="text-slate-500 text-sm">วันที่ขอ</div>
                 <div id="dDate" class="font-semibold">—</div>
               </div>
             </div>
-            <!-- แถวล่าง: ผู้ขอเบิก + สถานะ(ใหญ่) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div>
                 <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
                 <div id="dRequester" class="font-semibold">—</div>
               </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-slate-500 text-sm mb-1">สถานะ</div>
-                <div><span id="dStatusBig" class="status-badge-big">รออนุมัติ</span></div>
+              <div>
+                <div class="text-slate-500 text-sm">สถานะ</div>
+                <div class="mt-1"><span id="dStatusBig" class="status-pill">รออนุมัติ</span></div>
               </div>
             </div>
           </div>
 
-          <!-- ขวา -->
+          <!-- ขวา: กล่องสรุปจำนวนเงินรวม + จำนวนรายการ -->
           <div>
-            <div id="dItemCountLabel" class="text-sm text-slate-500 mb-1">รายการเบิก 0 รายการ</div>
             <div class="total-box w-full mb-4">
-              <div class="label">จำนวนเงินรวม</div>
+              <div class="label"><span id="dCountLabel">รายการเบิก 0 รายการ</span></div>
               <div id="dTotal" class="value">0 บาท</div>
             </div>
           </div>
@@ -302,15 +289,15 @@
         <!-- ตารางรายการย่อย -->
         <div class="mt-4">
           <div class="table-shell">
-            <div class="table-head">
-              <span class="font-semibold">รายละเอียดรายการเบิก</span>
-              <button id="toggleEditBtn" class="edit-btn" type="button"><span>✏️ Revise</span></button>
+            <div class="table-headbar">
+              <span class="font-semibold text-slate-700">รายละเอียดรายการเบิก</span>
+              <button id="toggleEditBtn" class="icon-btn" type="button" title="Revise">✏️</button>
             </div>
-            <div class="table-row text-slate-600 font-medium bg-slate-50">
+            <div class="table-header-row">
               <div>รายการ</div>
-              <div class="col-right">จำนวน</div>
-              <div class="col-right">ราคา/หน่วย (บาท)</div>
-              <div class="col-right">รวม</div>
+              <div class="text-right">จำนวน</div>
+              <div class="text-right">ราคา/หน่วย (บาท)</div>
+              <div class="text-right">รวม</div>
             </div>
             <div id="dItems"></div>
           </div>
@@ -388,7 +375,7 @@ function fillApprover(ap){
   document.getElementById('apvCompany').textContent  = ap.company || '—';
   document.getElementById('apvDivision').textContent = ap.division || '—';
   document.getElementById('apvCost').textContent     = ap.costCenter || '—';
-  document.getElementById('apvType').textContent     = ap.type ? `Type: ${ap.type}` : 'Type: —';
+  document.getElementById('apvType').textContent     = ap.type ? ap.type : '—';
 }
 
 /* ===== Role routing ===== */
@@ -424,7 +411,6 @@ document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
       verifiedAt: new Date().toISOString()
     };
     sessionStorage.setItem('approver', JSON.stringify(APPROVER));
-
     fillApprover(APPROVER);
 
     const src = getSourceByType(APPROVER.type);
@@ -445,7 +431,7 @@ let CURRENT_DETAIL = null;
 
 function normalizeStatus(txt){
   const s = String(txt || '').trim();
-  if (!s) return 'SUBMIT'; // ช่องว่างถือเป็นรออนุมัติ (ใช้สี submit/เขียวในลิสต์เดิม) แต่เรามี filter WAITING แยก
+  if (!s) return 'SUBMIT';
   const u = s.toUpperCase();
   if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ')) return 'SUBMIT';
   if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
@@ -457,7 +443,7 @@ function statusClass(norm){
   if (t==='SUBMIT') return 'submit';
   if (t==='REVISE') return 'revise';
   if (t==='REJECT') return 'reject';
-  return '';
+  return 'waiting';
 }
 function isApproved(raw){
   const s = String(raw||'').trim();
@@ -501,6 +487,7 @@ async function loadAndRenderList(filter){
     return norm === CURRENT_FILTER;
   });
 
+  // อนุมัติ → ดันไปล่างสุด
   rows.sort((r1, r2)=>{
     const a1 = r1._arr||[], a2 = r2._arr||[];
     const s1 = String(a1[idxStatus]||'').trim();
@@ -529,14 +516,13 @@ async function loadAndRenderList(filter){
     const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
 
     return `
-    <div class="grid-row">
+    <div class="grid-row list-grid">
       <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
       <div class="truncate">${reqBy || '—'}</div>
-      <div>${reqDate || '—'}</div>
-      <div class="truncate">${items || '—'}</div>
-      <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
-      <div></div>
-      <div class="col-center"><span class="status-pill ${pillClass}">${displayStatus}</span></div>
+      <div class="text-center-all">${reqDate || '—'}</div>
+      <div class="text-center-all truncate">${items || '—'}</div>
+      <div class="text-center-all font-semibold">${Number(total||0).toLocaleString()} บาท</div>
+      <div class="text-center-all"><span class="status-pill ${pillClass}">${displayStatus}</span></div>
       <div class="text-right">
         <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
                 onclick='openDetail(${JSON.stringify({i}).replace(/"/g,"&quot;")})'>
@@ -595,6 +581,7 @@ function recalcTotals(){
   DETAIL_LINES.forEach(li => li.sum = (Number(li.qty)||0) * (Number(li.price)||0));
   DETAIL_LINES.forEach(li => total += li.sum);
   document.getElementById('dTotal').textContent = `${total.toLocaleString()} บาท`;
+  document.getElementById('dCountLabel').textContent = `รายการเบิก ${DETAIL_LINES.length} รายการ`;
 }
 function renderDetailItems(){
   const host = document.getElementById('dItems');
@@ -645,15 +632,14 @@ function typeQty(idx, val){
 }
 document.getElementById('toggleEditBtn').addEventListener('click', ()=>{
   DETAIL_EDIT_MODE = !DETAIL_EDIT_MODE;
-  document.getElementById('toggleEditBtn').innerHTML = DETAIL_EDIT_MODE ? '<span>✅ Done</span>' : '<span>✏️ Revise</span>';
   renderDetailItems();
 });
 
+/* เปิดโมดอลรายละเอียด */
 async function openDetail({i}){
   CURRENT_DETAIL = i;
   DETAIL_EDIT_MODE  = false;
   DETAIL_EDIT_DIRTY = false;
-  document.getElementById('toggleEditBtn').innerHTML = '<span>✏️ Revise</span>';
 
   const srcRow = SOURCE_ROWS[i]; if(!srcRow) return;
   const arr = srcRow._arr || []; const fmt = srcRow._fmt || [];
@@ -675,17 +661,13 @@ async function openDetail({i}){
   document.getElementById('dTotal').textContent     = `${total.toLocaleString()} บาท`;
   const big = document.getElementById('dStatusBig');
   big.textContent = displayStatus;
-  big.className   = `status-badge-big ${pillClass.replace('waiting','')}`;
+  big.className   = `status-pill ${pillClass}`;
 
   // รายการย่อยจาก Response
   const tqR = `select * where A='${String(reqNo).replace(/'/g,"\\'")}'`;
   const respRows = await fetchGVizRows(gvizUrl(SHEET_RESP, tqR));
   DETAIL_LINES = (respRows && respRows.length) ? parseLineItemsFromResponseRow(respRows[0]._arr || []) : [];
-  document.getElementById('dItemCountLabel').textContent = `รายการเบิก ${DETAIL_LINES.length} รายการ`;
-
-  recalcTotals();
-  renderDetailItems();
-  renderDetailButtons(APPROVER?.type);
+  recalcTotals(); renderDetailItems(); renderDetailButtons(APPROVER?.type);
 
   const ov = document.getElementById('detailOverlay');
   ov.classList.remove('hidden'); ov.classList.add('flex');
