@@ -384,6 +384,27 @@
   display: block;
 }
 
+    /* ให้ตารางเลื่อนซ้าย–ขวาเฉพาะตอนที่กว้างเกิน */
+.table-scroll{
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+/* บังคับให้เนื้อหาตารางมีความกว้างขั้นต่ำ (เพื่อให้มีสิ่งให้เลื่อนตอนจอแคบ) */
+.grid-head,
+.grid-row{
+  min-width: 920px;   /* ปรับได้ 880–1040 แล้วแต่สายตา */
+}
+
+/* มือถือ → ลดช่องว่างคอลัมน์ให้เฟรนด์ลี่ขึ้น */
+@media (max-width: 640px){
+  .grid-head,
+  .grid-row{
+    gap: 12px;
+  }
+}
+
 
     
   </style>
@@ -514,6 +535,7 @@
 </div>
 
         <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="table-scroll">
           <div class="grid-head">
   <div>Request Number</div>
   <div>ผู้ขอเบิก</div>
