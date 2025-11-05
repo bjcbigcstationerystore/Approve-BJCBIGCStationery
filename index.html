@@ -395,17 +395,17 @@
 .grid-row{
   min-width: 920px;   /* ปรับได้ 880–1040 แล้วแต่สายตา */
 }
-
-@media (max-width: 640px){
+    @media (max-width: 640px){
   .app-viewport{
-    transform: scale(.8) translateX(0);
-    transform-origin: top center;
-    width: 100%;        /* ✅ ไม่ชดเชยความกว้าง */
-    margin: 0 auto;     /* ✅ ยังคงจัดกึ่งกลาง */
+    transform: none;        /* ✅ ไม่ย่อทั้งหน้า */
+    width: 100%;
+    max-width: 100%;        /* ✅ ให้ขยายเต็มจอจริง */
+    padding: 0 12px;        /* ✅ กันเนื้อหาชนขอบ จัดกลางพอดี */
   }
 }
-    html, body {
-  overflow-x: auto;    /* ✅ อนุญาตให้หน้าเลื่อนได้ */
+
+html, body {
+  overflow-x: hidden;
 }
 .table-scroll{
   -webkit-overflow-scrolling: touch; /* เลื่อนลื่นแบบ iOS */
