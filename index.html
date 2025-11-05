@@ -563,7 +563,7 @@ async function loadAndRenderList(filter){
 
   const idxA = 0, idxB = 1, idxG = 6, idxL = 11, idxM = 12, idxStatus = src.statusIdx;
 
-  let rows = SOURCE_ROWS.slice().filter(r=>{
+  let rows = SOURCE_ROWS.map((r, _idx) => ({ ...r, _idx })).filter(r=>{
     const arr = r._arr || [];
     const raw = String(arr[idxStatus] || '').trim();
     if (CURRENT_FILTER === 'ALL') return true;
@@ -590,6 +590,7 @@ async function loadAndRenderList(filter){
       if (g1 === 0) {
         return rno1.localeCompare(rno2, 'th');
     }
+      
     // ทั้งคู่เป็น ACTED → ใช้เวลา ActedAt
     const actedIdx = src.actedIdx;
     const t1 = toMsFromGviz(a1[actedIdx]) || 0;
@@ -640,7 +641,7 @@ async function loadAndRenderList(filter){
       <div class="col-center"><span class="status-pill ${pillClass}">${displayStatus}</span></div>
       <div class="text-right">
         <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
-                onclick='openDetail(${JSON.stringify({i}).replace(/"/g,"&quot;")})'>
+                onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
           ดูรายละเอียด
         </button>
       </div>
