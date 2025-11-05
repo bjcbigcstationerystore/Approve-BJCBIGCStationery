@@ -53,7 +53,42 @@
       font-size:14px; color:#0f172a; transition:.15s; box-shadow:0 1px 0 rgba(2,6,23,.02)
     }
     .status-chip:hover{ background:#f8fafc }
-    .status-chip.active{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; border-color:transparent }
+    /* default look */
+.status-chip.active{
+  color:#fff; border-color:transparent;
+}
+
+/* All (ยังคงธีมฟ้า) */
+.status-chip[data-status="ALL"].active{
+  background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+}
+
+/* Waiting for approval = เหลือง */
+.status-chip[data-status="WAITING"].active{
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+/* Submit = เขียว */
+.status-chip[data-status="SUBMIT"].active{
+  background:linear-gradient(135deg,#16a34a,#059669);
+}
+
+/* Revise = ส้ม */
+.status-chip[data-status="REVISE"].active{
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+/* Reject = แดง */
+.status-chip[data-status="REJECT"].active{
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+}
+    
+    /* โทน hover เบา ๆ ตอนยังไม่ active */
+.status-chip:not(.active)[data-status="WAITING"]:hover{ background:#fff7ed }   /* แซมส้มอ่อน */
+.status-chip:not(.active)[data-status="SUBMIT"]:hover { background:#ecfdf5 }   /* เขียวอ่อน */
+.status-chip:not(.active)[data-status="REVISE"]:hover { background:#fff7ed }   /* ส้มอ่อน */
+.status-chip:not(.active)[data-status="REJECT"]:hover { background:#fef2f2 }   /* แดงอ่อน */
+.status-chip:not(.active)[data-status="ALL"]:hover     { background:#f0f9ff }   /* ฟ้าอ่อน */
 
     /* ป้ายสถานะ (เล็ก) */
     .status-pill{
