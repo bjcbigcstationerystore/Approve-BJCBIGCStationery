@@ -258,6 +258,51 @@
     @media (max-width: 640px){
   .modal-card{ width: 98vw; max-height: 90vh; }
 }
+    /* ขนาดปกติคงไว้จากเดิม */
+.modal-card{
+  width: min(980px, 96vw);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: 18px;
+}
+
+/* โหมดเล็กลง */
+.modal-card.compact{
+  width: min(760px, 90vw);      /* ถ้าอยากเล็กกว่านี้ ลอง 700px หรือ 680px */
+  max-height: 84vh;             /* ลดความสูงลงนิด ให้ดูกระชับ */
+}
+
+/* หัวกล่องให้กระชับ */
+.modal-card.compact .modal-head{
+  padding: 14px 18px;           /* เดิม 18px 22px */
+  font-size: 18px;              /* เดิม 20px */
+}
+
+/* ตัวเนื้อหา: ลด padding */
+.modal-card.compact .modal-body{
+  padding: 14px 18px;           /* รองรับกรณีลืมใส่ px-5 pb-5 */
+}
+
+/* กล่องรวมยอดให้ตัวเลขเล็กลงนิด */
+.modal-card.compact .total-box .value{
+  font-size: 24px;              /* เดิม 28px */
+}
+
+/* หัวตารางและแถวรายละเอียดให้แน่นขึ้น */
+.modal-card.compact .table-head{
+  padding: 8px 12px;            /* เดิม 10px 16px */
+  font-size: 13px;
+}
+.modal-card.compact .detail-row{
+  padding: 10px 12px;           /* เดิม 12px 16px */
+  gap: 8px;                     /* เดิม 12px */
+  grid-template-columns: 56px 1.3fr 0.7fr 0.8fr 0.8fr; /* เดิม 72px ... */
+}
+.modal-card.compact .status-badge-big{
+  font-size: 16px;              /* เดิม 18px */
+  padding: 6px 12px;
+}
+
     
   </style>
 </head>
@@ -406,12 +451,10 @@
 
   <!-- ========== MODAL ========= -->
   <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
-    <div class="bg-white relative modal-card">
-      <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
-
-      <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
-
-      <div class="px-6 pb-6">
+  <div class="bg-white relative modal-card compact"> <!-- เพิ่ม class compact -->
+    <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
+    <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
+    <div class="modal-body px-5 pb-5">
         <!-- ซ้าย 2 แถว 4 กล่อง | ขวา รายการเบิก + กล่องรวม -->
         <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6">
           <!-- ซ้าย -->
