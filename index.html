@@ -309,6 +309,9 @@
           </div>
           <div id="reqList"></div>
         </div>
+
+        <div id="pager" class="mt-3 flex items-center justify-between text-sm text-slate-600"></div>
+        
       </section>
     </main>
   </section>
@@ -608,6 +611,10 @@ let SOURCE_ROWS = [];
 let CURRENT_FILTER = 'ALL';
 let CURRENT_DETAIL = null;
 
+const PAGE_SIZE = 20;
+let CURRENT_PAGE = 1;
+let FILTERED_ROWS = [];
+
 /* ===== ACTED ORDER (จำเวลาแอ็กชันของแต่ละ Request) ===== */
 let ACTED_AT = {};
 (function initActedAt(){
@@ -741,24 +748,40 @@ async function loadAndRenderList(filter){
     return rno1.localeCompare(rno2, 'th');
   });
 
-  document.getElementById('reqCount').textContent = `Total: ${rows.length} Requests`;
-  
-  const host = document.getElementById('reqList');
-  host.innerHTML = rows.map((r, i) => {
-    const arr     = r._arr || [];
-    const fmt     = r._fmt || [];
+ // NEW: บันทึกรายการที่ผ่านฟิลเตอร์ทั้งหมดเพื่อแบ่งหน้า
+FILTERED_ROWS = rows;
 
-    const reqNo   = arr[idxA] ?? '—';
-    const reqBy   = arr[idxG] ?? '—';
-    const reqDate = formatDDMMYYYY(arr[idxB], fmt[idxB]);
-    const items   = arr[idxL] ?? '—';
-    const total   = arr[idxM] ?? 0;
+// NEW: คำนวณหน้าทั้งหมด + clamp หน้า
+const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+CURRENT_PAGE = Math.min(Math.max(1, CURRENT_PAGE), totalPages);
 
-    const rawStatus     = String(arr[idxStatus] || '').trim();
-    const displayStatus = rawStatus || 'รออนุมัติ';
-    const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+// NEW: ตัดข้อมูลเฉพาะหน้าปัจจุบัน
+const start = (CURRENT_PAGE - 1) * PAGE_SIZE;
+const rowsPage = rows.slice(start, start + PAGE_SIZE);
 
-    return `
+// NEW: อัปเดตตัวนับ + ช่วงที่แสดงผล
+document.getElementById('reqCount').textContent =
+  `Total: ${rows.length} Requests` + (rows.length
+    ? ` (showing ${start + 1}-${Math.min(start + PAGE_SIZE, rows.length)})`
+    : ``);
+
+// Render เฉพาะ rows ของหน้านี้
+const host = document.getElementById('reqList');
+host.innerHTML = rowsPage.map((r, i) => {
+  const arr     = r._arr || [];
+  const fmt     = r._fmt || [];
+
+  const reqNo   = arr[idxA] ?? '—';
+  const reqBy   = arr[idxG] ?? '—';
+  const reqDate = formatDDMMYYYY(arr[idxB], fmt[idxB]);
+  const items   = arr[idxL] ?? '—';
+  const total   = arr[idxM] ?? 0;
+
+  const rawStatus     = String(arr[idxStatus] || '').trim();
+  const displayStatus = rawStatus || 'รออนุมัติ';
+  const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+
+  return `
     <div class="grid-row">
       <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
       <div class="truncate">${reqBy || '—'}</div>
@@ -777,15 +800,16 @@ async function loadAndRenderList(filter){
           </div>`;
       })()}
       <div class="text-right">
-      
         <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
                 onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
           ดูรายละเอียด
         </button>
       </div>
     </div>`;
-  }).join('');
-}
+}).join('');
+
+// NEW: วาดเพจเจอร์
+renderPager(totalPages);
 
 /* ฟิลเตอร์ */
 document.addEventListener('click', (e)=>{
@@ -793,6 +817,7 @@ document.addEventListener('click', (e)=>{
   if(!btn) return;
   document.querySelectorAll('.status-chip').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  CURRENT_PAGE = 1;                 // NEW: เปลี่ยนฟิลเตอร์ให้เริ่มที่หน้า 1 เสมอ
   loadAndRenderList(btn.dataset.status);
 });
 
@@ -1080,6 +1105,40 @@ markActed(reqNo);
   toast('เกิดข้อผิดพลาดในการส่งข้อมูล','error',2400);
 }
 }
+    /* NEW: Pager */
+function renderPager(totalPages){
+  const el = document.getElementById('pager');
+  if (!el) return;
+
+  if (totalPages <= 1){
+    el.innerHTML = '';   // ถ้ามีหน้าเดียว ไม่ต้องแสดงอะไร
+    return;
+  }
+
+  const canPrev = CURRENT_PAGE > 1;
+  const canNext = CURRENT_PAGE < totalPages;
+
+  el.innerHTML = `
+    <div>Page ${CURRENT_PAGE} / ${totalPages}</div>
+    <div class="flex gap-2">
+      <button
+        class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white disabled:opacity-50"
+        ${canPrev ? '' : 'disabled'}
+        onclick="gotoPage(${CURRENT_PAGE - 1})">‹ Prev</button>
+      <button
+        class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white disabled:opacity-50"
+        ${canNext ? '' : 'disabled'}
+        onclick="gotoPage(${CURRENT_PAGE + 1})">Next ›</button>
+    </div>`;
+}
+
+function gotoPage(p){
+  const totalPages = Math.max(1, Math.ceil(FILTERED_ROWS.length / PAGE_SIZE));
+  CURRENT_PAGE = Math.min(Math.max(1, p), totalPages);
+  // เรนเดอร์ใหม่โดยใช้ฟิลเตอร์เดิม (ไม่ต้อง refetch)
+  loadAndRenderList(CURRENT_FILTER);
+}
+
 
 
   </script>
