@@ -280,13 +280,19 @@
           <div class="text-sm text-slate-500 -mt-0.5">รายการขออนุมัติอุปกรณ์สำนักงาน</div>
         </div>
 
+        <div class="flex flex-wrap items-center justify-between">
         <div class="flex flex-wrap gap-2">
-          <button class="status-chip active" data-status="ALL">All items</button>
+          <button class="status-chip active" data-status="ALL">All Items</button>
           <button class="status-chip" data-status="WAITING">Waiting for approval</button>
           <button class="status-chip" data-status="SUBMIT">Submit</button>
           <button class="status-chip" data-status="REVISE">Revise</button>
           <button class="status-chip" data-status="REJECT">Reject</button>
         </div>
+          
+          <div id="reqCount" class="mt-2 text-slate-600 font-medium md:mt-0">
+    Total: 0 Requests
+  </div>
+</div>
 
         <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="grid-head">
@@ -733,6 +739,7 @@ async function loadAndRenderList(filter){
     return rno1.localeCompare(rno2, 'th');
   });
 
+  document.getElementById('reqCount').textContent = `Total: ${rows.length} Requests`;
   const host = document.getElementById('reqList');
   host.innerHTML = rows.map((r, i) => {
     const arr     = r._arr || [];
