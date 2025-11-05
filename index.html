@@ -135,6 +135,17 @@
     }
     .qty-box input{ width:64px; text-align:right; border:1px solid #e5e7eb; border-radius:10px; padding:4px 8px; }
     .disabled { opacity:.5; pointer-events:none; }
+    
+    /* ===== Overlay + Toast ===== */
+#appOverlay.show { display:flex !important; }
+#appToast.show   { display:block !important; animation: toastIn .18s ease-out; }
+@keyframes toastIn { from{opacity:.3; transform:translate(-50%,8px)} to{opacity:1; transform:translate(-50%,0)} }
+.toast-success{ background:linear-gradient(135deg,#16a34a,#059669); }
+.toast-error  { background:linear-gradient(135deg,#dc2626,#b91c1c); }
+.toast-warn   { background:linear-gradient(135deg,#f59e0b,#d97706); }
+
+    
+    
   </style>
 </head>
 <body>
@@ -332,6 +343,25 @@
       </div>
     </div>
   </div>
+  
+  <!-- ===== Loading Overlay ===== -->
+<div id="appOverlay" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/40">
+  <div class="rounded-2xl bg-white px-5 py-4 shadow-xl text-slate-700 flex items-center gap-3">
+    <svg class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+    </svg>
+    <span id="appOverlayText">กำลังบันทึกข้อมูลไปยังระบบ…</span>
+  </div>
+</div>
+
+<!-- ===== Toast (Success / Error / Warn) ===== -->
+<div id="appToast" class="hidden fixed left-1/2 -translate-x-1/2 bottom-6 z-[95]">
+  <div id="appToastCard" class="px-4 py-3 rounded-xl shadow-lg text-white font-medium min-w-[280px] text-center">
+    <span id="appToastText">ข้อความ</span>
+  </div>
+</div>
+
 
   <script>
 /* ===== CONFIG ===== */
@@ -396,16 +426,14 @@ function formatDDMMYYYY(val, formatted){
  // === แปลงค่าจาก GViz (Date/number/string) เป็น milliseconds เพื่อใช้ sort ตาม "วันที่ + เวลา" ===
 function toMsFromGviz(val){
   if (val == null) return 0;
-
-  // 1) GViz ให้เป็น Date object
   if (Object.prototype.toString.call(val) === '[object Date]') {
     const ms = val.getTime();
     return Number.isFinite(ms) ? ms : 0;
   }
 
   const s = String(val).trim();
-
-  // 2) รูปแบบ GViz: Date(YYYY,MM,DD[,hh,mm,ss])
+  
+ // 2) รูปแบบ GViz: Date(YYYY,MM,DD[,hh,mm,ss])
   {
     const m = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
     if (m) {
@@ -444,6 +472,35 @@ function toMsFromGviz(val){
   // 5) ฟอลแบ็ค: ให้เครื่องมือ Date.parse จัดการ (รองรับ ISO)
   const ms2 = Date.parse(s);
   return Number.isFinite(ms2) ? ms2 : 0;
+}
+    
+    /* ===== Overlay / Toast Helpers ===== */
+function showOverlay(text){
+  const ov = document.getElementById('appOverlay');
+  const tx = document.getElementById('appOverlayText');
+  if (tx) tx.textContent = text || 'กำลังบันทึกข้อมูลไปยังระบบ…';
+  ov.classList.add('show'); ov.classList.remove('hidden');
+}
+function hideOverlay(){
+  const ov = document.getElementById('appOverlay');
+  ov.classList.remove('show'); ov.classList.add('hidden');
+}
+let toastTimer = null;
+function toast(message, type='success', ms=1800){
+  const wrap = document.getElementById('appToast');
+  const card = document.getElementById('appToastCard');
+  const text = document.getElementById('appToastText');
+  if (!wrap || !card || !text) return;
+
+  text.textContent = message || '';
+  card.classList.remove('toast-success','toast-error','toast-warn');
+  if (type === 'error') card.classList.add('toast-error');
+  else if (type === 'warn') card.classList.add('toast-warn');
+  else card.classList.add('toast-success');
+
+  wrap.classList.add('show'); wrap.classList.remove('hidden');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ wrap.classList.remove('show'); wrap.classList.add('hidden'); }, ms);
 }
 
 /* ===== Approver Header ===== */
@@ -856,12 +913,13 @@ async function actOnCurrent(type){
 
   const isBUHead = String(ap?.type || '').toUpperCase() === 'BU HEAD';
   if (!isBUHead && DETAIL_EDIT_DIRTY && type !== 'REVISE'){
-  alert('มีการแก้ไขรายการแล้ว กรุณาส่งเป็น Revise เท่านั้น');
+  toast('มีการแก้ไขรายการแล้ว กรุณาส่งเป็น Revise เท่านั้น','warn',2400);
   return;
-  }
+}
   const editedItems = DETAIL_EDIT_DIRTY ? DETAIL_LINES.map(li => ({ name: li.name, qty: li.qty, price: li.price })) : null;
 
   try{
+  showOverlay('กำลังบันทึกข้อมูลไปยังระบบ…');
   const res = await fetch(API_BASE, {
   method: 'POST',
   body: JSON.stringify({
@@ -881,28 +939,38 @@ let data;
 try { data = JSON.parse(rawText); }
 catch (e) {
   console.error('API raw (not JSON):', rawText);
-  alert('API ตอบกลับไม่ใช่ JSON: ' + rawText);
+  hideOverlay();
+  toast('API ตอบกลับไม่ใช่ JSON','error',2600);
   return;
 }
 
 if (!res.ok || !data.ok){
   console.error('API error payload:', data);
-  alert('อัปเดตไม่สำเร็จ: ' + (data.error || (`HTTP ${res.status} ${res.statusText}`)));
+  hideOverlay();
+  toast('อัปเดตไม่สำเร็จ: ' + (data?.error || (`HTTP ${res.status} ${res.statusText}`)), 'error', 2600);
   return;
 }
 
-alert('บันทึกแล้ว');
-// บันทึกเวลาเพื่อใช้เรียงกองล่าง: ใหม่อยู่เหนือ, เก่าสุดอยู่ล่างสุด
+hideOverlay();
+const okMsg = type === 'SUBMIT' ? 'อนุมัติสำเร็จ'
+            : type === 'REJECT' ? 'ปฏิเสธแล้ว'
+            : type === 'REVISE' ? 'ส่งกลับเพื่อแก้ไขแล้ว'
+            : 'บันทึกข้อมูลไปยังระบบเสร็จสิ้น';
+toast(okMsg, 'success', 1600);
+// บันทึกเวลาเพื่อใช้เรียงกองล่าง
 markActed(reqNo);
 
     closeDetail();
     SOURCE_ROWS = [];
     await loadAndRenderList(CURRENT_FILTER);
+    
   }catch(err){
-    console.error(err);
-    alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
-  }
+  console.error(err);
+  hideOverlay();
+  toast('เกิดข้อผิดพลาดในการส่งข้อมูล','error',2400);
 }
+}
+
 
 
   </script>
