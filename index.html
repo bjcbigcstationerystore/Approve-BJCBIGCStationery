@@ -393,6 +393,43 @@ function formatDDMMYYYY(val, formatted){
   const n = Number(String(v).replace(/[, ]/g,''));
   return Number.isFinite(n) ? n : 0;
 }
+  // === แปลงค่าจาก GViz (Date/number/string) เป็น milliseconds เพื่อใช้ sort ตามเวลา ===
+function toMsFromGviz(val){
+  if (!val && val !== 0) return 0;
+
+  // Date object
+  if (Object.prototype.toString.call(val) === '[object Date]') {
+    const ms = val.getTime();
+    return isNaN(ms) ? 0 : ms;
+  }
+
+  // number → พยายามตีเป็นเวลา
+  if (typeof val === 'number') {
+    const ms = new Date(val).getTime();
+    if (!isNaN(ms)) return ms;
+  }
+
+  // รูปแบบ "Date(YYYY,MM,DD,hh,mm,ss)"
+  const s = String(val);
+  const m = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
+  if (m) {
+    const Y = +m[1], M = +m[2], D = +m[3],
+          h = +(m[4]||0), mi = +(m[5]||0), se = +(m[6]||0);
+    const ms = new Date(Y, M, D, h, mi, se).getTime();
+    return isNaN(ms) ? 0 : ms;
+  }
+
+  // dd/mm/yyyy
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) {
+    const [d,mn,y] = s.split(/[\/\s]/).map(x=>+x);
+    const ms = new Date(y, mn-1, d).getTime();
+    return isNaN(ms) ? 0 : ms;
+  }
+
+  // ฟอลแบ็ค
+  const ms2 = Date.parse(s);
+  return isNaN(ms2) ? 0 : ms2;
+}  
 
 /* ===== Approver Header ===== */
 function fillApprover(ap){
@@ -407,9 +444,9 @@ function fillApprover(ap){
 /* ===== Role routing ===== */
 function getSourceByType(type){
   const t = String(type||'').trim().toUpperCase();
-  if (t === 'ADMIN')    return { sheet: 'Admin',    statusIdx: 14 }; // O
-  if (t === 'BU ADMIN') return { sheet: 'BU Admin', statusIdx: 15 }; // P
-  if (t === 'BU HEAD')  return { sheet: 'BU Head',  statusIdx: 16 }; // Q
+  if (t === 'ADMIN')    return { sheet: 'Admin',    statusIdx: 14, actedIdx: 16 }; // O
+  if (t === 'BU ADMIN') return { sheet: 'BU Admin', statusIdx: 15, actedIdx: 17 }; // P
+  if (t === 'BU HEAD')  return { sheet: 'BU Head',  statusIdx: 16, actedIdx: 18 }; // Q
   return null;
 }
 
@@ -500,6 +537,8 @@ function isApproved(raw){
   return u.includes('APPROVE') || s.includes('อนุมัติ');
 }
 
+    
+
 async function loadAndRenderList(filter){
   CURRENT_FILTER = filter || CURRENT_FILTER;
 
@@ -551,10 +590,12 @@ async function loadAndRenderList(filter){
       if (g1 === 0) {
         return rno1.localeCompare(rno2, 'th');
     }
-    // ถ้าอยู่กลุ่ม ACTED เหมือนกัน → เรียง "ใหม่อยู่บน, เก่าอยู่ล่าง"
-    const t1 = getActedAt(rno1) || 0;
-    const t2 = getActedAt(rno2) || 0;
-    if (t1 !== t2) return t2 - t1; // <-- เปลี่ยนเป็น 'desc' (ใหม่→เก่า)
+    // ทั้งคู่เป็น ACTED → ใช้เวลา ActedAt
+    const actedIdx = src.actedIdx;
+    const t1 = toMsFromGviz(a1[actedIdx]) || 0;
+    const t2 = toMsFromGviz(a2[actedIdx]) || 0;
+    // ต้องการ “ใหม่อยู่บน → เก่าอยู่ล่าง” ในกองล่าง 
+    if (t1 !== t2) return t2 - t1; // DESC by actedAt
     return rno1.localeCompare(rno2, 'th');
     }
     
@@ -563,6 +604,12 @@ async function loadAndRenderList(filter){
     const ap1 = isApproved(s1) ? 1 : 0;
     const ap2 = isApproved(s2) ? 1 : 0;
     if (ap1 !== ap2) return ap1 - ap2;
+
+    // หากจะยึดเวลาในแท็บเหล่านี้ด้วยก็ทำได้:
+    const actedIdx2 = src.actedIdx;
+    const tt1 = toMsFromGviz(a1[actedIdx2]) || 0;
+    const tt2 = toMsFromGviz(a2[actedIdx2]) || 0;
+    if (tt1 !== tt2) return tt2 - tt1; // ใหม่บน/เก่าล่างเหมือนกัน
 
     return rno1.localeCompare(rno2, 'th');
   });
