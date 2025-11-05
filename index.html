@@ -593,8 +593,11 @@ async function loadAndRenderList(filter){
       
     // ทั้งคู่เป็น ACTED → ใช้เวลา ActedAt
     const actedIdx = src.actedIdx;
-    const t1 = toMsFromGviz(a1[actedIdx]) || 0;
-    const t2 = toMsFromGviz(a2[actedIdx]) || 0;
+    const t1Sheet = toMsFromGviz(a1[actedIdx]) || 0;
+    const t2Sheet = toMsFromGviz(a2[actedIdx]) || 0;
+      
+    const t1 = t1Sheet || getActedAt(rno1) || 0;
+    const t2 = t2Sheet || getActedAt(rno2) || 0;
     // ต้องการ “ใหม่อยู่บน → เก่าอยู่ล่าง” ในกองล่าง 
     if (t1 !== t2) return t2 - t1; // DESC by actedAt
     return rno1.localeCompare(rno2, 'th');
@@ -608,8 +611,10 @@ async function loadAndRenderList(filter){
 
     // หากจะยึดเวลาในแท็บเหล่านี้ด้วยก็ทำได้:
     const actedIdx2 = src.actedIdx;
-    const tt1 = toMsFromGviz(a1[actedIdx2]) || 0;
-    const tt2 = toMsFromGviz(a2[actedIdx2]) || 0;
+    const t1s = toMsFromGviz(a1[actedIdx2]) || 0;
+    const t2s = toMsFromGviz(a2[actedIdx2]) || 0;
+    const tt1 = t1s || getActedAt(rno1) || 0;
+    const tt2 = t2s || getActedAt(rno2) || 0;
     if (tt1 !== tt2) return tt2 - tt1; // ใหม่บน/เก่าล่างเหมือนกัน
 
     return rno1.localeCompare(rno2, 'th');
