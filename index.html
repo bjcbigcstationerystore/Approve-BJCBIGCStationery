@@ -168,6 +168,11 @@
 .grid-head .col-center{ justify-self:center; text-align:center; }
 .col-center{ justify-self:center; }
 
+    .col-left{
+  text-align:left !important;
+  justify-self:start !important;
+}
+
     @media (max-width: 1200px){
   :root{
     --col-name:200px;
@@ -349,11 +354,11 @@
             <div>ผู้ขอเบิก</div>
             <div>วันที่ขอ</div>
             <div>รายการ</div>
-            <div class="text-right">จำนวนเงิน</div>
+            <div class="col-left">จำนวนเงิน</div>
             <div class="col-spacer"></div>
-            <div class="col-center">สถานะ</div>
-            <div class="text-right">รายละเอียด</div>
-          </div>
+            <div class="col-left">สถานะ</div>
+            <div class="col-left">รายละเอียด</div>
+        </div>
           <div id="reqList"></div>
         </div>
 
