@@ -635,7 +635,7 @@ function normalizeStatus(txt){
   // ว่าง หรือระบุชัดว่า "รออนุมัติ" → WAITING
   if (!s || u.includes('WAIT') || s.includes('รออนุมัติ')) return 'WAITING';
 
-  if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ')) return 'SUBMIT';
+  if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ')) return 'APPROVE';
   if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
   if (u.includes('REJECT')  || s.includes('ปฏิเสธ')) return 'REJECT';
 
@@ -645,10 +645,10 @@ function normalizeStatus(txt){
     
 function statusClass(norm){
   const t = (norm||'').toUpperCase();
-  if (t==='SUBMIT') return 'submit';
+  if (t==='APPOVE') return 'approve';
   if (t==='REVISE') return 'revise';
   if (t==='REJECT') return 'reject';
-  return '';
+  return 'waiting';
 }
 function isApproved(raw){
   const s = String(raw||'').trim();
