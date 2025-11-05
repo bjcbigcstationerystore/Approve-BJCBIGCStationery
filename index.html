@@ -383,11 +383,8 @@
   display: block;
 }
 
-    /* ให้ตารางเลื่อนซ้าย–ขวาเฉพาะตอนที่กว้างเกิน */
-.table-scroll{
-  overflow-x: auto;
-  overflow-y: hidden;
-  width: 100%;
+table-scroll{
+  -webkit-overflow-scrolling: touch;  /* ✅ เลื่อนลื่นแบบ iOS */
 }
 
 /* บังคับให้เนื้อหาตารางมีความกว้างขั้นต่ำ (เพื่อให้มีสิ่งให้เลื่อนตอนจอแคบ) */
@@ -395,23 +392,20 @@
 .grid-row{
   min-width: 920px;   /* ปรับได้ 880–1040 แล้วแต่สายตา */
 }
-    @media (max-width: 640px){
+   @media (max-width: 640px){
   .app-viewport{
-    transform: none;        /* ✅ ไม่ย่อทั้งหน้า */
-    width: 100%;
-    max-width: 100%;        /* ✅ ให้ขยายเต็มจอจริง */
-    padding: 0 12px;        /* ✅ กันเนื้อหาชนขอบ จัดกลางพอดี */
+    transform: none !important;   /* ✅ เอาการย่อออกเพื่อไม่ให้ถูกบีบ */
+    width: 100% !important;       /* ✅ ใช้เต็มจอจริง */
+    max-width: 100% !important;
+    padding: 0 16px;              /* ✅ เพิ่ม margin กันขอบชนหน้าจอ */
+    margin: 0 auto;
   }
 }
 
 html, body {
   overflow-x: hidden;
+  overflow-y: auto; 
 }
-.table-scroll{
-  -webkit-overflow-scrolling: touch; /* เลื่อนลื่นแบบ iOS */
-}
-
-
 
     
   </style>
