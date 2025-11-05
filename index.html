@@ -645,7 +645,7 @@ function normalizeStatus(txt){
     
 function statusClass(norm){
   const t = (norm||'').toUpperCase();
-  if (t==='APPOVE') return 'approve';
+  if (t==='APPROVE') return 'approve';
   if (t==='REVISE') return 'revise';
   if (t==='REJECT') return 'reject';
   return 'waiting';
