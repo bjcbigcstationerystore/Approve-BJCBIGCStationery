@@ -587,13 +587,19 @@ function getActedAt(reqNo){
 
 function normalizeStatus(txt){
   const s = String(txt || '').trim();
-  if (!s) return 'SUBMIT'; // ช่องว่างถือเป็นรออนุมัติ (ใช้สี submit/เขียวในลิสต์เดิม) แต่เรามี filter WAITING แยก
   const u = s.toUpperCase();
+
+  // ว่าง หรือระบุชัดว่า "รออนุมัติ" → WAITING
+  if (!s || u.includes('WAIT') || s.includes('รออนุมัติ')) return 'WAITING';
+
   if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ')) return 'SUBMIT';
   if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
   if (u.includes('REJECT')  || s.includes('ปฏิเสธ')) return 'REJECT';
-  return 'SUBMIT';
+
+  // ดีฟอลต์เผื่อกรณีสะกดไม่ตรง → จัดเป็น WAITING จะปลอดภัยกว่า
+  return 'WAITING';
 }
+    
 function statusClass(norm){
   const t = (norm||'').toUpperCase();
   if (t==='SUBMIT') return 'submit';
@@ -1029,6 +1035,7 @@ markActed(reqNo);
   toast('เกิดข้อผิดพลาดในการส่งข้อมูล','error',2400);
 }
 }
+
 
   </script>
 </body>
