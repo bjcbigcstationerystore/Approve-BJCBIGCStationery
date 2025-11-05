@@ -393,43 +393,58 @@ function formatDDMMYYYY(val, formatted){
   const n = Number(String(v).replace(/[, ]/g,''));
   return Number.isFinite(n) ? n : 0;
 }
-  // === แปลงค่าจาก GViz (Date/number/string) เป็น milliseconds เพื่อใช้ sort ตามเวลา ===
+ // === แปลงค่าจาก GViz (Date/number/string) เป็น milliseconds เพื่อใช้ sort ตาม "วันที่ + เวลา" ===
 function toMsFromGviz(val){
-  if (!val && val !== 0) return 0;
+  if (val == null) return 0;
 
-  // Date object
+  // 1) GViz ให้เป็น Date object
   if (Object.prototype.toString.call(val) === '[object Date]') {
     const ms = val.getTime();
-    return isNaN(ms) ? 0 : ms;
+    return Number.isFinite(ms) ? ms : 0;
   }
 
-  // number → พยายามตีเป็นเวลา
-  if (typeof val === 'number') {
-    const ms = new Date(val).getTime();
-    if (!isNaN(ms)) return ms;
+  const s = String(val).trim();
+
+  // 2) รูปแบบ GViz: Date(YYYY,MM,DD[,hh,mm,ss])
+  {
+    const m = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
+    if (m) {
+      const Y = +m[1], M = +m[2], D = +m[3],
+            h = +(m[4]||0), mi = +(m[5]||0), se = +(m[6]||0);
+      const ms = new Date(Y, M, D, h, mi, se).getTime();
+      return Number.isFinite(ms) ? ms : 0;
+    }
   }
 
-  // รูปแบบ "Date(YYYY,MM,DD,hh,mm,ss)"
-  const s = String(val);
-  const m = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
-  if (m) {
-    const Y = +m[1], M = +m[2], D = +m[3],
-          h = +(m[4]||0), mi = +(m[5]||0), se = +(m[6]||0);
-    const ms = new Date(Y, M, D, h, mi, se).getTime();
-    return isNaN(ms) ? 0 : ms;
+  // 3) ตัวเลข: อาจเป็น ms ตั้งต้น หรือเป็น serial/day number → พยายามเดา
+  if (!Number.isNaN(+s) && s !== '') {
+    const num = +s;
+    // ถ้าเป็น "ขนาดใหญ่" ถือเป็น epoch ms
+    if (num > 1e10) return num;
+    // ถ้าคล้าย serial วันของ Sheets (เริ่ม 1899-12-30)
+    if (num > 10000 && num < 100000) {
+      const base = new Date(Date.UTC(1899, 11, 30)).getTime();
+      return base + Math.round(num * 24 * 60 * 60 * 1000);
+    }
+    // ลองตีเป็น epoch วินาที
+    if (num > 1e5 && num < 1e10) return num * 1000;
   }
 
-  // dd/mm/yyyy
-  if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) {
-    const [d,mn,y] = s.split(/[\/\s]/).map(x=>+x);
-    const ms = new Date(y, mn-1, d).getTime();
-    return isNaN(ms) ? 0 : ms;
+  // 4) dd/mm/yyyy HH:MM[:SS] (รองรับเวลาจริง)
+  {
+    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if (m) {
+      const d = +m[1], mn = +m[2], y = +m[3],
+            hh = +(m[4]||0), mm = +(m[5]||0), ss = +(m[6]||0);
+      const ms = new Date(y, mn - 1, d, hh, mm, ss).getTime();
+      return Number.isFinite(ms) ? ms : 0;
+    }
   }
 
-  // ฟอลแบ็ค
+  // 5) ฟอลแบ็ค: ให้เครื่องมือ Date.parse จัดการ (รองรับ ISO)
   const ms2 = Date.parse(s);
-  return isNaN(ms2) ? 0 : ms2;
-}  
+  return Number.isFinite(ms2) ? ms2 : 0;
+}
 
 /* ===== Approver Header ===== */
 function fillApprover(ap){
@@ -643,7 +658,16 @@ async function loadAndRenderList(filter){
       <div class="truncate">${items || '—'}</div>
       <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
       <div></div>
-      <div class="col-center"><span class="status-pill ${pillClass}">${displayStatus}</span></div>
+      (() => {
+  const actedIdx = src.actedIdx;
+  const tSheet = toMsFromGviz(arr[actedIdx]) || 0;
+  const tLocal = getActedAt(String(arr[0] || '')) || 0;
+  const tip = (tSheet || tLocal) ? new Date(tSheet || tLocal).toLocaleString() : '-';
+  return `
+    <div class="col-center">
+      <span class="status-pill ${pillClass}" title="ActedAt: ${tip}">${displayStatus}</span>
+    </div>`;
+})()
       <div class="text-right">
         <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
                 onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
