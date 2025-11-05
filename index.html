@@ -764,7 +764,7 @@ function parseLineItemsFromResponseRow(arr){
   return out;
 }
     
-function renderDetailButtons(type){
+function renderDetailButtons(type, acted){
   const box = document.getElementById('detailButtons');
   const t = String(type||'').trim().toUpperCase();
 
@@ -772,6 +772,12 @@ function renderDetailButtons(type){
   const btnSubmit = `<button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>`;
   const btnReject = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105"  onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ</button>`;
   const btnRevise = `<button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 Revise</button>`;
+  
+  // ✅ ถ้าใบนี้ถูก “กระทำแล้ว” (มีสถานะ) → แสดงแค่ปุ่มปิด
+  if (acted) {
+    box.innerHTML = `${btnClose}`;
+    return;
+  }
 
   if (t === 'BU HEAD'){
     box.innerHTML = `${btnClose} ${btnSubmit} ${btnReject}`;
@@ -872,7 +878,6 @@ async function openDetail({i}){
   const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
   const toggleBtn = document.getElementById('toggleEditBtn');
   toggleBtn.innerHTML = '<span>✏️ Revise</span>';
-  toggleBtn.style.display = isBUHead ? 'none' : '';
 
   const srcRow = SOURCE_ROWS[i]; if(!srcRow) return;
   const arr = srcRow._arr || []; const fmt = srcRow._fmt || [];
@@ -885,7 +890,9 @@ async function openDetail({i}){
   const total   = Number(arr[idxM] ?? 0);
   const rawStatus = String(arr[idxStatus] || '').trim();
   const displayStatus = rawStatus || 'รออนุมัติ';
-  const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+  const pillClass     = rawStatus === '' ? 'waiting' :    statusClass(normalizeStatus(displayStatus));
+  
+  const acted = rawStatus !== '';
 
   // ใส่ข้อมูล
   document.getElementById('dReqNo').textContent     = reqNo;
@@ -898,9 +905,24 @@ async function openDetail({i}){
    // ✅ เติม/ผูกคอมเมนต์ของใบนี้จาก cache + อัปเดต cache เมื่อพิมพ์
   const commentEl = document.getElementById('dComment');
   if (commentEl){
-    commentEl.value = getComment(reqNo); // เติมค่าที่เคยพิมพ์ไว้ของใบนี้
-    commentEl.oninput = (e)=> setComment(reqNo, e.target.value); // พิมพ์เมื่อไร เก็บทันที
+    commentEl.value = getComment(reqNo);
+    
+    if (acted) {
+      // ล็อค: ซ่อน focus ring + ห้ามพิมพ์
+      commentEl.readOnly = true;                 // ไม่ให้แก้ไข
+      commentEl.classList.add('disabled');       // ใช้สไตล์จาง
+      commentEl.oninput = null;                  // ตัด handler
+    } else {
+      // ปลดล็อค: ให้พิมพ์และเก็บ cache
+      commentEl.readOnly = false;
+      commentEl.classList.remove('disabled');
+      commentEl.oninput = (e)=> setComment(reqNo, e.target.value);
+    }
   }
+
+  // ==== ปุ่ม Revise (toggle) ====
+  // ซ่อนปุ่มแก้ไข ถ้าเป็น BU Head หรือ ใบที่มีสถานะแล้ว
+  toggleBtn.style.display = (isBUHead || acted) ? 'none' : '';
 
   // รายการย่อยจาก Response
   const tqR = `select * where A='${String(reqNo).replace(/'/g,"\\'")}'`;
@@ -910,7 +932,7 @@ async function openDetail({i}){
 
   recalcTotals();
   renderDetailItems();
-  renderDetailButtons(APPROVER?.type);
+  renderDetailButtons(APPROVER?.type, acted);
 
   const ov = document.getElementById('detailOverlay');
   ov.classList.remove('hidden'); ov.classList.add('flex');
@@ -1007,8 +1029,6 @@ markActed(reqNo);
   toast('เกิดข้อผิดพลาดในการส่งข้อมูล','error',2400);
 }
 }
-
-
 
   </script>
 </body>
