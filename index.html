@@ -97,7 +97,7 @@
       background:#e2e8f0; color:#334155;
     }
     .status-pill.waiting{ background:#e0f2fe; color:#075985 }
-    .status-pill.submit { background:#dcfce7; color:#166534 }
+    .status-pill.approve { background:#dcfce7; color:#166534 }
     .status-pill.revise { background:#fef9c3; color:#854d0e }
     .status-pill.reject { background:#fee2e2; color:#991b1b }
 
@@ -106,7 +106,7 @@
       display:inline-block; padding:8px 14px; border-radius:12px; font-weight:800; font-size:18px;
       background:#e0f2fe; color:#075985; border:1px solid rgba(7,89,133,.15);
     }
-    .status-badge-big.submit{ background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
+    .status-badge-big.approve{ background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
     .status-badge-big.revise{ background:#fef9c3; color:#854d0e; border-color:rgba(133,77,14,.15) }
     .status-badge-big.reject{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
@@ -1050,14 +1050,14 @@ if (!res.ok || !data.ok){
 
 hideOverlay();
 const okMsg =
-  type === 'SUBMIT' ? 'อนุมัติสำเร็จ' :
-  type === 'REJECT' ? 'ปฏิเสธแล้ว' :
-  type === 'REVISE' ? 'ส่งกลับเพื่อแก้ไขแล้ว' :
+  type === 'APPROVE' ? 'อนุมัติรายการเบิก' :
+  type === 'REJECT' ? 'ปฏิเสธรายการเบิก' :
+  type === 'REVISE' ? 'แก้ไขรายการเบิก' :
   'บันทึกข้อมูลไปยังระบบเสร็จสิ้น';
 
 // map action → toast type (กำหนดสี)
 const toastType =
-  type === 'SUBMIT' ? 'success' :
+  type === 'APPROVE' ? 'success' :
   type === 'REJECT' ? 'error' :
   type === 'REVISE' ? 'warn' :
   'success';
