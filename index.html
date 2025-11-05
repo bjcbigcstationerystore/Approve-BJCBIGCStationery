@@ -262,14 +262,15 @@
 
       <div class="mt-7 mx-auto card shadow-soft animate-[fadeIn_.25s_ease-out]">
         <form id="verifyForm" class="text-left">
-          <label for="empCode" class="block text-sm text-slate-600">กรุณากรอกรหัสพนักงานเพื่อเข้าสู่ระบบ</label>
+          <label for="empCode" class="block text-base text-slate-600">กรุณากรอกรหัสพนักงานเพื่อเข้าสู่ระบบ</label>
           <input id="empCode" name="empCode" type="text" inputmode="numeric" autocomplete="off" required
-                 class="mt-2 w-full rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 px-4 py-3 outline-none"
-                 placeholder="กรอกรหัสพนักงาน">
+       class="mt-2 w-full rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 px-4 py-3 outline-none text-sm"
+       placeholder="กรอกรหัสพนักงาน">
 
           <button id="submitBtn" type="submit"
-            class="mt-4 w-full btn-primary text-white font-medium rounded-xl py-3 transition-all flex items-center justify-center gap-2 active:translate-y-[1px]">
-            <span>ยืนยันการเข้าสู่ระบบ</span>
+  class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl py-3 transition-all flex items-center justify-center gap-2 active:translate-y-[1px]">
+  <span>ยืนยันตัวตน</span>
+            
             <svg id="loadingIcon" class="hidden animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"></circle>
               <path class="opacity-75" d="M4 12a8 8 0 018-8" stroke="white" stroke-width="4" stroke-linecap="round"></path>
@@ -286,7 +287,7 @@
   <section id="approvalScreen" class="hidden">
     <main class="max-w-6xl mx-auto px-4 py-8">
       <div class="flex items-center justify-center mb-3">
-        <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C" class="h-8 md:h-8 object-contain">
+        <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C" class="h-7 md:h-9 object-contain">
       </div>
 
       <h1 class="text-3xl md:text-4xl font-extrabold text-center">APPROVAL STATIONERY STORE</h1>
