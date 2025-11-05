@@ -376,11 +376,10 @@
 
     /* ===== Viewport scale 90% เฉพาะเนื้อหา ไม่แตะ overlay/fixed ===== */
 .app-viewport{
-  transform: scale(.94);
+  transform: scale(.9);
   transform-origin: top center;
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
   display: block;
 }
 
@@ -397,21 +396,21 @@
   min-width: 920px;   /* ปรับได้ 880–1040 แล้วแต่สายตา */
 }
 
-/* มือถือ → ลดช่องว่างคอลัมน์ให้เฟรนด์ลี่ขึ้น */
-@media (max-width: 640px){
-  .grid-head,
-  .grid-row{
-    gap: 12px;
-  }
-}
-/* มือถือ: ลดเหลือ 80% */
 @media (max-width: 640px){
   .app-viewport{
-    transform: scale(.8);
+    transform: scale(.8) translateX(0);
     transform-origin: top center;
-    width: 125%;   /* ชดเชยหลังย่อให้กว้างพอดี ไม่ลอยซ้าย */
+    width: 100%;        /* ✅ ไม่ชดเชยความกว้าง */
+    margin: 0 auto;     /* ✅ ยังคงจัดกึ่งกลาง */
   }
 }
+    html, body {
+  overflow-x: auto;    /* ✅ อนุญาตให้หน้าเลื่อนได้ */
+}
+.table-scroll{
+  -webkit-overflow-scrolling: touch; /* เลื่อนลื่นแบบ iOS */
+}
+
 
 
     
