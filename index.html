@@ -112,14 +112,22 @@
 
     /* ตารางหลัก: ล็อคคอลัมน์ + กันชนระหว่าง จำนวนเงิน ↔ สถานะ */
    :root{
-  --col-req:160px;     /* Request Number */
-  --col-name:220px;    /* ผู้ขอเบิก */
-  --col-date:140px;    /* วันที่ขอ */
-  --col-items:1.1fr;     /* รายการ */
-  --col-amount:132px;  /* จำนวนเงิน */
-  --col-gap:24px;      /* กันชน */
-  --col-status:128px;  /* สถานะ (ขยายเล็กน้อย) */
-  --col-action:148px;  /* รายละเอียด (ขยายเพื่อไม่ให้คำโดนตัด) */
+  --col-req:160px;
+  --col-name:220px;
+  --col-date:140px;
+  --col-items:1fr;
+  --col-amount:120px;  /* คงเดิม */
+  --col-gap:56px;      /* ↑ เพิ่มช่องว่างระหว่าง "จำนวนเงิน" ↔ "สถานะ" */
+  --col-status:140px;  /* คงเดิม */
+  --col-action:180px;  /* คงเดิม */
+}
+@media (max-width: 1200px){
+  :root{
+    --col-name:200px;
+    --col-action:160px; /* ขยับคืนบนจอแคบเล็กน้อย */
+    --col-amount:120px;
+    --col-gap:40px;     /* ลดกันชนลงบนจอแคบ */
+  }
 }
 .grid-head, .grid-row{
   display:grid;
@@ -355,15 +363,15 @@
 
         <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="grid-head">
-            <div>Request Number</div>
-            <div>ผู้ขอเบิก</div>
-            <div>วันที่ขอ</div>
-            <div>รายการ</div>
-            <div class="col-left">จำนวนเงิน</div>
-            <div class="col-spacer"></div>
-            <div class="col-left">สถานะ</div>
-            <div class="col-left">รายละเอียด</div>
-        </div>
+  <div>Request Number</div>
+  <div>ผู้ขอเบิก</div>
+  <div>วันที่ขอ</div>
+  <div>รายการ</div>
+  <div class="text-right">จำนวนเงิน</div>    <!-- เหมือนแถวล่าง -->
+  <div class="col-spacer"></div>
+  <div class="col-center">สถานะ</div>         <!-- เหมือนแถวล่าง -->
+  <div class="col-left pl-2 md:pl-3">รายละเอียด</div> <!-- ชิดซ้าย + เยื้องนิดหน่อย -->
+</div>
           <div id="reqList"></div>
         </div>
 
@@ -852,8 +860,8 @@ host.innerHTML = rowsPage.map((r, i) => {
             <span class="status-pill ${pillClass}" title="ActedAt: ${tip}">${displayStatus}</span>
           </div>`;
       })()}
-      <div class="col-left">
-  <button class="px-3 py-1.5 ml-3 rounded-xl bg-blue-600 text-white hover:brightness-105"
+      <div class="col-left pl-2 md:pl-3">
+  <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
           onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
     ดูรายละเอียด
   </button>
