@@ -302,6 +302,78 @@
   font-size: 16px;              /* เดิม 18px */
   padding: 6px 12px;
 }
+    /* ===== ตัวหนังสือเล็กลงเมื่อเป็นโหมด compact ===== */
+.modal-card.compact {
+  font-size: 14px;             /* ลดทั้งกล่อง */
+  line-height: 1.4;
+}
+
+.modal-card.compact .modal-head {
+  font-size: 18px;             /* หัวลดลงเล็กน้อย */
+}
+
+.modal-card.compact .text-slate-500,
+.modal-card.compact .field-label {
+  font-size: 13px;             /* ป้ายหัวข้อ */
+}
+
+.modal-card.compact .font-semibold,
+.modal-card.compact .field-value {
+  font-size: 14px;             /* ค่าในกล่อง */
+}
+
+/* กล่องยอดรวม */
+.modal-card.compact .total-box .label {
+  font-size: 12.5px;
+}
+.modal-card.compact .total-box .value {
+  font-size: 22px !important;  /* เดิม 28 → ลด 2 ระดับ */
+}
+
+/* ตารางรายการในโมดอล */
+.modal-card.compact .detail-row {
+  font-size: 13px;
+}
+
+/* ป้ายสถานะใหญ่ */
+.modal-card.compact .status-badge-big {
+  font-size: 15px;
+  padding: 6px 10px;
+}
+
+/* คอมเมนต์ (ช่องข้อความ) */
+.modal-card.compact textarea#dComment {
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+/* ปุ่มปิด / ปุ่ม Revise / Approve / Reject */
+.modal-card.compact #detailButtons button {
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 10px;
+}
+
+    /* ปรับขนาดปุ่ม Revise ให้เข้ากับโหมด compact */
+.modal-card.compact .edit-btn{
+  padding: 4px 8px;                 /* เดิม 6px 10px */
+  font-size: 12px;                  /* เดิม 13px */
+  border-radius: 8px;               /* เดิม 10px */
+  gap: 4px;                         /* เดิม 6px */
+}
+
+/* แก้ตำแหน่งให้ไม่ชิดขอบเกินไป */
+.modal-card.compact .edit-btn{
+  right: 8px;                       /* เดิม 10px */
+  top: 6px;                         /* เดิม 8px */
+}
+
+/* Hover นุ่มลง เพื่อให้กลมกลืนมากขึ้น */
+.modal-card.compact .edit-btn:hover{
+  background:#e0e7ff;               /* ฟ้าอ่อนกว่าเดิม */
+  border-color:#bfc8ff;
+}
+
 
     
   </style>
