@@ -592,20 +592,18 @@ function renderDetailButtons(type){
   const box = document.getElementById('detailButtons');
   const t = String(type||'').trim().toUpperCase();
 
-  const disableNonRevise = DETAIL_EDIT_DIRTY;
   const btnClose  = `<button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>`;
-  const btnSubmit = `<button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105 ${disableNonRevise?'disabled':''}" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ (Submit)</button>`;
-  const btnReject = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105 ${disableNonRevise?'disabled':''}" onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ (Reject)</button>`;
+  const btnSubmit = `<button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>`;
+  const btnReject = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105"  onclick="actOnCurrent('REJECT')">❌ ปฏิเสธ</button>`;
   const btnRevise = `<button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">📝 Revise</button>`;
 
   if (t === 'BU HEAD'){
-    box.innerHTML = `${btnClose}
-      <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105 ${disableNonRevise?'disabled':''}" onclick="actOnCurrent('SUBMIT')">✅ อนุมัติ</button>
-      ${btnReject}`;
+    box.innerHTML = `${btnClose} ${btnSubmit} ${btnReject}`;
   }else{
     box.innerHTML = `${btnClose} ${btnSubmit} ${btnReject} ${btnRevise}`;
   }
 }
+    
 function recalcTotals(){
   let total = 0;
   DETAIL_LINES.forEach(li => li.sum = (Number(li.qty)||0) * (Number(li.price)||0));
@@ -622,7 +620,8 @@ function renderDetailItems(){
     return;
   }
   host.innerHTML = DETAIL_LINES.map((li, idx) => {
-    if (!DETAIL_EDIT_MODE){
+    const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
+    if (!DETAIL_EDIT_MODE || isBUHead){
       return `
         <div class="detail-row">
         <div class="col-center">${idx + 1}</div>
@@ -665,8 +664,11 @@ function typeQty(idx, val){
   markDirty(); recalcTotals(); renderDetailItems();
 }
 document.getElementById('toggleEditBtn').addEventListener('click', ()=>{
+  const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
+  if (isBUHead) return; // ไม่อนุญาต BU Head แก้ไข
   DETAIL_EDIT_MODE = !DETAIL_EDIT_MODE;
-  document.getElementById('toggleEditBtn').innerHTML = DETAIL_EDIT_MODE ? '<span>✅ Done</span>' : '<span>✏️ Revise</span>';
+  document.getElementById('toggleEditBtn').innerHTML = 
+    DETAIL_EDIT_MODE ? '<span>✅ Done</span>' : '<span>✏️ Revise</span>';
   renderDetailItems();
 });
 
@@ -674,7 +676,10 @@ async function openDetail({i}){
   CURRENT_DETAIL = i;
   DETAIL_EDIT_MODE  = false;
   DETAIL_EDIT_DIRTY = false;
-  document.getElementById('toggleEditBtn').innerHTML = '<span>✏️ Revise</span>';
+  const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
+  const toggleBtn = document.getElementById('toggleEditBtn');
+  toggleBtn.innerHTML = '<span>✏️ Revise</span>';
+  toggleBtn.style.display = isBUHead ? 'none' : '';
 
   const srcRow = SOURCE_ROWS[i]; if(!srcRow) return;
   const arr = srcRow._arr || []; const fmt = srcRow._fmt || [];
@@ -730,14 +735,15 @@ async function actOnCurrent(type){
   const comment = document.getElementById('dComment').value || '';
   const ap = APPROVER || JSON.parse(sessionStorage.getItem('approver') || '{}');
 
-  if (DETAIL_EDIT_DIRTY && type !== 'REVISE'){
-    alert('มีการแก้ไขรายการแล้ว กรุณาส่งเป็น Revise เท่านั้น');
-    return;
+  const isBUHead = String(ap?.type || '').toUpperCase() === 'BU HEAD';
+  if (!isBUHead && DETAIL_EDIT_DIRTY && type !== 'REVISE'){
+  alert('มีการแก้ไขรายการแล้ว กรุณาส่งเป็น Revise เท่านั้น');
+  return;
   }
   const editedItems = DETAIL_EDIT_DIRTY ? DETAIL_LINES.map(li => ({ name: li.name, qty: li.qty, price: li.price })) : null;
 
   try{
-    const res = await fetch(API_BASE, {
+  const res = await fetch(API_BASE, {
   method: 'POST',
   body: JSON.stringify({
     action: 'act',
