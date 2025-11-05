@@ -111,21 +111,31 @@
     .status-badge-big.reject{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
     /* ตารางหลัก: ล็อคคอลัมน์ + กันชนระหว่าง จำนวนเงิน ↔ สถานะ */
-    .grid-head, .grid-row{
-      display:grid;
-      grid-template-columns:
-        160px   /* Request Number */
-        220px   /* ผู้ขอเบิก */
-        140px   /* วันที่ขอ */
-        1fr     /* รายการ (ชิ้น) */
-        140px   /* จำนวนเงิน */
-        40px    /* กันชน */
-        120px   /* สถานะ */
-        140px   /* การดำเนินการ */
-      ;
-      gap: 16px;
-      align-items: center;
-    }
+   :root{
+  --col-req:160px;      /* Request Number */
+  --col-name:220px;     /* ผู้ขอเบิก */
+  --col-date:140px;     /* วันที่ขอ */
+  --col-items:1fr;      /* รายการ */
+  --col-amount:140px;   /* จำนวนเงิน */
+  --col-gap:40px;       /* กันชน */
+  --col-status:120px;   /* สถานะ */
+  --col-action:140px;   /* รายละเอียด */
+}
+.grid-head, .grid-row{
+  display:grid;
+  grid-template-columns:
+    var(--col-req)
+    var(--col-name)
+    var(--col-date)
+    var(--col-items)
+    var(--col-amount)
+    var(--col-gap)
+    var(--col-status)
+    var(--col-action);
+  gap:16px;
+  align-items:center;
+}
+    
     .grid-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
     .grid-row{ padding:12px 16px; }
     .grid-row + .grid-row { border-top:1px solid #f1f5f9; }
@@ -304,7 +314,7 @@
             <div>รายการ</div>
             <div class="text-right">จำนวนเงิน</div>
             <div class="col-spacer"></div>
-            <div>สถานะ</div>
+            <div class="col-center">สถานะ</div>
             <div class="text-right">รายละเอียด</div>
           </div>
           <div id="reqList"></div>
