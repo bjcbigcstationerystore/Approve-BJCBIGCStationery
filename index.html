@@ -759,11 +759,7 @@ CURRENT_PAGE = Math.min(Math.max(1, CURRENT_PAGE), totalPages);
 const start = (CURRENT_PAGE - 1) * PAGE_SIZE;
 const rowsPage = rows.slice(start, start + PAGE_SIZE);
 
-// NEW: อัปเดตตัวนับ + ช่วงที่แสดงผล
-document.getElementById('reqCount').textContent =
-  `Total: ${rows.length} Requests` + (rows.length
-    ? ` (showing ${start + 1}-${Math.min(start + PAGE_SIZE, rows.length)})`
-    : ``);
+document.getElementById('reqCount').textContent = `Total: ${rows.length} Requests`;
 
 // Render เฉพาะ rows ของหน้านี้
 const host = document.getElementById('reqList');
