@@ -456,6 +456,26 @@ let SOURCE_ROWS = [];
 let CURRENT_FILTER = 'ALL';
 let CURRENT_DETAIL = null;
 
+/* ===== ACTED ORDER (จำเวลาแอ็กชันของแต่ละ Request) ===== */
+let ACTED_AT = {};
+(function initActedAt(){
+  try {
+    const raw = sessionStorage.getItem('actedAt') || '{}';
+    ACTED_AT = JSON.parse(raw);
+  } catch { ACTED_AT = {}; }
+})();
+function markActed(reqNo){
+  if (!reqNo) return;
+  const key = String(reqNo).trim(); // normalize key
+  ACTED_AT[key] = Date.now();
+  try { sessionStorage.setItem('actedAt', JSON.stringify(ACTED_AT)); } catch {}
+}
+function getActedAt(reqNo){
+  const key = String(reqNo).trim(); // normalize key
+  return Number(ACTED_AT[key] || 0);
+}
+
+
 function normalizeStatus(txt){
   const s = String(txt || '').trim();
   if (!s) return 'SUBMIT'; // ช่องว่างถือเป็นรออนุมัติ (ใช้สี submit/เขียวในลิสต์เดิม) แต่เรามี filter WAITING แยก
@@ -516,13 +536,34 @@ async function loadAndRenderList(filter){
 
   rows.sort((r1, r2)=>{
     const a1 = r1._arr||[], a2 = r2._arr||[];
+    const rno1 = String(a1[idxA]||'');
+    const rno2 = String(a2[idxA]||'');
+
+    const raw1 = String(a1[idxStatus]||'').trim();
+    const raw2 = String(a2[idxStatus]||'').trim();
+    // กลุ่ม 0 = WAITING (ว่าง), กลุ่ม 1 = ACTED (มีสถานะแล้ว)
+    const g1 = raw1 === '' ? 0 : 1;
+    const g2 = raw2 === '' ? 0 : 1;
+    // เฉพาะแท็บ All: ให้ WAITING มาก่อน, ACTED ไปอยู่กองล่าง
+    if (CURRENT_FILTER === 'ALL') {
+      if (g1 !== g2) return g1 - g2;
+    // ถ้าอยู่กลุ่ม WAITING เหมือนกัน → เรียงตามเลขใบคำขอ
+      if (g1 === 0) {
+        return rno1.localeCompare(rno2, 'th');
+    }
+    // ถ้าอยู่กลุ่ม ACTED เหมือนกัน → เรียง "ใหม่อยู่บน, เก่าอยู่ล่าง"
+    const t1 = getActedAt(rno1) || 0;
+    const t2 = getActedAt(rno2) || 0;
+    if (t1 !== t2) return t2 - t1; // <-- เปลี่ยนเป็น 'desc' (ใหม่→เก่า)
+    return rno1.localeCompare(rno2, 'th');
+    }
+    
     const s1 = String(a1[idxStatus]||'').trim();
     const s2 = String(a2[idxStatus]||'').trim();
     const ap1 = isApproved(s1) ? 1 : 0;
     const ap2 = isApproved(s2) ? 1 : 0;
     if (ap1 !== ap2) return ap1 - ap2;
-    const rno1 = String(a1[idxA]||'');
-    const rno2 = String(a2[idxA]||'');
+
     return rno1.localeCompare(rno2, 'th');
   });
 
@@ -773,8 +814,9 @@ if (!res.ok || !data.ok){
 }
 
 alert('บันทึกแล้ว');
+// บันทึกเวลาเพื่อใช้เรียงกองล่าง: ใหม่อยู่เหนือ, เก่าสุดอยู่ล่างสุด
+markActed(reqNo);
 
-    
     closeDetail();
     SOURCE_ROWS = [];
     await loadAndRenderList(CURRENT_FILTER);
