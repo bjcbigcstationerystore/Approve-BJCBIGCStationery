@@ -172,6 +172,11 @@
   text-align:left !important;
   justify-self:start !important;
 }
+    
+    .col-left{
+  justify-self:start !important;
+  text-align:left !important;
+}
 
     @media (max-width: 1200px){
   :root{
@@ -847,12 +852,12 @@ host.innerHTML = rowsPage.map((r, i) => {
             <span class="status-pill ${pillClass}" title="ActedAt: ${tip}">${displayStatus}</span>
           </div>`;
       })()}
-      <div class="text-right">
-        <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
-                onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
-          ดูรายละเอียด
-        </button>
-      </div>
+      <div class="col-left">
+  <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
+          onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
+    ดูรายละเอียด
+  </button>
+</div>
     </div>`;
 }).join('');
 
