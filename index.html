@@ -383,8 +383,10 @@
   display: block;
 }
 
-table-scroll{
-  -webkit-overflow-scrolling: touch;  /* ✅ เลื่อนลื่นแบบ iOS */
+.table-scroll{
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* ✅ เลื่อนลื่นในมือถือ */
 }
 
 /* บังคับให้เนื้อหาตารางมีความกว้างขั้นต่ำ (เพื่อให้มีสิ่งให้เลื่อนตอนจอแคบ) */
@@ -401,11 +403,13 @@ table-scroll{
     margin: 0 auto;
   }
 }
-
-html, body {
+    html {
   overflow-x: hidden;
-  overflow-y: auto; 
 }
+body {
+  overflow-x: visible;
+}
+
 
     
   </style>
