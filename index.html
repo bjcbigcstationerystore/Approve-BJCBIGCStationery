@@ -373,25 +373,6 @@
   background:#e0e7ff;               /* ฟ้าอ่อนกว่าเดิม */
   border-color:#bfc8ff;
 }
-    /* ===== App scale (ย่อทั้งคอนเทนต์หลักลงเล็กน้อย) ===== */
-:root{ --app-zoom: 0.94; }  /* ปรับได้ 0.90–0.97 ตามชอบ */
-
-.app-scale{
-  transform: scale(var(--app-zoom));
-  transform-origin: top center;
-  width: 100%;
-  /* ชดเชยความสูงหลังย่อ ป้องกันพื้นที่ขาว */
-  min-height: calc(100vh / var(--app-zoom));
-  overflow-x: hidden;
-}
-
-/* มือถือ/จอแคบ ไม่ย่อ เพื่อความอ่านง่าย */
-@media (max-width: 640px){
-  .app-scale{
-    transform: none;
-    min-height: auto;
-  }
-}
 
 
     
@@ -402,7 +383,7 @@
 <div id="appRoot">
   <!-- ========== VERIFY ========== -->
   <section id="verifyScreen" class="min-h-screen flex items-center justify-center px-4">
-  <div class="app-scale w-full max-w-3xl text-center">
+    <div class="w-full max-w-3xl text-center">
       <div class="flex items-center justify-center">
         <img class="logo" alt="BJC Big C" src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png">
       </div>
@@ -439,7 +420,7 @@
 
   <!-- ========== APPROVAL ========== -->
   <section id="approvalScreen" class="hidden">
-  <main class="app-scale max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-6xl mx-auto px-4 py-8">
       <div class="flex items-center justify-center mb-3">
         <img src="https://i.postimg.cc/B6wpk3yh/cropped-Logo-BJC-Big-C-2021-2048x606.png" alt="BJC Big C" class="h-7 md:h-9 object-contain">
       </div>
