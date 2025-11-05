@@ -847,11 +847,28 @@ document.getElementById('toggleEditBtn').addEventListener('click', ()=>{
     DETAIL_EDIT_MODE ? '<span>✅ Done</span>' : '<span>✏️ Revise</span>';
   renderDetailItems();
 });
+    
+    /* ===== Comment Cache (persist ต่อใบ) ===== */
+let COMMENT_CACHE = (() => {
+  try { return JSON.parse(sessionStorage.getItem('commentCache') || '{}'); }
+  catch { return {}; }
+})();
+
+function getComment(reqNo){
+  const k = String(reqNo || '').trim();
+  return COMMENT_CACHE[k] || '';
+}
+function setComment(reqNo, text){
+  const k = String(reqNo || '').trim();
+  COMMENT_CACHE[k] = text || '';
+  try { sessionStorage.setItem('commentCache', JSON.stringify(COMMENT_CACHE)); } catch {}
+}
 
 async function openDetail({i}){
   CURRENT_DETAIL = i;
   DETAIL_EDIT_MODE  = false;
   DETAIL_EDIT_DIRTY = false;
+  
   const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
   const toggleBtn = document.getElementById('toggleEditBtn');
   toggleBtn.innerHTML = '<span>✏️ Revise</span>';
@@ -877,6 +894,13 @@ async function openDetail({i}){
   const big = document.getElementById('dStatusBig');
   big.textContent = displayStatus;
   big.className   = `status-badge-big ${pillClass.replace('waiting','')}`;
+  
+   // ✅ เติม/ผูกคอมเมนต์ของใบนี้จาก cache + อัปเดต cache เมื่อพิมพ์
+  const commentEl = document.getElementById('dComment');
+  if (commentEl){
+    commentEl.value = getComment(reqNo); // เติมค่าที่เคยพิมพ์ไว้ของใบนี้
+    commentEl.oninput = (e)=> setComment(reqNo, e.target.value); // พิมพ์เมื่อไร เก็บทันที
+  }
 
   // รายการย่อยจาก Response
   const tqR = `select * where A='${String(reqNo).replace(/'/g,"\\'")}'`;
@@ -966,6 +990,9 @@ const toastType =
   'success';
 
 toast(okMsg, toastType, 1600);
+    
+// ✅ เก็บคอมเมนต์ล่าสุดซ้ำอีกครั้ง (กันเผื่อ oninput ยังไม่ยิง)
+setComment(reqNo, (document.getElementById('dComment')?.value || ''));
     
 // บันทึกเวลาเพื่อใช้เรียงกองล่าง
 markActed(reqNo);
