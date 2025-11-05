@@ -112,14 +112,14 @@
 
     /* ตารางหลัก: ล็อคคอลัมน์ + กันชนระหว่าง จำนวนเงิน ↔ สถานะ */
    :root{
-  --col-req:160px;      /* Request Number */
-  --col-name:220px;     /* ผู้ขอเบิก */
-  --col-date:140px;     /* วันที่ขอ */
-  --col-items:1fr;      /* รายการ */
-  --col-amount:140px;   /* จำนวนเงิน */
-  --col-gap:40px;       /* กันชน */
-  --col-status:120px;   /* สถานะ */
-  --col-action:140px;   /* รายละเอียด */
+  --col-req:160px;     /* Request Number */
+  --col-name:220px;    /* ผู้ขอเบิก */
+  --col-date:140px;    /* วันที่ขอ */
+  --col-items:1fr;     /* รายการ */
+  --col-amount:140px;  /* จำนวนเงิน */
+  --col-gap:40px;      /* กันชน */
+  --col-status:128px;  /* สถานะ (ขยายเล็กน้อย) */
+  --col-action:160px;  /* รายละเอียด (ขยายเพื่อไม่ให้คำโดนตัด) */
 }
 .grid-head, .grid-row{
   display:grid;
@@ -135,6 +135,16 @@
   gap:16px;
   align-items:center;
 }
+
+/* ทำให้หัวคอลัมน์ไม่ตัดคำ/ขึ้นบรรทัดใหม่กลางคำไทย */
+.grid-head > div{
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+/* จัดแนวให้ตรงกับแถวล่างแบบบังคับ */
+.grid-head .text-right{ text-align:right; }
+.grid-head .col-center{ justify-self:center; text-align:center; }
     
     .grid-head{ background:#f1f5f9; color:#64748b; font-size:14px; padding:10px 16px; }
     .grid-row{ padding:12px 16px; }
