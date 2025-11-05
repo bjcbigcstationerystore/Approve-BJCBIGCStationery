@@ -658,7 +658,7 @@ async function loadAndRenderList(filter){
       <div class="truncate">${items || '—'}</div>
       <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
       <div></div>
-      (() => {
+      ${(() => {
   const actedIdx = src.actedIdx;
   const tSheet = toMsFromGviz(arr[actedIdx]) || 0;
   const tLocal = getActedAt(String(arr[0] || '')) || 0;
