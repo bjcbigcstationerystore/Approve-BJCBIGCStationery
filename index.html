@@ -110,26 +110,19 @@
     .status-badge-big.revise{ background:#fef9c3; color:#854d0e; border-color:rgba(133,77,14,.15) }
     .status-badge-big.reject{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
-    /* ตารางหลัก: ล็อคคอลัมน์ + กันชนระหว่าง จำนวนเงิน ↔ สถานะ */
-   :root{
-  --col-req:160px;
-  --col-name:220px;
-  --col-date:140px;
+    /* ตารางหลัก: คอลัมน์จริง 7 ช่อง (ไม่มี spacer แล้ว) */
+:root{
+  --col-req:140px;
+  --col-name:200px;
+  --col-date:120px;
   --col-items:1fr;
-  --col-amount:120px;  /* คงเดิม */
-  --col-gap:56px;      /* ↑ เพิ่มช่องว่างระหว่าง "จำนวนเงิน" ↔ "สถานะ" */
-  --col-status:140px;  /* คงเดิม */
-  --col-action:180px;  /* คงเดิม */
+  --col-amount:120px;   /* จำนวนเงิน */
+  --col-status:150px;   /* สถานะ */
+  --col-action:150px;   /* รายละเอียด */
 }
-@media (max-width: 1200px){
-  :root{
-    --col-name:200px;
-    --col-action:160px; /* ขยับคืนบนจอแคบเล็กน้อย */
-    --col-amount:120px;
-    --col-gap:40px;     /* ลดกันชนลงบนจอแคบ */
-  }
-}
-.grid-head, .grid-row{
+
+.grid-head,
+.grid-row{
   display:grid;
   grid-template-columns:
     var(--col-req)
@@ -137,56 +130,58 @@
     var(--col-date)
     var(--col-items)
     var(--col-amount)
-    var(--col-gap)
     var(--col-status)
     var(--col-action);
-  gap:16px;
+  gap:24px;
   align-items:center;
 }
 
-/* ทำให้หัวคอลัมน์ไม่ตัดคำ/ขึ้นบรรทัดใหม่กลางคำไทย */
-.grid-head > div{
-  white-space: nowrap;
-  word-break: keep-all;
-}
-    .grid-row .truncate{
-      white-space: normal;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;  
-      -webkit-box-orient: vertical;
-      }
-    .grid-row .text-right button{ white-space: nowrap; }
-
-/* จัดแนวให้ตรงกับแถวล่างแบบบังคับ */
-.grid-head .text-right{ text-align:right; }
-.grid-head .col-center{ justify-self:center; text-align:center; }
-    
-    .grid-head{
+/* ===== หัวตาราง ===== */
+.grid-head{
   background:#f1f5f9; color:#64748b;
   font-size:13px;
   padding:10px 16px;
 }
-    .grid-row{
-  padding:10px 16px;
-  font-size:14px; line-height:1.35;
+
+/* หัวคอลัมน์: ดีฟอลต์ = ชิดซ้าย + ไม่ตัดคำ */
+.grid-head > div{
+  text-align:left;
+  white-space:nowrap;
+  word-break:keep-all;
 }
+
+/* เฉพาะหัว “จำนวนเงิน” → ชิดขวา, “สถานะ” → กึ่งกลาง */
 .grid-head .text-right{ text-align:right; }
-.grid-head .col-center{ justify-self:center; text-align:center; }
-.col-center{ justify-self:center; }
-
-    .col-left{
-  text-align:left !important;
-  justify-self:start !important;
-}
-    
-    .col-left{
-  justify-self:start !important;
-  text-align:left !important;
+.col-center{
+  justify-self: center;
+  text-align: center;
 }
 
-    @media (max-width: 1200px){
+/* ===== แถวข้อมูล ===== */
+.grid-row{
+  padding:10px 16px;
+  font-size:14px;
+  line-height:1.35;
+}
+
+/* เนื้อหา “รายการ” ให้ตัดบรรทัดแบบ 2 บรรทัด */
+.grid-row .truncate{
+  white-space:normal;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+
+/* คอลัมน์ “รายละเอียด” บังคับชิดซ้าย */
+.col-left{
+  justify-self:start !important;
+  text-align:left !important;
+}
+
+/* จอแคบ: ปรับขนาดบางคอลัมน์ */
+@media (max-width: 1200px){
   :root{
     --col-name:200px;
     --col-action:140px;
@@ -366,11 +361,10 @@
   <div>Request Number</div>
   <div>ผู้ขอเบิก</div>
   <div>วันที่ขอ</div>
-  <div>รายการ</div>
-  <div class="text-right">จำนวนเงิน</div>    <!-- เหมือนแถวล่าง -->
-  <div class="col-spacer"></div>
-  <div class="col-center">สถานะ</div>         <!-- เหมือนแถวล่าง -->
-  <div class="col-left pl-2 md:pl-3">รายละเอียด</div> <!-- ชิดซ้าย + เยื้องนิดหน่อย -->
+  <div class="col-center">รายการ</div>
+  <div class="col-center">จำนวนเงิน</div>
+  <div class="col-center">สถานะ</div>
+  <div class="col-left pl-2 md:pl-3">รายละเอียด</div>
 </div>
           <div id="reqList"></div>
         </div>
@@ -842,14 +836,14 @@ host.innerHTML = rowsPage.map((r, i) => {
   const displayStatus = rawStatus || 'รออนุมัติ';
   const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
 
-  return `
-    <div class="grid-row">
-      <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
-      <div class="truncate">${reqBy || '—'}</div>
-      <div>${reqDate || '—'}</div>
-      <div class="truncate">${items || '—'}</div>
-      <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
-      <div></div>
+    return `
+  <div class="grid-row">
+    <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
+    <div class="truncate">${reqBy || '—'}</div>
+    <div>${reqDate || '—'}</div>
+    <div class="truncate col-center text-center">${items || '—'}</div>
+
+    <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
       ${(() => {
         const actedIdx = src.actedIdx;
         const tSheet = toMsFromGviz(arr[actedIdx]) || 0;
@@ -861,12 +855,12 @@ host.innerHTML = rowsPage.map((r, i) => {
           </div>`;
       })()}
       <div class="col-left pl-2 md:pl-3">
-  <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
-          onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
-    ดูรายละเอียด
-  </button>
-</div>
-    </div>`;
+        <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white hover:brightness-105"
+                onclick='openDetail(${JSON.stringify({i: r._idx}).replace(/"/g,"&quot;")})'>
+          ดูรายละเอียด
+        </button>
+      </div>
+  </div>`;
 }).join('');
 
 // NEW: วาดเพจเจอร์
