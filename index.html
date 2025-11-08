@@ -637,7 +637,7 @@ function hideHint(){ document.getElementById('hint').classList.add('hidden'); }
 
 function gvizUrl(sheetName, tq){
   const qs = new URLSearchParams({ tqx:'out:json', sheet: sheetName, tq });
-  return https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq? + qs.toString();
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + qs.toString();
 }
 async function fetchGVizRows(url){
   const res = await fetch(url, { cache:'no-store' });
@@ -648,7 +648,7 @@ async function fetchGVizRows(url){
   const cols = json.table.cols.map(c=>c.label || c.id || '');
   const rows = json.table.rows.map(r => {
     const obj = {};
-    r.c.forEach((c,i)=> obj[cols[i] || c${i}] = c ? c.v : null );
+    r.c.forEach((c,i)=> obj[cols[i] || `c${i}`] = c ? c.v : null );
     obj._arr = r.c.map(c => c ? c.v : null);
     obj._fmt = r.c.map(c => (c && c.f) ? c.f : null);
     return obj;
