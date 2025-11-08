@@ -73,11 +73,6 @@
   background:linear-gradient(135deg,#16a34a,#059669);
 }
 
-/* Revise = ส้ม */
-.status-chip[data-status="REVISE"].active{
-  background:linear-gradient(135deg,#f59e0b,#d97706);
-}
-
 /* Reject = แดง */
 .status-chip[data-status="REJECT"].active{
   background:linear-gradient(135deg,#dc2626,#b91c1c);
@@ -86,7 +81,6 @@
     /* โทน hover เบา ๆ ตอนยังไม่ active */
 .status-chip:not(.active)[data-status="WAITING"]:hover{ background:#fff7ed }   /* แซมส้มอ่อน */
 .status-chip:not(.active)[data-status="APPROVE"]:hover { background:#ecfdf5 }   /* เขียวอ่อน */
-.status-chip:not(.active)[data-status="REVISE"]:hover { background:#fff7ed }   /* ส้มอ่อน */
 .status-chip:not(.active)[data-status="REJECT"]:hover { background:#fef2f2 }   /* แดงอ่อน */
 .status-chip:not(.active)[data-status="ALL"]:hover     { background:#f0f9ff }   /* ฟ้าอ่อน */
 
@@ -98,7 +92,6 @@
     }
     .status-pill.waiting{ background:#e0f2fe; color:#075985 }
     .status-pill.approve { background:#dcfce7; color:#166534 }
-    .status-pill.revise { background:#fef9c3; color:#854d0e }
     .status-pill.reject { background:#fee2e2; color:#991b1b }
 
     /* ป้ายสถานะ (ใหญ่ในโมดอล) */
@@ -107,7 +100,6 @@
       background:#e0f2fe; color:#075985; border:1px solid rgba(7,89,133,.15);
     }
     .status-badge-big.approve{ background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
-    .status-badge-big.revise{ background:#fef9c3; color:#854d0e; border-color:rgba(133,77,14,.15) }
     .status-badge-big.reject{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
     /* ตารางหลัก: คอลัมน์จริง 7 ช่อง (ไม่มี spacer แล้ว) */
@@ -218,18 +210,6 @@
     .col-right{ text-align:right; }
     .bold{ font-weight:700; }
 
-    .edit-btn{
-      position:absolute; right:10px; top:8px;
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:10px; border:1px solid #c7d2fe; background:#eef2ff; color:#3730a3;
-      font-size:13px; font-weight:600;
-    }
-    .qty-box{ display:inline-flex; align-items:center; gap:8px; justify-content:flex-end; }
-    .qty-box button{
-      width:26px; height:26px; border-radius:8px; border:1px solid #e2e8f0; background:#fff;
-      font-weight:700; line-height:1; display:flex; align-items:center; justify-content:center;
-    }
-    .qty-box input{ width:64px; text-align:right; border:1px solid #e5e7eb; border-radius:10px; padding:4px 8px; }
     .disabled { opacity:.5; pointer-events:none; }
     
     /* ===== Overlay + Toast ===== */
@@ -347,31 +327,10 @@
   padding: 8px 10px;
 }
 
-/* ปุ่มปิด / ปุ่ม Revise / Approve / Reject */
 .modal-card.compact #detailButtons button {
   font-size: 13px;
   padding: 6px 14px;
   border-radius: 10px;
-}
-
-    /* ปรับขนาดปุ่ม Revise ให้เข้ากับโหมด compact */
-.modal-card.compact .edit-btn{
-  padding: 4px 8px;                 /* เดิม 6px 10px */
-  font-size: 12px;                  /* เดิม 13px */
-  border-radius: 8px;               /* เดิม 10px */
-  gap: 4px;                         /* เดิม 6px */
-}
-
-/* แก้ตำแหน่งให้ไม่ชิดขอบเกินไป */
-.modal-card.compact .edit-btn{
-  right: 8px;                       /* เดิม 10px */
-  top: 6px;                         /* เดิม 8px */
-}
-
-/* Hover นุ่มลง เพื่อให้กลมกลืนมากขึ้น */
-.modal-card.compact .edit-btn:hover{
-  background:#e0e7ff;               /* ฟ้าอ่อนกว่าเดิม */
-  border-color:#bfc8ff;
 }
 
     /* ===== Viewport scale 90% เฉพาะเนื้อหา ไม่แตะ overlay/fixed ===== */
@@ -524,7 +483,6 @@ body {
     <button class="status-chip active" data-status="ALL">All items</button>
     <button class="status-chip" data-status="WAITING">Waiting for approval</button>
     <button class="status-chip" data-status="APPROVE">Approve</button>
-    <button class="status-chip" data-status="REVISE">Revise</button>
     <button class="status-chip" data-status="REJECT">Reject</button>
   </div>
 
@@ -539,26 +497,28 @@ body {
   </div>
 </div>
 
-        <div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="table-scroll">
-          <div class="grid-head">
-  <div>Request Number</div>
-  <div>ผู้ขอเบิก</div>
-  <div>วันที่ขอ</div>
-  <div class="col-center">รายการ</div>
-  <div class="col-center">จำนวนเงิน</div>
-  <div class="col-center">สถานะ</div>
-  <div class="col-left pl-2 md:pl-3">รายละเอียด</div>
-</div>
-          <div id="reqList"></div>
-        </div>
+<div class="mt-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+  <div class="table-scroll">
+    <div class="grid-head">
+      <div>Request Number</div>
+      <div>ผู้ขอเบิก</div>
+      <div>วันที่ขอ</div>
+      <div class="col-center">รายการ</div>
+      <div class="col-center">จำนวนเงิน</div>
+      <div class="col-center">สถานะ</div>
+      <div class="col-left pl-2 md:pl-3">รายละเอียด</div>
+    </div>
+    <div id="reqList"></div>
+  </div>
 
-        <div id="pager"
+  <div id="pager"
        class="px-4 py-3 border-t border-slate-100
               flex items-center justify-between text-sm text-slate-600">
+  </div> <!-- ✅ ปิด pager -->
+</div>
         
-      </section>
     </main>
+    </div>
   </section>
 
   <!-- ========== MODAL ========= -->
@@ -605,23 +565,23 @@ body {
           </div>
         </div>
 
-        <!-- ตารางรายการย่อย -->
-        <div class="mt-4">
-          <div class="table-shell">
-            <div class="table-head">
-              <span class="font-semibold">รายละเอียดรายการเบิก</span>
-              <button id="toggleEditBtn" class="edit-btn" type="button"><span>✏️ Revise</span></button>
-            </div>
-            <div class="detail-row text-slate-600 font-medium bg-slate-50">
-              <div class="col-center">ลำดับ</div>
-              <div>รายการ</div>
-              <div class="col-right">จำนวน</div>
-              <div class="col-right">ราคา/หน่วย (บาท)</div>
-              <div class="col-right">รวม</div>
-            </div>
-            <div id="dItems"></div>
-          </div>
-        </div>
+<div class="table-shell">
+  <div class="table-head">
+    <span class="font-semibold">รายละเอียดรายการเบิก</span>
+  </div>
+
+  <!-- แถวหัวคอลัมน์ของรายละเอียดรายการ (วาง "นอก" .table-head) -->
+  <div class="detail-row text-slate-600 font-medium bg-slate-50">
+    <div class="col-center">ลำดับ</div>
+    <div>รายการ</div>
+    <div class="col-right">จำนวน</div>
+    <div class="col-right">ราคา/หน่วย (บาท)</div>
+    <div class="col-right">รวม</div>
+  </div>
+
+  <!-- เนื้อหารายการ -->
+  <div id="dItems"></div>
+</div>
 
         <!-- คอมเมนต์ + ปุ่ม -->
         <div class="mt-5">
@@ -632,6 +592,7 @@ body {
       </div>
     </div>
   </div>
+  </div> <!-- ปิด #appRoot -->
   
   <!-- ===== Loading Overlay ===== -->
 <div id="appOverlay" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/40">
@@ -676,7 +637,7 @@ function hideHint(){ document.getElementById('hint').classList.add('hidden'); }
 
 function gvizUrl(sheetName, tq){
   const qs = new URLSearchParams({ tqx:'out:json', sheet: sheetName, tq });
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` + qs.toString();
+  return https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq? + qs.toString();
 }
 async function fetchGVizRows(url){
   const res = await fetch(url, { cache:'no-store' });
@@ -687,7 +648,7 @@ async function fetchGVizRows(url){
   const cols = json.table.cols.map(c=>c.label || c.id || '');
   const rows = json.table.rows.map(r => {
     const obj = {};
-    r.c.forEach((c,i)=> obj[cols[i] || `c${i}`] = c ? c.v : null );
+    r.c.forEach((c,i)=> obj[cols[i] || c${i}] = c ? c.v : null );
     obj._arr = r.c.map(c => c ? c.v : null);
     obj._fmt = r.c.map(c => (c && c.f) ? c.f : null);
     return obj;
@@ -886,7 +847,6 @@ function normalizeStatus(txt){
   if (!s || u.includes('WAIT') || s.includes('รออนุมัติ')) return 'WAITING';
 
   if (u.includes('APPROVE') || u.includes('SUBMIT') || s.includes('อนุมัติ')) return 'APPROVE';
-  if (u.includes('REVISE')  || s.includes('แก้ไข')) return 'REVISE';
   if (u.includes('REJECT')  || s.includes('ปฏิเสธ')) return 'REJECT';
 
   // ดีฟอลต์เผื่อกรณีสะกดไม่ตรง → จัดเป็น WAITING จะปลอดภัยกว่า
@@ -896,7 +856,6 @@ function normalizeStatus(txt){
 function statusClass(norm){
   const t = (norm||'').toUpperCase();
   if (t==='APPROVE') return 'approve';
-  if (t==='REVISE') return 'revise';
   if (t==='REJECT') return 'reject';
   return 'waiting';
 }
@@ -1062,8 +1021,6 @@ document.addEventListener('click', (e)=>{
 });
 
 /* ===== DETAIL ===== */
-let DETAIL_EDIT_MODE = false;
-let DETAIL_EDIT_DIRTY = false;
 let DETAIL_LINES = [];
 
 function parseLineItemsFromResponseRow(arr){
@@ -1082,24 +1039,15 @@ function parseLineItemsFromResponseRow(arr){
     
 function renderDetailButtons(type, acted){
   const box = document.getElementById('detailButtons');
-  const t = String(type||'').trim().toUpperCase();
-
-  const btnClose  = `<button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>`;
+  const btnClose   = `<button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>`;
   const btnApprove = `<button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('APPROVE')">Approve</button>`;
-  const btnReject = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105"  onclick="actOnCurrent('REJECT')">Reject</button>`;
-  const btnRevise = `<button class="px-4 py-2 rounded-xl bg-amber-500 text-white hover:brightness-105" onclick="actOnCurrent('REVISE')">Revise</button>`;
-  
-  // ✅ ถ้าใบนี้ถูก “กระทำแล้ว” (มีสถานะ) → แสดงแค่ปุ่มปิด
-  if (acted) {
-    box.innerHTML = `${btnClose}`;
-    return;
-  }
+  const btnReject  = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">Reject</button>`;
 
-  if (t === 'BU HEAD'){
-    box.innerHTML = `${btnClose} ${btnApprove} ${btnReject}`;
-  }else{
-    box.innerHTML = `${btnClose} ${btnApprove} ${btnReject} ${btnRevise}`;
-  }
+  // ถ้าใบนี้เคยถูกกระทำแล้ว → ให้ปิดอย่างเดียว
+  if (acted) { box.innerHTML = `${btnClose}`; return; }
+
+  // เหลือเฉพาะ Approve/Reject
+  box.innerHTML = `${btnClose} ${btnApprove} ${btnReject}`;
 }
     
 function recalcTotals(){
@@ -1112,64 +1060,23 @@ function renderDetailItems(){
   const host = document.getElementById('dItems');
   if (!DETAIL_LINES.length){
     host.innerHTML = `
-  <div class="detail-row text-slate-500 text-sm">
-    <div style="grid-column:1 / -1">ไม่มีรายการย่อย</div>
-  </div>`;
+      <div class="detail-row text-slate-500 text-sm">
+        <div style="grid-column:1 / -1">ไม่มีรายการย่อย</div>
+      </div>`;
     return;
   }
   host.innerHTML = DETAIL_LINES.map((li, idx) => {
-    const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
-    if (!DETAIL_EDIT_MODE || isBUHead){
-      return `
-        <div class="detail-row">
+    return `
+      <div class="detail-row">
         <div class="col-center">${idx + 1}</div>
-          <div>${li.name}</div>
-          <div class="col-right">${(li.qty).toLocaleString()}</div>
-          <div class="col-right">${(li.price).toLocaleString()}</div>
-          <div class="col-right bold">${(li.sum).toLocaleString()}</div>
-        </div>`;
-    } else {
-      return `
-        <div class="detail-row">
-        <div class="col-center">${idx + 1}</div>
-          <div>${li.name}</div>
-          <div class="col-right">
-            <div class="qty-box">
-              <button type="button" onclick="changeQty(${idx}, -1)">−</button>
-              <input type="number" min="0" step="1" value="${li.qty}" oninput="typeQty(${idx}, this.value)">
-              <button type="button" onclick="changeQty(${idx}, 1)">+</button>
-            </div>
-          </div>
-          <div class="col-right">${(li.price).toLocaleString()}</div>
-          <div class="col-right bold">${(li.sum).toLocaleString()}</div>
-        </div>`;
-    }
+        <div>${li.name}</div>
+        <div class="col-right">${(li.qty).toLocaleString()}</div>
+        <div class="col-right">${(li.price).toLocaleString()}</div>
+        <div class="col-right bold">${(li.sum).toLocaleString()}</div>
+      </div>`;
   }).join('');
 }
-function markDirty(){
-  if (!DETAIL_EDIT_DIRTY){
-    DETAIL_EDIT_DIRTY = true;
-    renderDetailButtons(APPROVER?.type);
-  }
-}
-function changeQty(idx, delta){
-  const li = DETAIL_LINES[idx];
-  li.qty = Math.max(0, (Number(li.qty)||0) + delta);
-  markDirty(); recalcTotals(); renderDetailItems();
-}
-function typeQty(idx, val){
-  DETAIL_LINES[idx].qty = Math.max(0, Number(val||0));
-  markDirty(); recalcTotals(); renderDetailItems();
-}
-document.getElementById('toggleEditBtn').addEventListener('click', ()=>{
-  const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
-  if (isBUHead) return; // ไม่อนุญาต BU Head แก้ไข
-  DETAIL_EDIT_MODE = !DETAIL_EDIT_MODE;
-  document.getElementById('toggleEditBtn').innerHTML = 
-    DETAIL_EDIT_MODE ? '<span>✅ Done</span>' : '<span>✏️ Revise</span>';
-  renderDetailItems();
-});
-    
+        
     /* ===== Comment Cache (persist ต่อใบ) ===== */
 let COMMENT_CACHE = (() => {
   try { return JSON.parse(sessionStorage.getItem('commentCache') || '{}'); }
@@ -1188,15 +1095,12 @@ function setComment(reqNo, text){
 
 async function openDetail({i}){
   CURRENT_DETAIL = i;
-  DETAIL_EDIT_MODE  = false;
-  DETAIL_EDIT_DIRTY = false;
-  
-  const isBUHead = String(APPROVER?.type || '').toUpperCase() === 'BU HEAD';
-  const toggleBtn = document.getElementById('toggleEditBtn');
-  toggleBtn.innerHTML = '<span>✏️ Revise</span>';
 
-  const srcRow = SOURCE_ROWS[i]; if(!srcRow) return;
-  const arr = srcRow._arr || []; const fmt = srcRow._fmt || [];
+  const srcRow = SOURCE_ROWS[i]; 
+  if(!srcRow) return;
+
+  const arr = srcRow._arr || [];
+  const fmt = srcRow._fmt || [];
   const src = getSourceByType(APPROVER?.type);
   const idxA=0, idxB=1, idxG=6, idxM=12, idxStatus=src.statusIdx;
 
@@ -1206,84 +1110,73 @@ async function openDetail({i}){
   const total   = Number(arr[idxM] ?? 0);
   const rawStatus = String(arr[idxStatus] || '').trim();
   const displayStatus = rawStatus || 'รออนุมัติ';
-  const pillClass     = rawStatus === '' ? 'waiting' :    statusClass(normalizeStatus(displayStatus));
-  
-  const acted = rawStatus !== '';
+  const pillClass     = rawStatus === '' ? 'waiting' : statusClass(normalizeStatus(displayStatus));
+  const acted         = rawStatus !== '';
 
-  // ใส่ข้อมูล
+// เติมข้อมูลหัวกล่อง
   document.getElementById('dReqNo').textContent     = reqNo;
   document.getElementById('dDate').textContent      = reqDate;
   document.getElementById('dRequester').textContent = reqBy;
+
   const big = document.getElementById('dStatusBig');
   big.textContent = displayStatus;
   big.className   = `status-badge-big ${pillClass.replace('waiting','')}`;
-  
-   // ✅ เติม/ผูกคอมเมนต์ของใบนี้จาก cache + อัปเดต cache เมื่อพิมพ์
+
+  // คอมเมนต์ (อ่านอย่างเดียวถ้า acted แล้ว)
   const commentEl = document.getElementById('dComment');
   if (commentEl){
     commentEl.value = getComment(reqNo);
-    
     if (acted) {
-      // ล็อค: ซ่อน focus ring + ห้ามพิมพ์
-      commentEl.readOnly = true;                 // ไม่ให้แก้ไข
-      commentEl.classList.add('disabled');       // ใช้สไตล์จาง
-      commentEl.oninput = null;                  // ตัด handler
+      commentEl.readOnly = true;
+      commentEl.classList.add('disabled');
+      commentEl.oninput = null;
     } else {
-      // ปลดล็อค: ให้พิมพ์และเก็บ cache
       commentEl.readOnly = false;
       commentEl.classList.remove('disabled');
       commentEl.oninput = (e)=> setComment(reqNo, e.target.value);
     }
   }
 
-  // ==== ปุ่ม Revise (toggle) ====
-  // ซ่อนปุ่มแก้ไข ถ้าเป็น BU Head หรือ ใบที่มีสถานะแล้ว
-  toggleBtn.style.display = (isBUHead || acted) ? 'none' : '';
-
-  // รายการย่อยจาก Response
+   // ดึงรายการย่อยจากชีต Response
   const tqR = `select * where A='${String(reqNo).replace(/'/g,"\\'")}'`;
   const respRows = await fetchGVizRows(gvizUrl(SHEET_RESP, tqR));
   DETAIL_LINES = (respRows && respRows.length) ? parseLineItemsFromResponseRow(respRows[0]._arr || []) : [];
-  document.getElementById('dItemCountLabel').textContent = `รายการเบิก ${DETAIL_LINES.length} รายการ`;
 
-  recalcTotals();
+  document.getElementById('dItemCountLabel').textContent = `รายการเบิก ${DETAIL_LINES.length} รายการ`;
+  document.getElementById('dTotal').textContent = `${(total||0).toLocaleString()} บาท`;
+
   renderDetailItems();
   renderDetailButtons(APPROVER?.type, acted);
 
   const ov = document.getElementById('detailOverlay');
-  ov.classList.remove('hidden'); ov.classList.add('flex');
+  ov.classList.remove('hidden'); 
+  ov.classList.add('flex');
 }
-function closeDetail(){
-  const ov = document.getElementById('detailOverlay');
-  ov.classList.add('hidden'); ov.classList.remove('flex');
-}
-document.getElementById('detailOverlay').addEventListener('click', (e)=>{
-  if (e.target.id === 'detailOverlay') closeDetail();
-});
-document.addEventListener('keydown', (e)=>{
-  if (e.key === 'Escape') closeDetail();
-});
 
+    function closeDetail(){
+  const ov = document.getElementById('detailOverlay');
+  if (!ov) return;
+  ov.classList.add('hidden');
+  ov.classList.remove('flex');
+  CURRENT_DETAIL = null;
+}
+
+  
 /* ===== ACT ===== */
 async function actOnCurrent(type){
   const idx = CURRENT_DETAIL;
-  if(idx == null) return;
+  if (idx == null) return;
+
   const srcRow = SOURCE_ROWS[idx];
-  const reqNo = srcRow?._arr?.[0] || '—';
+  const reqNo  = srcRow?._arr?.[0] || '—';
   const comment = document.getElementById('dComment').value || '';
   const ap = APPROVER || JSON.parse(sessionStorage.getItem('approver') || '{}');
 
-  const isBUHead = String(ap?.type || '').toUpperCase() === 'BU HEAD';
-  if (!isBUHead && DETAIL_EDIT_DIRTY && type !== 'REVISE'){
-  toast('มีการแก้ไขรายการแล้ว กรุณาส่งเป็น Revise เท่านั้น','warn',2400);
-  return;
-}
-  const editedItems = DETAIL_EDIT_DIRTY ? DETAIL_LINES.map(li => ({ name: li.name, qty: li.qty, price: li.price })) : null;
-
   try{
-  showOverlay('กำลังบันทึกข้อมูลไปยังระบบ…');
-  const res = await fetch(API_BASE, {
+    showOverlay('กำลังบันทึกข้อมูลไปยังระบบ…');
+const res = await fetch(API_BASE, {
   method: 'POST',
+  headers: { 'Content-Type': 'application/json' }, // สำคัญมาก
   body: JSON.stringify({
     action: 'act',
     type,
@@ -1291,60 +1184,49 @@ async function actOnCurrent(type){
     approver: ap?.name || '',
     approverEmail: ap?.email || '',
     role: ap?.type || '',
-    comment,
-    editedItems
+    comment
   })
 });
 
-const rawText = await res.text();
-let data;
-try { data = JSON.parse(rawText); }
-catch (e) {
-  console.error('API raw (not JSON):', rawText);
-  hideOverlay();
-  toast('API ตอบกลับไม่ใช่ JSON','error',2600);
-  return;
-}
+    const rawText = await res.text();
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch (e) {
+      console.error('API raw (not JSON):', rawText);
+      hideOverlay();
+      toast('API ตอบกลับไม่ใช่ JSON','error',2600);
+      return;
+    }
 
-if (!res.ok || !data.ok){
-  console.error('API error payload:', data);
-  hideOverlay();
-  toast('อัปเดตไม่สำเร็จ: ' + (data?.error || (`HTTP ${res.status} ${res.statusText}`)), 'error', 2600);
-  return;
-}
+    if (!res.ok || !data.ok){
+      console.error('API error payload:', data);
+      hideOverlay();
+      toast('อัปเดตไม่สำเร็จ: ' + (data?.error || (`HTTP ${res.status} ${res.statusText}`)), 'error', 2600);
+      return;
+    }
 
-hideOverlay();
-const okMsg =
-  type === 'APPROVE' ? 'อนุมัติรายการเบิก' :
-  type === 'REJECT' ? 'ปฏิเสธรายการเบิก' :
-  type === 'REVISE' ? 'แก้ไขรายการเบิก' :
-  'บันทึกข้อมูลไปยังระบบเสร็จสิ้น';
+    hideOverlay();
+    const okMsg = (type === 'APPROVE') ? 'อนุมัติรายการเบิก' : 'ปฏิเสธรายการเบิก';
+    const toastType = (type === 'APPROVE') ? 'success' : 'error';
+    toast(okMsg, toastType, 1600);
 
-// map action → toast type (กำหนดสี)
-const toastType =
-  type === 'APPROVE' ? 'success' :
-  type === 'REJECT' ? 'error' :
-  type === 'REVISE' ? 'warn' :
-  'success';
+    // เก็บคอมเมนต์ล่าสุด (กันกรณี oninput ยังไม่ยิง)
+    setComment(reqNo, (document.getElementById('dComment')?.value || ''));
 
-toast(okMsg, toastType, 1600);
-    
-// ✅ เก็บคอมเมนต์ล่าสุดซ้ำอีกครั้ง (กันเผื่อ oninput ยังไม่ยิง)
-setComment(reqNo, (document.getElementById('dComment')?.value || ''));
-    
-// บันทึกเวลาเพื่อใช้เรียงกองล่าง
-markActed(reqNo);
+    // บันทึกเวลาที่กระทำ ใช้เรียง “กองล่าง”
+    markActed(reqNo);
 
     closeDetail();
-    SOURCE_ROWS = [];
+    SOURCE_ROWS = [];                   // เคลียร์ cache เพื่อรีเฟรชจากชีต
     await loadAndRenderList(CURRENT_FILTER);
-    
+
   }catch(err){
-  console.error(err);
-  hideOverlay();
-  toast('เกิดข้อผิดพลาดในการส่งข้อมูล','error',2400);
+    console.error(err);
+    hideOverlay();
+    toast('เกิดข้อผิดพลาดในการส่งข้อมูล','error',2400);
+  }
 }
-}
+  
     /* NEW: Pager */
 function renderPager(totalPages){
   const el = document.getElementById('pager');
