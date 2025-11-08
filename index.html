@@ -245,12 +245,23 @@
     @media (max-width: 640px){
   .modal-card{ width: 98vw; max-height: 90vh; }
 }
-    /* ขนาดปกติคงไว้จากเดิม */
+/* การ์ดครอบโค้ง และซ่อนขอบคมจากสกรอลล์ด้านใน */
 .modal-card{
   width: min(980px, 96vw);
   max-height: 88vh;
-  overflow: auto;
+  overflow: hidden;        /* ← เปลี่ยนเป็น hidden เพื่อให้มุมโค้งเนียน */
   border-radius: 18px;
+}
+
+/* ให้สกรอลล์เกิดแค่เมื่อ “ภายใน” สูงเกินกรอบ */
+.modal-body{
+  max-height: calc(88vh - 90px); /* เผื่อหัว+ปุ่มท้ายกล่อง (~90px ปรับได้) */
+  overflow: auto;                /* ถ้าเนื้อหาไม่เกิน จะไม่แสดงสกรอลล์ */
+}
+    .modal-body::-webkit-scrollbar{ width: 10px; }
+.modal-body::-webkit-scrollbar-thumb{
+  background: rgba(100,116,139,.35);
+  border-radius: 999px;
 }
 
 /* โหมดเล็กลง */
