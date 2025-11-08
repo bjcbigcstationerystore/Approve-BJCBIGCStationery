@@ -187,7 +187,7 @@
     .modal-overlay { background: rgba(0,0,0,.4); }
     .modal-card   { border-radius: 18px; box-shadow: 0 20px 60px rgba(2,6,23,.25); overflow: hidden; }
     .modal-head   { padding: 18px 22px; font-weight: 800; font-size: 20px; }
-    .modal-close  { position:absolute; right:16px; top:12px; font-size:22px; color:#94a3b8; }
+    .modal-close  { position:absolute; right:16px; top:12px; font-size:40px; color:#94a3b8; }
     .modal-close:hover { color:#475569; }
 
     .total-box{
@@ -525,10 +525,10 @@ body {
   <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
   <div class="bg-white relative modal-card compact"> <!-- เพิ่ม class compact -->
     <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
-    <div class="modal-head">รายละเอียดการขอเบิกเครื่องเขียน</div>
+    <div class="modal-head mt-2 md:mt-3">รายละเอียดการขอเบิกอุปกรณ์สำนักงาน</div>
     <div class="modal-body px-5 pb-5">
         <!-- ซ้าย 2 แถว 4 กล่อง | ขวา รายการเบิก + กล่องรวม -->
-        <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6 mb-2 lg:mb-6">
           <!-- ซ้าย -->
           <div class="space-y-4">
             <!-- แถวบน: Request Number + วันที่ขอ -->
