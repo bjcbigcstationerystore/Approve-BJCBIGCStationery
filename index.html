@@ -375,10 +375,52 @@
 body {
   overflow-x: visible;
 }
-/* เฉพาะ Timeline Modal: ขยับหัวข้อให้ลงจากขอบบน */
-#timelineOverlay .modal-head {
-  padding-top: 26px;   /* เดิม 18px → ให้เว้นระยะหายใจ */
+#timelineOverlay{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 16px;
 }
+
+/* กล่องไวท์: กว้างพอดีกับข้อความ + เผื่อขอบ */
+#timelineOverlay .timeline-card{
+  /* เดสก์ท็อป: กล่องกว้างขึ้น ไม่ตัดบรรทัด */
+  width: min(1000px, 88vw);      /* ปรับหลัก ๆ ตรงนี้ถ้าอยากกว้าง/แคบกว่านี้ */
+  padding: 28px 48px 34px;       /* เผื่อขอบให้ดูโปร่ง */
+  border-radius: 22px;
+  box-shadow: 0 22px 64px rgba(2,6,23,.22);
+}
+
+/* หัวข้อให้ลงจากขอบบนเล็กน้อย */
+#timelineOverlay .modal-head{
+  padding-top: 22px;             /* เดิม 18 → เว้นหายใจ */
+  padding-right: 48px;           /* กันตัว X */
+}
+
+/* กากบาท: ขยับซ้าย ไม่ชิดจนเกินไป และขนาดกำลังดี */
+#timelineOverlay .modal-close{
+  right: 16px;                   /* เดิม 6px */
+  top:   12px;                   /* เดิม 6px */
+  font-size: 32px;               /* เดิม 45px */
+  line-height: 1;
+}
+
+/* เนื้อบรรทัด: เดสก์ท็อปไม่ตัดบรรทัด, จอเล็กค่อยยอมตัด */
+@media (min-width: 1024px){
+  #timelineOverlay li > .ms-12{ white-space: nowrap; }
+}
+
+/* มือถือ/จอเล็ก: ให้กล่องยืดหยุ่นและข้อความตัดบรรทัดได้ตามปกติ */
+@media (max-width: 640px){
+  #timelineOverlay .timeline-card{
+    width: min(560px, 94vw);
+    padding: 20px 16px 22px;
+    border-radius: 18px;
+  }
+  #timelineOverlay li > .ms-12{ white-space: normal; }
+}
+
+
 
 
     
@@ -633,7 +675,7 @@ body {
 <div id="timelineOverlay"
      class="fixed inset-0 hidden items-center justify-center modal-overlay z-[65] p-4">
   <!-- บีบกรอบให้พอดี (แคบลง) -->
-  <div class="bg-white relative modal-card w-[min(520px,86vw)] max-h-[84vh] overflow-auto">
+  <div class="bg-white relative modal-card timeline-card max-h-[84vh] overflow-auto">
     <button class="modal-close" onclick="closeTimeline()" aria-label="Close">×</button>
 
     <!-- หัวเรื่องใส่อิโมจินาฬิกา -->
