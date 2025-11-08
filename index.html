@@ -525,7 +525,7 @@ body {
   <div id="detailOverlay" class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60]">
   <div class="bg-white relative modal-card compact"> <!-- เพิ่ม class compact -->
     <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
-    <div class="modal-head mt-2 md:mt-3">รายละเอียดการขอเบิกอุปกรณ์สำนักงาน</div>
+    <div class="modal-head mt-5 md:mt-7 pb-0">รายละเอียดการขอเบิกอุปกรณ์สำนักงาน</div>
     <div class="modal-body px-5 pb-5">
         <!-- ซ้าย 2 แถว 4 กล่อง | ขวา รายการเบิก + กล่องรวม -->
         <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6 mb-2 lg:mb-6">
@@ -1275,8 +1275,6 @@ document.addEventListener('click', (e) => {
   if (emp) emp.value = '';
   window.scrollTo(0,0);
 });
-
-
 
   </script>
 </body>
