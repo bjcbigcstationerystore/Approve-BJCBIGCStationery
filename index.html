@@ -187,7 +187,7 @@
     .modal-overlay { background: rgba(0,0,0,.4); }
     .modal-card   { border-radius: 18px; box-shadow: 0 20px 60px rgba(2,6,23,.25); overflow: hidden; }
     .modal-head   { padding: 18px 22px; font-weight: 800; font-size: 20px; }
-    .modal-close  { position:absolute; right:16px; top:12px; font-size:40px; color:#94a3b8; }
+    .modal-close  { position:absolute; right:10px; top:10px; font-size:34px; line-height: 1; color:#94a3b8; }
     .modal-close:hover { color:#475569; }
 
     .total-box{
@@ -410,6 +410,24 @@ body {
           <p id="hint" class="mt-3 text-sm text-rose-600 hidden hint-error">ไม่มีข้อมูลในระบบ</p>
         </form>
       </div>
+    
+    <!-- ===== Timeline Button (ใต้กล่องยืนยันตัวตน) ===== -->
+      <div class="mt-4 flex items-center justify-center">
+        <button
+          type="button"
+          onclick="openTimeline()"
+          class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white/70
+                 hover:bg-white active:translate-y-[1px]
+                 px-4 py-2 text-slate-700 shadow-sm">
+          <!-- ไอคอนนาฬิกาเล็ก ๆ -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span class="font-medium">Request &amp; Approval Timeline</span>
+        </button>
+      </div>
+    
     </div>
   </section>
 
@@ -522,77 +540,129 @@ body {
   </section>
 
   <!-- ========== MODAL ========= -->
-  <div id="detailOverlay" class="fixed inset-0 hidden items-start justify-center modal-overlay z-[60] pt-4 md:pt-6">
-  <div class="bg-white relative modal-card compact"> <!-- เพิ่ม class compact -->
+<!-- Overlay: รายละเอียดคำขอ -->
+<div id="detailOverlay"
+     class="fixed inset-0 hidden items-start justify-center modal-overlay z-[60] pt-4 md:pt-6">
+
+  <!-- กล่องเนื้อหา -->
+  <div class="bg-white relative modal-card compact">
     <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
     <div class="modal-head mt-1 md:mt-2 pb-0">รายละเอียดการขอเบิกอุปกรณ์สำนักงาน</div>
+
     <div class="modal-body px-5 pb-5">
-        <!-- ซ้าย 2 แถว 4 กล่อง | ขวา รายการเบิก + กล่องรวม -->
-        <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6 mb-2 lg:mb-6">
-          <!-- ซ้าย -->
-          <div class="space-y-4">
-            <!-- แถวบน: Request Number + วันที่ขอ -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-slate-500 text-sm">Request Number</div>
-                <div id="dReqNo" class="font-semibold">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-slate-500 text-sm">วันที่ขอ</div>
-                <div id="dDate" class="font-semibold">—</div>
-              </div>
+      <!-- ซ้าย 2 แถว 4 กล่อง | ขวา รายการเบิก + กล่องรวม -->
+      <div class="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-6 mb-2 lg:mb-6">
+        <!-- ซ้าย -->
+        <div class="space-y-4">
+          <!-- แถวบน: Request Number + วันที่ขอ -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-slate-500 text-sm">Request Number</div>
+              <div id="dReqNo" class="font-semibold">—</div>
             </div>
-            <!-- แถวล่าง: ผู้ขอเบิก + สถานะ(ใหญ่) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
-                <div id="dRequester" class="font-semibold">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div class="text-slate-500 text-sm mb-1">สถานะ</div>
-                <div><span id="dStatusBig" class="status-badge-big">รออนุมัติ</span></div>
-              </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-slate-500 text-sm">วันที่ขอ</div>
+              <div id="dDate" class="font-semibold">—</div>
             </div>
           </div>
 
-          <!-- ขวา -->
-          <div>
-            <div id="dItemCountLabel" class="text-sm text-slate-500 mb-1">รายการเบิก 0 รายการ</div>
-            <div class="total-box w-full mb-4">
-              <div class="label">จำนวนเงินรวม</div>
-              <div id="dTotal" class="value">0 บาท</div>
+          <!-- แถวล่าง: ผู้ขอเบิก + สถานะ(ใหญ่) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-slate-500 text-sm">ผู้ขอเบิก</div>
+              <div id="dRequester" class="font-semibold">—</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-slate-500 text-sm mb-1">สถานะ</div>
+              <div><span id="dStatusBig" class="status-badge-big">รออนุมัติ</span></div>
             </div>
           </div>
         </div>
 
-<div class="table-shell">
-  <div class="table-head">
-    <span class="font-semibold">รายละเอียดรายการเบิก</span>
-  </div>
-
-  <!-- แถวหัวคอลัมน์ของรายละเอียดรายการ (วาง "นอก" .table-head) -->
-  <div class="detail-row text-slate-600 font-medium bg-slate-50">
-    <div class="col-center">ลำดับ</div>
-    <div>รายการ</div>
-    <div class="col-right">จำนวน</div>
-    <div class="col-right">ราคา/หน่วย (บาท)</div>
-    <div class="col-right">รวม</div>
-  </div>
-
-  <!-- เนื้อหารายการ -->
-  <div id="dItems"></div>
-</div>
-
-        <!-- คอมเมนต์ + ปุ่ม -->
-        <div class="mt-5">
-          <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
-          <textarea id="dComment" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
+        <!-- ขวา -->
+        <div>
+          <div id="dItemCountLabel" class="text-sm text-slate-500 mb-1">รายการเบิก 0 รายการ</div>
+          <div class="total-box w-full mb-4">
+            <div class="label">จำนวนเงินรวม</div>
+            <div id="dTotal" class="value">0 บาท</div>
+          </div>
         </div>
-        <div id="detailButtons" class="mt-6 flex flex-wrap gap-2 justify-end"></div>
+      </div>
+
+      <div class="table-shell">
+        <div class="table-head">
+          <span class="font-semibold">รายละเอียดรายการเบิก</span>
+        </div>
+
+        <!-- แถวหัวคอลัมน์ของรายละเอียดรายการ -->
+        <div class="detail-row text-slate-600 font-medium bg-slate-50">
+          <div class="col-center">ลำดับ</div>
+          <div>รายการ</div>
+          <div class="col-right">จำนวน</div>
+          <div class="col-right">ราคา/หน่วย (บาท)</div>
+          <div class="col-right">รวม</div>
+        </div>
+
+        <!-- เนื้อหารายการ -->
+        <div id="dItems"></div>
+      </div>
+
+      <!-- คอมเมนต์ + ปุ่ม -->
+      <div class="mt-5">
+        <label class="text-sm text-slate-600">ความคิดเห็น (Comment)</label>
+        <textarea id="dComment" rows="3"
+                  class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-4 focus:ring-blue-100"></textarea>
+      </div>
+      <div id="detailButtons" class="mt-6 flex flex-wrap gap-2 justify-end"></div>
+      </div> <!-- ปิด .modal-body -->
+    </div>   <!-- ปิด .modal-card -->
+  </div>     <!-- ปิด #detailOverlay (อยู่ภายใน #appRoot ระดับเดียวกับ #timelineOverlay) -->
+
+<!-- ========== TIMELINE MODAL (COMPACT + ALIGNED LINE/DOTS) ========== -->
+<div id="timelineOverlay"
+     class="fixed inset-0 hidden items-center justify-center modal-overlay z-[65] p-4">
+  <!-- บีบกรอบให้พอดี (แคบลง) -->
+  <div class="bg-white relative modal-card w-[min(520px,86vw)] max-h-[84vh] overflow-auto">
+    <button class="modal-close" onclick="closeTimeline()" aria-label="Close">×</button>
+
+    <!-- หัวเรื่องใส่อิโมจินาฬิกา -->
+    <div class="modal-head"><span class="mr-2">🕒</span>Request &amp; Approval Timeline</div>
+
+    <div class="px-5 pb-5">
+      
+      <ol class="relative pl-8 space-y-6">
+
+  <li class="relative">
+    <span class="absolute left-2.5 top-1 w-3.5 h-3.5 rounded-full bg-emerald-600 ring-4 ring-emerald-100"></span>
+    <div class="ms-12 leading-relaxed font-medium text-lg text-slate-800">
+      พนักงานสามารถยื่นคำขอเบิกอุปกรณ์ได้ระหว่างวันที่ 1–10 ของทุกเดือน
+    </div>
+  </li>
+
+  <li class="relative">
+    <span class="absolute left-2.5 top-1 w-3.5 h-3.5 rounded-full bg-sky-600 ring-4 ring-sky-100"></span>
+    <div class="ms-12 leading-relaxed font-medium text-lg text-slate-800">
+      รายการที่ได้รับการอนุมัติภายในวันที่ 15 จะถูกจัดเตรียมและส่งมอบภายในช่วงสิ้นเดือน
+    </div>
+  </li>
+
+  <li class="relative">
+    <span class="absolute left-2.5 top-1 w-3.5 h-3.5 rounded-full bg-amber-600 ring-4 ring-amber-100"></span>
+    <div class="ms-12 leading-relaxed font-medium text-lg text-slate-800">
+      หากรายการได้รับการอนุมัติหลังวันที่ 15 จะถูกเลื่อนไปจัดส่งในรอบเดือนถัดไป
+    </div>
+  </li>
+
+</ol>
+
+      <div class="mt-6 flex justify-end">
+        <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300"
+                onclick="closeTimeline()">ปิด</button>
       </div>
     </div>
   </div>
-  </div> <!-- ปิด #appRoot -->
+</div>
+    
   
   <!-- ===== Loading Overlay ===== -->
 <div id="appOverlay" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/40">
@@ -1275,6 +1345,34 @@ document.addEventListener('click', (e) => {
   if (emp) emp.value = '';
   window.scrollTo(0,0);
 });
+    /* ===== Timeline Modal ===== */
+function openTimeline(){
+  const ov = document.getElementById('timelineOverlay');
+  if (!ov) return;
+  ov.classList.remove('hidden');
+  ov.classList.add('flex');
+}
+
+function closeTimeline(){
+  const ov = document.getElementById('timelineOverlay');
+  if (!ov) return;
+  ov.classList.add('hidden');
+  ov.classList.remove('flex');
+}
+
+// ปิดเมื่อคลิกฉากหลัง
+document.addEventListener('click', (e)=>{
+  const ov = document.getElementById('timelineOverlay');
+  if (!ov || ov.classList.contains('hidden')) return;
+  // ถ้าคลิกที่ overlay เอง (ไม่ใช่คลิกรายการข้อความด้านใน) ให้ปิด
+  if (e.target === ov) closeTimeline();
+});
+
+// ปิดด้วย ESC
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape') closeTimeline();
+});
+
 
 
 
