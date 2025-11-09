@@ -236,12 +236,7 @@
 
 /* ปรับ modal ให้พอดีจอเสมอ */
 .modal-overlay{ padding:16px; }                 /* เว้นขอบขณะจอเล็ก */
-.modal-card{
-  width: min(980px, 96vw);                       /* แคบลงนิดให้เผื่อขอบ */
-  max-height: 88vh;                              /* ไม่เกินสูงจอ */
-  overflow: auto;                                /* ถ้าเนื้อหาเยอะให้สกรอลล์ในกล่อง */
-  border-radius: 18px;
-}
+
     @media (max-width: 640px){
   .modal-card{ width: 98vw; max-height: 90vh; }
 }
@@ -350,6 +345,19 @@
   padding: 6px 14px;
   border-radius: 10px;
 }
+    /* ===== ย่อขนาดกล่องรายละเอียด (#detailOverlay) เหลือ 70% ===== */
+#detailOverlay .modal-card{
+  transform: scale(.8);
+  transform-origin: top center;  /* ย่อจากกึ่งกลางด้านบน จะดูบาลานซ์กับการจัดตำแหน่ง items-start */
+}
+
+/* มือถือ/จอเล็ก: ไม่ย่อ เพื่อให้ยังอ่านง่าย */
+@media (max-width: 640px){
+  #detailOverlay .modal-card{
+    transform: none;
+  }
+}
+
 
     /* ===== Viewport scale 90% เฉพาะเนื้อหา ไม่แตะ overlay/fixed ===== */
 .app-viewport{
@@ -436,6 +444,21 @@ body {
   #timelineOverlay li > .ms-12{ white-space: normal; }
 }
 
+    /* ===== Desktop: ยืดความสูงกล่องรายละเอียดให้ยาวขึ้น ===== */
+@media (min-width: 1024px){
+  /* ยืดกรอบกล่อง */
+  #detailOverlay .modal-card{
+    max-height: 120vh;                 /* เดิม 88vh → 120vh */
+  }
+  #detailOverlay .modal-card.compact{
+    max-height: 120vh;                 /* เดิม 84vh → 120vh */
+  }
+  /* ยืดความสูงส่วนเนื้อหาให้สัมพันธ์กับกรอบใหม่ */
+  #detailOverlay .modal-card .modal-body{
+    max-height: calc(120vh - 90px);    /* เดิม calc(88vh - 90px) */
+    overflow: auto;
+  }
+}
 
 
 
