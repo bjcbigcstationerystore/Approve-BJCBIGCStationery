@@ -1334,18 +1334,20 @@ async function actOnCurrent(type){
 
   try{
     showOverlay('กำลังบันทึกข้อมูลไปยังระบบ…');
+const form = new URLSearchParams({
+  action: 'act',
+  type,
+  requestNo: reqNo,
+  approver: ap?.name || '',
+  approverEmail: ap?.email || '',
+  role: ap?.type || '',
+  comment
+});
+
 const res = await fetch(API_BASE, {
   method: 'POST',
-  headers: { 'Content-Type': 'application/json' }, // สำคัญมาก
-  body: JSON.stringify({
-    action: 'act',
-    type,
-    requestNo: reqNo,
-    approver: ap?.name || '',
-    approverEmail: ap?.email || '',
-    role: ap?.type || '',
-    comment
-  })
+  // ❌ ไม่ต้องใส่ headers เลย เบราว์เซอร์จะตั้งเป็น application/x-www-form-urlencoded ให้อัตโนมัติ
+  body: form
 });
 
     const rawText = await res.text();
