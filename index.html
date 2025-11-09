@@ -409,7 +409,7 @@ body {
   box-shadow: 0 22px 64px rgba(2,6,23,.22);
 
   /* ⬇️ ย่อขนาดทั้งกล่อง (รวมข้อความ/ปุ่ม X) */
-  transform: scale(.7);             /* ปรับ .7 = 70% (อยากใหญ่/เล็ก ก็ตั้ง .8/.9/.6 ได้) */
+  transform: scale(.8);             /* ปรับ .7 = 70% (อยากใหญ่/เล็ก ก็ตั้ง .8/.9/.6 ได้) */
   transform-origin: center center;  /* ย่อจากกึ่งกลางกล่อง */
 }
 
@@ -459,6 +459,23 @@ body {
     overflow: auto;
   }
 }
+    /* === Compact loading overlay (ย่อกรอบ + ตัวอักษร + ไอคอน) === */
+#appOverlay > div{
+  padding: 8px 10px !important;  /* เดิม px-5 py-4 → เล็กลง */
+  border-radius: 12px !important; /* มุมโค้งเล็กลง */
+  gap: 8px !important;            /* ระยะห่างไอคอน-ข้อความลดลง */
+  font-size: 13px !important;     /* ตัวอักษรเล็กลงทั้งกล่อง */
+  box-shadow: 0 10px 24px rgba(2,6,23,.18) !important; /* เงาเบาลง (ทางเลือก) */
+}
+#appOverlay svg{
+  width: 16px !important;   /* เดิม 20 → 16 */
+  height: 16px !important;
+}
+#appOverlay #appOverlayText{
+  font-size: 13px !important;     /* ย้ำขนาดข้อความ */
+  line-height: 1.2 !important;
+}
+
 
 
 
