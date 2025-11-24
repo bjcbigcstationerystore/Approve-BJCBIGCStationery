@@ -750,6 +750,55 @@ body {
       </div> <!-- ปิด .modal-body -->
     </div>   <!-- ปิด .modal-card -->
   </div>     <!-- ปิด #detailOverlay (อยู่ภายใน #appRoot ระดับเดียวกับ #timelineOverlay) -->
+    
+    <!-- ========== REJECT REASON MODAL (ADMIN) ========== -->
+<div id="rejectReasonOverlay"
+     class="fixed inset-0 hidden items-center justify-center modal-overlay z-[70] p-4">
+  <div class="bg-white relative modal-card compact max-w-lg w-full">
+    <button class="modal-close" onclick="closeRejectModal()" aria-label="Close">×</button>
+
+    <div class="modal-head pb-1">
+      ปฏิเสธการขอเบิกอุปกรณ์สำนักงาน
+    </div>
+
+    <div class="modal-body px-5 pb-5">
+      <label for="rejectReasonSelect" class="block text-sm font-semibold text-slate-700 mb-2">
+        กรุณาเลือกเหตุผลในการปฏิเสธการเบิก :
+      </label>
+
+      <select id="rejectReasonSelect"
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+        <option value="">-- กรุณาเลือกเหตุผล --</option>
+        <option value="Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้">
+          1. Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้
+        </option>
+        <option value="ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้">
+          2. ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้
+        </option>
+        <option value="สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า">
+          3. สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า
+        </option>
+        <option value="บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5–7 วัน">
+          4. บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5–7 วัน
+        </option>
+      </select>
+
+      <div class="mt-5 flex justify-end gap-3">
+        <button type="button"
+                class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold"
+                onclick="closeRejectModal()">
+          Cancel
+        </button>
+        <button type="button"
+                class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold"
+                onclick="confirmRejectReason()">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- ========== TIMELINE MODAL (COMPACT + ALIGNED LINE/DOTS) ========== -->
 <div id="timelineOverlay"
@@ -1244,12 +1293,23 @@ function renderDetailButtons(type, acted){
   const box = document.getElementById('detailButtons');
   const btnClose   = `<button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300" onclick="closeDetail()">ปิด</button>`;
   const btnApprove = `<button class="px-4 py-2 rounded-xl bg-emerald-600 text-white hover:brightness-105" onclick="actOnCurrent('APPROVE')">Approve</button>`;
-  const btnReject  = `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">Reject</button>`;
+
+  // === ปรับปุ่ม Reject ให้ ADMIN ใช้ popup เลือกเหตุผล ===
+  const isAdmin = String(type || '').toUpperCase() === 'ADMIN';
+  const btnRejectAdmin =
+    `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="openRejectModal()">Reject</button>`;
+  const btnRejectNormal =
+    `<button class="px-4 py-2 rounded-xl bg-rose-600 text-white hover:brightness-105" onclick="actOnCurrent('REJECT')">Reject</button>`;
+
+  const btnReject = isAdmin ? btnRejectAdmin : btnRejectNormal;
 
   // ถ้าใบนี้เคยถูกกระทำแล้ว → ให้ปิดอย่างเดียว
-  if (acted) { box.innerHTML = `${btnClose}`; return; }
+  if (acted) {
+    box.innerHTML = `${btnClose}`;
+    return;
+  }
 
-  // เหลือเฉพาะ Approve/Reject
+  // ยังไม่เคยอนุมัติ/ปฏิเสธ → แสดงปุ่มครบ
   box.innerHTML = `${btnClose} ${btnApprove} ${btnReject}`;
 }
     
@@ -1363,10 +1423,48 @@ async function openDetail({i}){
   ov.classList.remove('flex');
   CURRENT_DETAIL = null;
 }
+/* ===== REJECT REASON MODAL (ADMIN) ===== */
+
+function openRejectModal(){
+  // ใช้ตอนกดปุ่ม Reject (เฉพาะ ADMIN)
+  const ov = document.getElementById('rejectReasonOverlay');
+  const sel = document.getElementById('rejectReasonSelect');
+  if (!ov || !sel) return;
+
+  sel.value = '';                   // เคลียร์ค่าเดิม
+  ov.classList.remove('hidden');
+  ov.classList.add('flex');
+}
+
+function closeRejectModal(){
+  const ov = document.getElementById('rejectReasonOverlay');
+  if (!ov) return;
+
+  ov.classList.add('hidden');
+  ov.classList.remove('flex');
+}
+
+async function confirmRejectReason(){
+  const sel = document.getElementById('rejectReasonSelect');
+  if (!sel) return;
+
+  const reason = (sel.value || '').trim();
+  if (!reason){
+    alert('กรุณาเลือกเหตุผลในการปฏิเสธการเบิก');
+    sel.focus();
+    return;
+  }
+
+  // เรียก actOnCurrent โดยส่ง reason ไปด้วย
+  await actOnCurrent('REJECT', reason);
+
+  // ถ้า actOnCurrent สำเร็จแล้วจะ toast + ปิด detail ให้เอง
+  closeRejectModal();
+}
 
   
-/* ===== ACT ===== */
-async function actOnCurrent(type){
+/* ===== ACT (รองรับเหตุผล Reject แบบ dropdown) ===== */
+async function actOnCurrent(type, rejectReason){
   const idx = CURRENT_DETAIL;
   if (idx == null) return;
 
@@ -1375,25 +1473,34 @@ async function actOnCurrent(type){
   const comment = document.getElementById('dComment').value || '';
   const ap = APPROVER || JSON.parse(sessionStorage.getItem('approver') || '{}');
 
+  // ถ้าเป็น REJECT และมาจากปุ่มเดิมที่ไม่ได้ส่ง reason เข้ามา → กันไว้
+  if (type === 'REJECT' && !rejectReason){
+    // ในกรณี ADMIN ปกติจะไม่เข้าเคสนี้ เพราะใช้ confirmRejectReason เสมอ
+    console.warn('REJECT without reason – fallback ใช้ comment แทน');
+  }
+
   try{
     showOverlay('กำลังบันทึกข้อมูลไปยังระบบ…');
-const form = new URLSearchParams({
-  action: 'act',
-  type,
-  requestNo: reqNo,
-  approver: ap?.name || '',
-  approverEmail: ap?.email || '',
-  role: ap?.type || '',
-  comment
-});
 
-const res = await fetch(API_BASE, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-  },
-  body: form.toString()
-});
+    const form = new URLSearchParams({
+      action: 'act',
+      type,
+      requestNo: reqNo,
+      approver: ap?.name || '',
+      approverEmail: ap?.email || '',
+      role: ap?.type || '',
+      comment,
+      // เพิ่ม field ใหม่สำหรับเหตุผลการ Reject
+      rejectReason: rejectReason || ''
+    }); 
+
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+      },
+      body: form.toString()
+    });
 
     const rawText = await res.text();
     let data;
@@ -1413,18 +1520,18 @@ const res = await fetch(API_BASE, {
     }
 
     hideOverlay();
-    const okMsg = (type === 'APPROVE') ? 'อนุมัติรายการเบิก' : 'ปฏิเสธรายการเบิก';
-    const toastType = (type === 'APPROVE') ? 'success' : 'error';
+    const okMsg    = (type === 'APPROVE') ? 'อนุมัติรายการเบิก' : 'ปฏิเสธรายการเบิก';
+    const toastType= (type === 'APPROVE') ? 'success' : 'error';
     toast(okMsg, toastType, 1600);
 
-    // เก็บคอมเมนต์ล่าสุด (กันกรณี oninput ยังไม่ยิง)
+    // เก็บคอมเมนต์ล่าสุด
     setComment(reqNo, (document.getElementById('dComment')?.value || ''));
 
-    // บันทึกเวลาที่กระทำ ใช้เรียง “กองล่าง”
+    // บันทึกเวลาที่กระทำ
     markActed(reqNo);
 
-    closeDetail();
-    SOURCE_ROWS = [];                   // เคลียร์ cache เพื่อรีเฟรชจากชีต
+    closeDetail(); 
+    SOURCE_ROWS = [];                   // เคลียร์ cache
     await loadAndRenderList(CURRENT_FILTER);
 
   }catch(err){
@@ -1509,6 +1616,53 @@ document.addEventListener('click', (e)=>{
 document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape') closeTimeline();
 });
+    
+    <!-- ============ Reject Reason Modal ============ -->
+<div id="rejectReasonModal" class="modal-mask">
+  <div class="modal">
+    <!-- หัวข้อ -->
+    <h3 class="text-lg font-bold mb-3">
+      กรุณาเลือกเหตุผลในการปฏิเสธการเบิก
+    </h3>
+
+    <!-- Dropdown เหตุผล -->
+    <label for="rejectReasonSelect" class="block text-sm font-medium text-gray-700 mb-2">
+      เหตุผลในการปฏิเสธการเบิก :
+    </label>
+    <select id="rejectReasonSelect"
+            class="w-full border rounded-lg px-3 py-2 text-sm mb-4">
+      <option value="">-- กรุณาเลือกเหตุผล --</option>
+      <option value="Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้">
+        1. Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้
+      </option>
+      <option value="ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้">
+        2. ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้
+      </option>
+      <option value="สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า">
+        3. สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า
+      </option>
+      <option value="บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5-7 วัน">
+        4. บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5-7 วัน
+      </option>
+    </select>
+
+    <!-- ปุ่มกด -->
+    <div class="flex justify-end gap-2 mt-2">
+      <button type="button"
+              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold"
+              onclick="closeRejectModal()">
+        ยกเลิก
+      </button>
+
+      <button type="button"
+              class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-bold"
+              onclick="confirmRejectReason()">
+        Submit
+      </button>
+    </div>
+  </div>
+</div>
+
 
 
 
