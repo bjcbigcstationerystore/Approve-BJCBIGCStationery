@@ -675,10 +675,11 @@ body {
   <!-- ========== MODAL ========= -->
 <!-- Overlay: รายละเอียดคำขอ -->
 <div id="detailOverlay"
-     class="fixed inset-0 hidden items-start justify-center modal-overlay z-[60] pt-4 md:pt-6">
+     class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60] p-4">
 
-  <!-- กล่องเนื้อหา -->
-  <div class="bg-white relative modal-card compact">
+  <div class="bg-white relative modal-card detail-card 
+              w-full max-w-[900px] md:max-w-[1100px]
+              max-h-[90vh] overflow-auto p-6 md:p-8 rounded-2xl shadow-xl">
     <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
     <div class="modal-head mt-1 md:mt-2 pb-0">รายละเอียดการขอเบิกอุปกรณ์สำนักงาน</div>
 
