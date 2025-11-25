@@ -843,8 +843,7 @@ body {
       </div>
     </div>
   </div>
-</div>
-    
+</div> 
   
   <!-- ===== Loading Overlay ===== -->
 <div id="appOverlay" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/40">
@@ -1617,56 +1616,7 @@ document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape') closeTimeline();
 });
     
-    <!-- ============ Reject Reason Modal ============ -->
-<div id="rejectReasonModal" class="modal-mask">
-  <div class="modal">
-    <!-- หัวข้อ -->
-    <h3 class="text-lg font-bold mb-3">
-      กรุณาเลือกเหตุผลในการปฏิเสธการเบิก
-    </h3>
-
-    <!-- Dropdown เหตุผล -->
-    <label for="rejectReasonSelect" class="block text-sm font-medium text-gray-700 mb-2">
-      เหตุผลในการปฏิเสธการเบิก :
-    </label>
-    <select id="rejectReasonSelect"
-            class="w-full border rounded-lg px-3 py-2 text-sm mb-4">
-      <option value="">-- กรุณาเลือกเหตุผล --</option>
-      <option value="Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้">
-        1. Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้
-      </option>
-      <option value="ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้">
-        2. ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้
-      </option>
-      <option value="สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า">
-        3. สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า
-      </option>
-      <option value="บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5-7 วัน">
-        4. บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5-7 วัน
-      </option>
-    </select>
-
-    <!-- ปุ่มกด -->
-    <div class="flex justify-end gap-2 mt-2">
-      <button type="button"
-              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold"
-              onclick="closeRejectModal()">
-        ยกเลิก
-      </button>
-
-      <button type="button"
-              class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-bold"
-              onclick="confirmRejectReason()">
-        Submit
-      </button>
-    </div>
-  </div>
-</div>
-
-
-
-
-
+    
   </script>
 </body>
-</html>
+</html> 
