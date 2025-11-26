@@ -126,13 +126,13 @@
 
 /* ตารางหลัก: คอลัมน์ 7 ช่อง – บีบให้พอดีกับกรอบโดยไม่ต้องเลื่อนใน Desktop */
 :root{
-  --col-req:130px;    /* Request Number – ลดลงนิดนึง */
+  --col-req:160px;    /* Request Number – ลดลงนิดนึง */
   --col-name:210px;   /* ผู้ขอเบิก */
-  --col-date:110px;   /* วันที่ขอ */
-  --col-items:1fr;    /* รายการ (ให้ยืด–หดตามพื้นที่ที่เหลือ) */
-  --col-amount:110px; /* จำนวนเงิน */
-  --col-status:130px; /* สถานะ */
-  --col-action:130px; /* รายละเอียด */
+  --col-date:150px;   /* วันที่ขอ */
+  --col-items:100px;    /* รายการ (ให้ยืด–หดตามพื้นที่ที่เหลือ) */
+  --col-amount:100px; /* จำนวนเงิน */
+  --col-status:140px; /* สถานะ */
+  --col-action:140px; /* รายละเอียด */
 }
 
 .grid-head,
@@ -146,7 +146,7 @@
     var(--col-amount)
     var(--col-status)
     var(--col-action);
-  gap:20px;           /* จาก 28px → 20px ให้คอลัมน์ห่างกันพอดี ไม่กินพื้นที่เกินไป */
+  gap:10px;           /* จาก 28px → 20px ให้คอลัมน์ห่างกันพอดี ไม่กินพื้นที่เกินไป */
   align-items:center;
 }
 
@@ -675,6 +675,9 @@ body {
 #pager {
   margin-bottom: 20px !important;
 }
+.status-head{
+  margin-left: 20px;    /* ปรับ 8–20px ได้ */
+}
 
 
 
@@ -829,8 +832,8 @@ body {
       <div>วันที่ขอ</div>
       <div>รายการ</div>
       <div>จำนวนเงิน</div>
-      <div class="col-center">สถานะ</div>
-      <div>รายละเอียด</div>
+      <div class="col-center status-head">สถานะ</div>
+      <div class="col-left pl-23 md:pl-10">รายละเอียด</div>
     </div>
     <div id="reqList"></div>
   </div>
