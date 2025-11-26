@@ -240,29 +240,27 @@
     @media (max-width: 640px){
   .modal-card{ width: 98vw; max-height: 90vh; }
 }
-/* การ์ดครอบโค้ง และซ่อนขอบคมจากสกรอลล์ด้านใน */
+    
 .modal-card{
-  width: min(980px, 96vw);
-  max-height: 88vh;
-  overflow: hidden;        /* ← เปลี่ยนเป็น hidden เพื่อให้มุมโค้งเนียน */
-  border-radius: 18px;
+  width: min(1100px, 96vw);
+  max-height: 98vh;     /* เพิ่มความสูง */
+  overflow: hidden;
 }
 
-/* ให้สกรอลล์เกิดแค่เมื่อ “ภายใน” สูงเกินกรอบ */
 .modal-body{
-  max-height: calc(88vh - 90px); /* เผื่อหัว+ปุ่มท้ายกล่อง (~90px ปรับได้) */
-  overflow: auto;                /* ถ้าเนื้อหาไม่เกิน จะไม่แสดงสกรอลล์ */
+  max-height: calc(95vh - 90px);
+  overflow: auto;
 }
+    
     .modal-body::-webkit-scrollbar{ width: 10px; }
 .modal-body::-webkit-scrollbar-thumb{
   background: rgba(100,116,139,.35);
   border-radius: 999px;
 }
 
-/* โหมดเล็กลง */
 .modal-card.compact{
-  width: min(760px, 90vw);      /* ถ้าอยากเล็กกว่านี้ ลอง 700px หรือ 680px */
-  max-height: 84vh;             /* ลดความสูงลงนิด ให้ดูกระชับ */
+  width: min(1000px, 96vw);   /* ใหญ่ขึ้น */
+  max-height: 98vh;           /* เดิม 84vh → เพิ่มสูงขึ้น */
 }
 
 /* หัวกล่องให้กระชับ */
@@ -345,7 +343,18 @@
   padding: 6px 14px;
   border-radius: 10px;
 }
+    /* ===== ย่อขนาดกล่องรายละเอียด (#detailOverlay) เหลือ 70% ===== */
+#detailOverlay .modal-card{
+  transform: scale(.9);
+  transform-origin: top center;  /* ย่อจากกึ่งกลางด้านบน จะดูบาลานซ์กับการจัดตำแหน่ง items-start */
+}
 
+/* มือถือ/จอเล็ก: ไม่ย่อ เพื่อให้ยังอ่านง่าย */
+@media (max-width: 640px){
+  #detailOverlay .modal-card{
+    transform: none;
+  }
+}
 
 
     /* ===== Viewport scale 90% เฉพาะเนื้อหา ไม่แตะ overlay/fixed ===== */
@@ -442,11 +451,10 @@ body {
   #detailOverlay .modal-card.compact{
     max-height: 120vh;                 /* เดิม 84vh → 120vh */
   }
+  
   /* ยืดความสูงส่วนเนื้อหาให้สัมพันธ์กับกรอบใหม่ */
-  #detailOverlay .modal-card .modal-body{
-    max-height: calc(120vh - 90px);    /* เดิม calc(88vh - 90px) */
-    overflow: auto;
-  }
+#detailOverlay .modal-card .modal-body{
+  max-height: calc(98vh - 70px);
 }
     /* === Compact loading overlay (ย่อกรอบ + ตัวอักษร + ไอคอน) === */
 #appOverlay > div{
@@ -664,11 +672,10 @@ body {
   <!-- ========== MODAL ========= -->
 <!-- Overlay: รายละเอียดคำขอ -->
 <div id="detailOverlay"
-     class="fixed inset-0 hidden items-center justify-center modal-overlay z-[60] p-4">
+     class="fixed inset-0 hidden items-start justify-center modal-overlay z-[60] pt-4 md:pt-6">
 
-  <div class="bg-white relative modal-card detail-card 
-              w-full max-w-[900px] md:max-w-[1100px]
-              max-h-[90vh] overflow-auto p-6 md:p-8 rounded-2xl shadow-xl">
+  <!-- กล่องเนื้อหา -->
+  <div class="bg-white relative modal-card compact">
     <button class="modal-close" onclick="closeDetail()" aria-label="Close">×</button>
     <div class="modal-head mt-1 md:mt-2 pb-0">รายละเอียดการขอเบิกอุปกรณ์สำนักงาน</div>
 
@@ -833,7 +840,8 @@ body {
       </div>
     </div>
   </div>
-</div> 
+</div>
+    
   
   <!-- ===== Loading Overlay ===== -->
 <div id="appOverlay" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/40">
@@ -1606,7 +1614,7 @@ document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape') closeTimeline();
 });
     
-    
+
   </script>
 </body>
-</html> 
+</html>
