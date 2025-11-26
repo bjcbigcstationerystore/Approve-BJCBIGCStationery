@@ -42,7 +42,12 @@
     @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
 
     .title-underline{ width:92px; height:4px; border-radius:999px; background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
-    .info-card{ background:#fff; border-radius:18px; padding:18px 20px; box-shadow:var(--tw-shadow,0 20px 60px rgba(2,6,23,.08)); }
+    .info-card{
+  background:#fff;
+  border-radius:16px;                    /* มุมโค้งลดนิดนึง */
+  padding:12px 16px;                     /* จาก 18x20 → 12x16 */
+  box-shadow:var(--tw-shadow,0 14px 40px rgba(2,6,23,.06));
+}
     .field-label{ font-size:.78rem; color:#64748b }
     .field-value{ font-weight:600; color:#0f172a }
     .hidden{ display:none !important; }
@@ -527,11 +532,24 @@ body {
     flex-grow: 1;
 }
 
-/* ยกเลิกการย่อขนาดหน้า Approval เพื่อตัดช่องว่างด้านล่าง */
+/* ย่อขนาดหน้า Approval ทั้งหมด ให้เล็กลงเหลือ ~90% */
 #approvalScreen .app-viewport{
-  transform: scale(.96);
+  transform: scale(.9);          /* จาก .96 → .9 เล็กลงชัดเจน */
   transform-origin: top center;
+  max-width: 1200px;             /* ไม่ให้เนื้อหากว้างจนเต็มจอเกินไป */
+  margin: 0 auto;                /* จัดให้อยู่กลางจอ */
 }
+  /* หัวข้อใหญ่ในหน้า Approval ให้เล็กลง */
+#approvalScreen h1{
+  font-size: 1.75rem;        /* เทียบประมาณ text-2xl */
+}
+
+@media (min-width: 768px){
+  #approvalScreen h1{
+    font-size: 2.25rem;      /* เดิม md:text-4xl → เหลือประมาณ text-3xl */
+  }
+}
+
 
 
     
