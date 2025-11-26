@@ -42,16 +42,28 @@
     @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
 
     .title-underline{ width:92px; height:4px; border-radius:999px; background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
-    /* กรอบข้อมูลผู้อนุมัติ — ให้กว้างเท่ากรอบรายการเบิกด้านล่าง */
+    
+/* ย่อกรอบข้อมูลผู้อนุมัติให้เล็กลง */
 .info-card{
-  width: 100%;                        /* กินเต็มความกว้าง content เหมือนกรอบตาราง */
-  background:#fff;
-  border-radius: 1rem;                /* เท่ากับ rounded-2xl ของกรอบล่าง */
-  padding: 16px 18px;                 /* padding ใกล้เคียงกรอบตาราง */
-  border: 1px solid #e2e8f0;          /* ให้มีกรอบบาง ๆ เหมือนกัน */
-  box-shadow: 0 10px 28px rgba(15,23,42,.06);
-  transform: none;                    /* เอา scale(.92) ออก เพื่อไม่ให้เล็กกว่า */
-  transform-origin: unset;
+  max-width: 100%;
+  padding: 12px 14px !important;     /* เดิม 16–18px ➜ ลดลง */
+  border-radius: 12px !important;    /* เดิม 1rem (16px) ➜ ลดลงนิด */
+  box-shadow: 0 6px 18px rgba(15,23,42,.05) !important;  /* เงาเบาลง */
+  margin-top: 0.8rem !important;
+  margin-bottom: 0.8rem !important;
+}
+
+/* กล่องรายละเอียดภายในให้เล็กลงตาม */
+.info-card .p-3{
+  padding: 8px 10px !important;      /* ลด padding ของ input box */
+}
+
+.info-card .field-label{
+  font-size: 12px !important;
+}
+
+.info-card .field-value{
+  font-size: 14px !important;
 }
     .field-label{ font-size:.78rem; color:#64748b }
     .field-value{ font-weight:600; color:#0f172a }
@@ -366,15 +378,24 @@
   }
 }
 
-
-    /* ===== Viewport scale 90% เฉพาะเนื้อหา ไม่แตะ overlay/fixed ===== */
-.app-viewport{
-  transform: scale(.9);
-  transform-origin: top center;
-  width: 100%;
-  margin: 0 auto;
-  display: block;
+    /* ลดพื้นที่ด้านล่างของหน้าอนุมัติให้พอดีกับตาราง */
+#approvalScreen main{
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
 }
+
+/* บังคับให้กรอบรายการเบิกชิดด้านล่างจริง */
+#pager{
+  margin-bottom: 0 !important;
+  padding-bottom: 4px !important;
+}
+
+/* ลดช่องว่างล่างสุดของ app viewport */
+.app-viewport{
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 
 .table-scroll{
   overflow-x: auto !important;
@@ -530,6 +551,22 @@ body {
   padding-top: 6px !important;
   padding-bottom: 6px !important;
   margin-bottom: 0 !important;
+}
+/* ลดขนาดหัวข้อ APPROVAL STATIONERY STORE */
+#approvalScreen h1 {
+  font-size: 26px !important;        /* เดิม ~36–40px */
+  letter-spacing: 0.5px;
+  font-weight: 800;
+  margin-bottom: 4px !important;
+}
+
+  /* เพิ่มพื้นที่เล็กน้อยด้านล่างตาราง เพื่อไม่ให้ชิดจอเกินไป */
+#approvalScreen .app-viewport {
+  padding-bottom: 40px !important; 
+}
+
+#pager {
+  margin-bottom: 40px !important; /* ลอยขึ้นนิดเดียวพอดี ไม่โล่งเยอะ */
 }
 
 
