@@ -557,6 +557,43 @@ body {
   }
 }
 
+/* ===== ลดช่องว่างด้านล่างของตาราง Approval ให้พอดี ===== */
+
+/* ตัด padding/margin ทั้งหมดของ main */
+#approvalScreen main{
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* viewport ไม่ต้องเว้นพื้นที่ล่าง */
+#approvalScreen .app-viewport{
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ลด padding ของกรอบ pager */
+#pager{
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 0 !important;
+}
+
+/* ลดช่องว่างด้านล่างสุดของ section ทั้งหมด */
+#approvalScreen{
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* บังคับให้ container ชิดล่าง */
+#approvalScreen{
+  display: flex;
+  flex-direction: column;
+}
+
+/* main ขยายเต็ม และไม่ให้เหลือช่องว่างล่าง */
+#approvalScreen main{
+  flex-grow: 1;
+}
 
 
     
