@@ -509,91 +509,30 @@ body {
   to   { opacity: 1;  transform: translate(-50%, 0); }
 }
 
-/* ลดพื้นที่ว่างล่างของหน้า Approval */
-#approvalScreen main {
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
+  /* ===== ปรับความสูงหน้า Approval ให้เท่ากับเนื้อหาจริง ลดช่องว่างด้านล่าง ===== */
+
+/* section ทั้งหน้าจออนุมัติ */
+#approvalScreen{
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  min-height: auto;      /* ไม่บังคับ 100vh แล้ว */
+  display: block;        /* เอา flex ออก */
 }
 
-/* ลดระยะด้านล่างของ app-viewport */
-#approvalScreen .app-viewport {
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
-}
-
-/* ลด padding ของตัว container ทั้งหมด */
-#approvalScreen {
-    padding-bottom: 0 !important;
-}
-/* บังคับ section approval ให้สูงเท่าจอแบบชิดล่าง */
-#approvalScreen {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* เนื้อหาไม่เว้นช่องว่างด้านล่าง */
-#approvalScreen main {
-    flex-grow: 1;
-}
-
-/* ย่อหน้า Approval ลงให้เล็กลงจริง (~85%) */
-#approvalScreen .app-viewport{
-  transform: scale(.85);          /* จาก .9 → .85 */
-  transform-origin: top center;
-  max-width: 1100px;              /* จาก 1200 → 1100 เพื่อให้ทุกอย่างดูเล็กลง */
-  margin: 0 auto;
-}
-
-/* ลดขนาดหัวข้อหลักให้เล็กลง */
-#approvalScreen h1{
-  font-size: 1.4rem;             /* เดิม 1.75 → เล็กลง */
-  letter-spacing: .5px;
-}
-
-@media (min-width: 768px){
-  #approvalScreen h1{
-    font-size: 1.9rem;           /* เดิม 2.25 → เล็กลง */
-  }
-}
-
-/* ===== ลดช่องว่างด้านล่างของตาราง Approval ให้พอดี ===== */
-
-/* ตัด padding/margin ทั้งหมดของ main */
+/* ตัว main ข้างใน – กันเผื่อมี padding ล่างติดอยู่ */
 #approvalScreen main{
   padding-bottom: 0 !important;
   margin-bottom: 0 !important;
 }
 
-/* viewport ไม่ต้องเว้นพื้นที่ล่าง */
-#approvalScreen .app-viewport{
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* ลด padding ของกรอบ pager */
+/* pager ด้านล่างตาราง – ให้ชิดกรอบพอดี */
 #pager{
   padding-top: 6px !important;
   padding-bottom: 6px !important;
   margin-bottom: 0 !important;
 }
 
-/* ลดช่องว่างด้านล่างสุดของ section ทั้งหมด */
-#approvalScreen{
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
 
-/* บังคับให้ container ชิดล่าง */
-#approvalScreen{
-  display: flex;
-  flex-direction: column;
-}
-
-/* main ขยายเต็ม และไม่ให้เหลือช่องว่างล่าง */
-#approvalScreen main{
-  flex-grow: 1;
-}
 
 
     
