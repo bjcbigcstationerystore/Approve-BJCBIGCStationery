@@ -569,6 +569,112 @@ body {
   margin-bottom: 40px !important; /* ลอยขึ้นนิดเดียวพอดี ไม่โล่งเยอะ */
 }
 
+/* ===========================================================
+   🔽 ย่อหน้า APPROVAL MODE ให้เล็กลงทั้งหน้าแบบปลอดภัย
+   =========================================================== */
+
+/* ทั้งหน้าจอ Approval – ลดขนาดตัวอักษร */
+#approvalScreen {
+  font-size: 13px !important;        /* เดิมเทียบเท่า text-[14–16px] */
+  line-height: 1.35 !important;
+}
+
+/* หัวข้อ Approval Items */
+#approvalScreen h1 {
+  font-size: 22px !important;        /* เดิม 26px */
+  margin-bottom: 2px !important;
+}
+
+/* กรอบผู้อนุมัติ (info-card) – เล็กลงอีก 25% */
+.info-card {
+  padding: 8px 10px !important;      /* เดิม 12–14px */
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04) !important;
+}
+
+/* ไอคอนรูปคน – เล็กลง */
+.info-card .w-14.h-14 {
+  width: 42px !important;
+  height: 42px !important;
+}
+.info-card svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* กล่องข้อมูลผู้อนุมัติด้านใน */
+.info-card .p-3 {
+  padding: 6px 8px !important;
+}
+
+/* ป้ายหัวข้อ (Name, Email…) */
+.info-card .field-label {
+  font-size: 11px !important;
+}
+
+/* ค่าข้อมูล (Test Admin, email…) */
+.info-card .field-value {
+  font-size: 13px !important;
+}
+
+/* ประเภท Type + ปุ่ม Logout */
+#apvType {
+  font-size: 12px !important;
+}
+#logoutBtn {
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+}
+
+/* ===========================================================
+   🔽 ตาราง Approval – ลดความสูง / ลดตัวอักษรทุกแถว
+   =========================================================== */
+
+.grid-head {
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+}
+
+.grid-row {
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+  gap: 14px !important;
+}
+
+/* ป้ายสถานะ (รออนุมัติ / อนุมัติ / ปฏิเสธ) */
+.status-pill {
+  font-size: 11px !important;
+  padding: 3px 8px !important;
+}
+
+.grid-row button {
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+}
+
+/* ===========================================================
+   🔽 ส่วนหัว Approval Items
+   =========================================================== */
+#approvalScreen .text-xl,
+#approvalScreen .text-2xl {
+  font-size: 17px !important;
+}
+
+#approvalScreen .text-sm {
+  font-size: 12px !important;
+}
+
+/* ===========================================================
+   🔽 เพิ่มพื้นที่ล่างตารางนิดเดียว (ดูพอดี)
+   =========================================================== */
+#approvalScreen .app-viewport {
+  padding-bottom: 28px !important;
+}
+
+#pager {
+  margin-bottom: 20px !important;
+}
 
 
 
