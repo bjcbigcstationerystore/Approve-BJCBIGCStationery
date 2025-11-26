@@ -515,7 +515,23 @@ body {
 #approvalScreen {
     padding-bottom: 0 !important;
 }
+/* บังคับ section approval ให้สูงเท่าจอแบบชิดล่าง */
+#approvalScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
+/* เนื้อหาไม่เว้นช่องว่างด้านล่าง */
+#approvalScreen main {
+    flex-grow: 1;
+}
+
+/* ยกเลิกการย่อขนาดหน้า Approval เพื่อตัดช่องว่างด้านล่าง */
+#approvalScreen .app-viewport{
+  transform: scale(.96);
+  transform-origin: top center;
+}
 
 
     
@@ -782,17 +798,17 @@ body {
       <select id="rejectReasonSelect"
               class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
         <option value="">-- กรุณาเลือกเหตุผล --</option>
-        <option value="Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้">
-          1. Cost Center ไม่มี Budget ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีเติมให้
+        <option value="Cost Center ไม่มี Budget">
+          1. Cost Center ไม่มี Budget 
         </option>
-        <option value="ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้">
-          2. ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้ ต้องรอทางบัญชีผูก IO ให้
+        <option value="ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้">
+          2. ไม่มี IO Internal Order ทำให้เปิด PR ไม่ได้
         </option>
-        <option value="สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า">
-          3. สายอนุมัติในระบบ E2E และ K2 อาจจะกดช้า
+        <option value="สายอนุมัติในระบบ E2E และ K2 อาจจะกดล่าช้า">
+          3. สายอนุมัติในระบบ E2E และ K2 อาจจะกดล่าช้า
         </option>
-        <option value="บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5–7 วัน">
-          4. บางครั้ง PO ก็ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5–7 วัน
+        <option value="PO ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5–7 วัน">
+          4. PO ออกช้า ปกติต้องออก 3 วันหลังจากสายอนุมัติ Final Approve ทั้งสองระบบ อาจจะช้าไป 5–7 วัน
         </option>
       </select>
 
