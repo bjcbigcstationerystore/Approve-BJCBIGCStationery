@@ -42,21 +42,16 @@
     @keyframes fadeIn{ from{opacity:0; transform:translateY(-3px)} to{opacity:1; transform:translateY(0)} }
 
     .title-underline{ width:92px; height:4px; border-radius:999px; background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
-    .info-card{
+    /* กรอบข้อมูลผู้อนุมัติ — ให้กว้างเท่ากรอบรายการเบิกด้านล่าง */
+.info-card{
+  width: 100%;                        /* กินเต็มความกว้าง content เหมือนกรอบตาราง */
   background:#fff;
-  border-radius:14px;         /* มุมเล็กลง */
-  padding:10px 12px;          /* จาก 12x16 → 10x12 */
-  box-shadow:0 10px 28px rgba(2,6,23,.05);
-  transform: scale(.92);      /* ยิ่งเล็กลงอีกหน่อย */
-  transform-origin: top center;
-}
-
-/* ขนาดตัวหนังสือในกรอบข้อมูล */
-.info-card .field-label{
-  font-size: .72rem;         /* เดิม .78rem */
-}
-.info-card .field-value{
-  font-size: .9rem;          /* เดิม ~1rem */
+  border-radius: 1rem;                /* เท่ากับ rounded-2xl ของกรอบล่าง */
+  padding: 16px 18px;                 /* padding ใกล้เคียงกรอบตาราง */
+  border: 1px solid #e2e8f0;          /* ให้มีกรอบบาง ๆ เหมือนกัน */
+  box-shadow: 0 10px 28px rgba(15,23,42,.06);
+  transform: none;                    /* เอา scale(.92) ออก เพื่อไม่ให้เล็กกว่า */
+  transform-origin: unset;
 }
     .field-label{ font-size:.78rem; color:#64748b }
     .field-value{ font-weight:600; color:#0f172a }
