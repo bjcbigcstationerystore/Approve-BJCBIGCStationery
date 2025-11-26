@@ -112,15 +112,15 @@
     .status-badge-big.approve{ background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.15) }
     .status-badge-big.reject{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.15) }
 
-    /* ตารางหลัก: คอลัมน์จริง 7 ช่อง (ไม่มี spacer แล้ว) */
+/* ตารางหลัก: คอลัมน์ 7 ช่อง – บีบให้พอดีกับกรอบโดยไม่ต้องเลื่อนใน Desktop */
 :root{
-  --col-req:140px;
-  --col-name:200px;
-  --col-date:120px;
-  --col-items:1fr;
-  --col-amount:120px;   /* จำนวนเงิน */
-  --col-status:150px;   /* สถานะ */
-  --col-action:150px;   /* รายละเอียด */
+  --col-req:130px;    /* Request Number – ลดลงนิดนึง */
+  --col-name:210px;   /* ผู้ขอเบิก */
+  --col-date:110px;   /* วันที่ขอ */
+  --col-items:1fr;    /* รายการ (ให้ยืด–หดตามพื้นที่ที่เหลือ) */
+  --col-amount:110px; /* จำนวนเงิน */
+  --col-status:130px; /* สถานะ */
+  --col-action:130px; /* รายละเอียด */
 }
 
 .grid-head,
@@ -134,7 +134,7 @@
     var(--col-amount)
     var(--col-status)
     var(--col-action);
-  gap:24px;
+  gap:20px;           /* จาก 28px → 20px ให้คอลัมน์ห่างกันพอดี ไม่กินพื้นที่เกินไป */
   align-items:center;
 }
 
@@ -385,7 +385,7 @@
 /* บังคับให้เนื้อหาตารางมีความกว้างขั้นต่ำ (เพื่อให้มีสิ่งให้เลื่อนตอนจอแคบ) */
 .grid-head,
 .grid-row{
-  min-width: 920px;   /* ปรับได้ 880–1040 แล้วแต่สายตา */
+  min-width: 880px;   /* ปรับได้ 880–1040 แล้วแต่สายตา */
 }
    @media (max-width: 640px){
   .app-viewport{
@@ -708,10 +708,10 @@ body {
       <div>Request Number</div>
       <div>ผู้ขอเบิก</div>
       <div>วันที่ขอ</div>
-      <div class="col-center">รายการ</div>
-      <div class="col-center">จำนวนเงิน</div>
+      <div>รายการ</div>
+      <div>จำนวนเงิน</div>
       <div class="col-center">สถานะ</div>
-      <div class="col-left pl-2 md:pl-3">รายละเอียด</div>
+      <div>รายละเอียด</div>
     </div>
     <div id="reqList"></div>
   </div>
@@ -783,7 +783,7 @@ body {
 
         <!-- แถวหัวคอลัมน์ของรายละเอียดรายการ -->
         <div class="detail-row text-slate-600 font-medium bg-slate-50">
-          <div class="col-center">ลำดับ</div>
+          <div>ลำดับ</div>
           <div>รายการ</div>
           <div class="col-right">จำนวน</div>
           <div class="col-right">ราคา/หน่วย (บาท)</div>
@@ -1290,9 +1290,9 @@ host.innerHTML = rowsPage.map((r, i) => {
     <div class="text-blue-700 font-semibold whitespace-nowrap">${reqNo}</div>
     <div class="truncate">${reqBy || '—'}</div>
     <div>${reqDate || '—'}</div>
-    <div class="truncate col-center text-center">${items || '—'}</div>
+    <div class="truncate">${items || '—'}</div>
 
-    <div class="text-right font-semibold">${Number(total||0).toLocaleString()} บาท</div>
+    <div class="font-semibold">${Number(total||0).toLocaleString()} บาท</div>
       ${(() => {
         const actedIdx = src.actedIdx;
         const tSheet = toMsFromGviz(arr[actedIdx]) || 0;
