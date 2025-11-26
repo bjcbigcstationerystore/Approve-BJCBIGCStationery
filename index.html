@@ -696,8 +696,10 @@ body {
 }
 
 #verifyScreen .card {
-  padding: 18px !important;     /* เดิม 28px ➜ เล็กลง */
-  border-radius: 16px !important;
+  max-width: 550px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 #verifyScreen label {
@@ -741,13 +743,45 @@ body {
   font-size: 14px !important;      /* ไอคอน 🕒 เล็กลงหน่อย */
 }
 
-/* ========== ย่อความกว้างกล่องหน้าแรก ========== */
+/* ========== ปรับขนาดกรอบ Timeline ให้ใหญ่ขึ้นนิด ========= */
 
-#verifyScreen .card {
-  max-width: 500px !important;     /* เดิม 720px → แคบลง */
-  width: 100% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+#timelineOverlay .timeline-card {
+  width: min(820px, 88vw) !important;   /* เดิม 700px → 820px */
+  padding: 26px 38px 30px !important;   /* เพิ่มพื้นที่ */
+  border-radius: 20px !important;
+  transform: scale(.92) !important;     /* เดิม .85 → .92 */
+  transform-origin: center center !important;
+}
+
+/* หัวข้อให้ใหญ่ขึ้นเล็กน้อย */
+#timelineOverlay .modal-head {
+  font-size: 22px !important;     /* เดิม 20px → 22px */
+  padding-top: 18px !important;
+  padding-right: 36px !important;
+}
+
+/* เนื้อหาข้อความ */
+#timelineOverlay li .ms-12 {
+  font-size: 16px !important;     /* เดิม 15px → 16px */
+  line-height: 1.5 !important;
+}
+
+/* Dot ให้ใหญ่กลับมานิด */
+#timelineOverlay li span {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ปุ่มปิด */
+#timelineOverlay .modal-close {
+  font-size: 38px !important;     /* เดิม 34px → 38px */
+}
+
+/* ปุ่มปิดล่าง */
+#timelineOverlay button {
+  padding: 8px 16px !important;   /* เดิม 6px → 8px */
+  font-size: 15px !important;
+  border-radius: 10px !important;
 }
 
 
