@@ -1464,15 +1464,29 @@ async function loadAndRenderList(filter){
 
   const idxA = 0, idxB = 1, idxG = 6, idxL = 11, idxM = 12, idxStatus = src.statusIdx;
 
-  let rows = SOURCE_ROWS.map((r, _idx) => ({ ...r, _idx })).filter(r=>{
-    const arr = r._arr || [];
-    const raw = String(arr[idxStatus] || '').trim();
-    if (CURRENT_FILTER === 'ALL') return true;
-    if (CURRENT_FILTER === 'WAITING') return raw === '';
-    const disp = raw || 'รออนุมัติ';
-    const norm = normalizeStatus(disp);
-    return norm === CURRENT_FILTER;
-  });
+  let rows = SOURCE_ROWS
+    .map((r, _idx) => ({ ...r, _idx }))
+    .filter(r => {
+      const arr = r._arr || [];
+
+      // ❶ ถ้าไม่มี Request Number เลย → มองข้ามแถวนี้
+      const reqNo = String(arr[idxA] || '').trim();
+      if (!reqNo) return false;
+
+      // ❷ ถ้าทั้งแถวว่างหมด (ไม่มีค่าเลย) → มองข้าม
+      const hasAnyValue = arr.some(v => v !== null && String(v).trim() !== '');
+      if (!hasAnyValue) return false;
+
+      // ❸ กรองตามสถานะ (เหมือนเดิม)
+      const raw = String(arr[idxStatus] || '').trim();
+
+      if (CURRENT_FILTER === 'ALL') return true;
+      if (CURRENT_FILTER === 'WAITING') return raw === '';
+
+      const disp = raw || 'รออนุมัติ';
+      const norm = normalizeStatus(disp);
+      return norm === CURRENT_FILTER;
+    });
 
   rows.sort((r1, r2)=>{
     const a1 = r1._arr||[], a2 = r2._arr||[];
