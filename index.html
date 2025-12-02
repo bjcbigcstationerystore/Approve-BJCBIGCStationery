@@ -1189,15 +1189,54 @@ async function fetchGVizRows(url){
 }
 function pad(n){ return n<10 ? '0'+n : ''+n; }
 function formatDDMMYYYY(val, formatted){
-  if (formatted && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(formatted)) return formatted.split('/').map((x,i)=> i<2?pad(+x):x).join('/');
+  // 1) ถ้ามีค่า formatted จาก GViz ให้ใช้ก่อนเลย (รองรับปี พ.ศ. ที่ฟอร์แมตไว้ในชีต)
+  if (formatted && typeof formatted === 'string') {
+    // เช่น 2/12/2568 หรือ 02/12/2568
+    const m = formatted.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+    if (m) {
+      const d = pad(+m[1]);
+      const mn = pad(+m[2]);
+      const y = m[3].length === 2 ? '20'+m[3] : m[3]; // กันกรณี 2 หลัก
+      return `${d}/${mn}/${y}`;
+    }
+  }
+
+  // 2) รูปแบบ GViz: "Date(YYYY,MM,DD)"
   if (typeof val === 'string' && /Date\(\d+,\d+,\d+/.test(val)) {
-    const m = val.match(/Date\((\d+),(\d+),(\d+)/); if (m) return pad(+m[3])+'/'+pad(+m[2]+1)+'/'+m[1];
+    const m = val.match(/Date\((\d+),(\d+),(\d+)/);
+    if (m) {
+      const y = +m[1];
+      const mn = +m[2] + 1;
+      const d = +m[3];
+      return `${pad(d)}/${pad(mn)}/${y}`;
+    }
   }
-  const d = new Date(val); if (!isNaN(d.getTime())) return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
-  if (typeof val === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(val)) {
-    const [d2,m2,y2] = val.split('/').map(x=>+x); return pad(d2)+'/'+pad(m2)+'/'+y2;
+
+  // 3) ถ้าเป็นตัวเลข serial date ของ Google Sheets (เช่น 45600)
+  if (typeof val === 'number' && Number.isFinite(val)) {
+    // serial นับจาก 1899-12-30
+    const base = new Date(Date.UTC(1899, 11, 30)).getTime();
+    const ms   = base + Math.round(val * 24 * 60 * 60 * 1000);
+    const dt = new Date(ms);
+    if (!isNaN(dt.getTime())) {
+      return `${pad(dt.getDate())}/${pad(dt.getMonth()+1)}/${dt.getFullYear()}`;
+    }
   }
-  return String(val || '—');
+
+  // 4) ถ้าเป็นสตริง dd/mm/yyyy อยู่แล้ว
+  if (typeof val === 'string' && /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(val)) {
+    const [d2,m2,y2] = val.split('/');
+    const y = y2.length === 2 ? '20'+y2 : y2;
+    return `${pad(+d2)}/${pad(+m2)}/${y}`;
+  }
+
+  // 5) ลองให้ Date() parse ปกติเป็น fallback
+  const d = new Date(val);
+  if (!isNaN(d.getTime())) {
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  }
+
+  return '—';
 }
     function toNum(v){
   if (v == null) return 0;
