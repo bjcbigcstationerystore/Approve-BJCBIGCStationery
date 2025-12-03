@@ -1673,19 +1673,27 @@ function renderDetailItems(){
   }).join('');
 }
         
-    /* ===== Comment Cache (persist ต่อใบ) ===== */
+    /* ===== Comment Cache (persist ต่อใบ + แยกตาม Role: ADMIN | BU ADMIN | BU HEAD) ===== */
 let COMMENT_CACHE = (() => {
   try { return JSON.parse(sessionStorage.getItem('commentCache') || '{}'); }
   catch { return {}; }
 })();
 
-function getComment(reqNo){
-  const k = String(reqNo || '').trim();
-  return COMMENT_CACHE[k] || '';
+// key รูปแบบ:  ROLE::REQNO  เช่น  ADMIN::1001
+function makeCommentKey(reqNo, role){
+  const r = String(role || '').trim().toUpperCase() || 'UNKNOWN';
+  const n = String(reqNo || '').trim();
+  return `${r}::${n}`;
 }
-function setComment(reqNo, text){
-  const k = String(reqNo || '').trim();
-  COMMENT_CACHE[k] = text || '';
+
+function getComment(reqNo, role){
+  const key = makeCommentKey(reqNo, role);
+  return COMMENT_CACHE[key] || '';
+}
+
+function setComment(reqNo, text, role){
+  const key = makeCommentKey(reqNo, role);
+  COMMENT_CACHE[key] = text || '';
   try { sessionStorage.setItem('commentCache', JSON.stringify(COMMENT_CACHE)); } catch {}
 }
 
@@ -1720,8 +1728,13 @@ async function openDetail({i}){
 
   // คอมเมนต์ (อ่านอย่างเดียวถ้า acted แล้ว)
   const commentEl = document.getElementById('dComment');
+  const roleType  = String(APPROVER?.type || '').toUpperCase(); 
+  // roleType จะเป็น: ADMIN | BU ADMIN | BU HEAD
+
   if (commentEl){
-    commentEl.value = getComment(reqNo);
+    // ดึง comment ตาม Role + Request No (ไม่ปนกัน)
+    commentEl.value = getComment(reqNo, roleType);
+
     if (acted) {
       commentEl.readOnly = true;
       commentEl.classList.add('disabled');
@@ -1729,7 +1742,7 @@ async function openDetail({i}){
     } else {
       commentEl.readOnly = false;
       commentEl.classList.remove('disabled');
-      commentEl.oninput = (e)=> setComment(reqNo, e.target.value);
+      commentEl.oninput = (e)=> setComment(reqNo, e.target.value, roleType);
     }
   }
 
@@ -1858,7 +1871,8 @@ async function actOnCurrent(type, rejectReason){
     toast(okMsg, toastType, 1600);
 
     // เก็บคอมเมนต์ล่าสุด
-    setComment(reqNo, (document.getElementById('dComment')?.value || ''));
+    const roleType = String(ap?.type || '').toUpperCase();
+setComment(reqNo, (document.getElementById('dComment')?.value || ''), roleType);
 
     // บันทึกเวลาที่กระทำ
     markActed(reqNo);
