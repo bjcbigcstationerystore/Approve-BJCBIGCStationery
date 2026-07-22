@@ -23,53 +23,18 @@
 
   <style>
     :root { --card-w: 720px; }
-body{
+    body{
   font-family:'Prompt',system-ui,sans-serif;
   min-height:100vh;
   margin:0;
   color:#0f172a;
 
   background:
-
-    /* ชั้นสีขาวครอบด้านบน */
-    linear-gradient(
-      rgba(255,255,255,.35),
-      rgba(255,255,255,.35)
-    ),
-
-    /* ซ้ายบน */
-    radial-gradient(
-      circle at 0% 0%,
-      rgba(255,255,255,.90) 0%,
-      rgba(167,243,208,.18) 18%,
-      transparent 42%
-    ),
-
-    /* ขวาบน */
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(255,255,255,.90) 0%,
-      rgba(251,207,232,.17) 18%,
-      transparent 42%
-    ),
-
-    /* ซ้ายล่าง */
-    radial-gradient(
-      circle at 0% 100%,
-      rgba(255,255,255,.90) 0%,
-      rgba(165,243,252,.17) 18%,
-      transparent 42%
-    ),
-
-    /* ขวาล่าง */
-    radial-gradient(
-      circle at 100% 100%,
-      rgba(255,255,255,.90) 0%,
-      rgba(221,214,254,.17) 18%,
-      transparent 42%
-    ),
-
-    #ffffff;
+  radial-gradient(circle at 0% 0%, #ffffff 0%, rgba(167,243,208,.20) 22%, transparent 48%),
+  radial-gradient(circle at 100% 0%, #ffffff 0%, rgba(251,207,232,.20) 22%, transparent 48%),
+  radial-gradient(circle at 0% 100%, #ffffff 0%, rgba(165,243,252,.20) 22%, transparent 48%),
+  radial-gradient(circle at 100% 100%, #ffffff 0%, rgba(221,214,254,.20) 22%, transparent 48%),
+  #ffffff;
 
   background-attachment:fixed;
   background-repeat:no-repeat;
